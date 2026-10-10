@@ -52,7 +52,7 @@ function kresli() { ({ vyprava, obrana: obranaUvod, vyzva, mesto, odznaky })[zal
 // ---------- výprava: ročníky, témata, úrovně ----------
 function vyprava() {
   const R = rocnik(), h = hodnost();
-  ram(`<section class="uvod" id="uvod-mesto">${mestoSvg(stav.mesto, { H: 150 })}
+  ram(`<section class="uvod" id="uvod-mesto">${mestoSvg(stav.mesto, { H: stav.mesto.length ? 150 : 64 })}
       <p class="uvod-t">${h.dalsi ? `Do hodnosti ${h.dalsi} zbývá <b>${h.zbyva}</b> bodů.` : 'Nejvyšší hodnost je tvoje.'}</p></section>
     <div class="rocniky" role="tablist" aria-label="Ročník">${ROCNIKY.map(r => `<button role="tab" aria-selected="${r.rocnik === R.rocnik}" class="${r.rocnik === R.rocnik ? 'on' : ''}" data-r="${r.rocnik}">${r.rocnik}. ročník</button>`).join('')}</div>
     <div class="temata">${R.temata.map(t => {

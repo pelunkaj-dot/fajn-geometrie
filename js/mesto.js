@@ -36,7 +36,7 @@ export function mestoSvg(ids, o = {}) {
   const H = o.H || 170, mez = 8; let x = 12, g = '';
   for (const id of ids) { const s = stavba(id); if (!s) continue; g += `<g transform="translate(${x} 0)" class="ms-st${o.nova === id ? ' ms-nova' : ''}">${s.k()}</g>`; x += s.w + mez; }
   const W = Math.max(o.W || 360, x + 4);
-  const prazdno = ids.length ? '' : `<text x="${W / 2}" y="${-H / 2}" text-anchor="middle" class="ms-text">Tady vyroste tvoje město.</text>`;
+  const prazdno = ids.length ? '' : `<text x="${W / 2}" y="${-H / 2 + 6}" text-anchor="middle" class="ms-text">Tady vyroste tvoje město. První stavbu pořídíš za krystaly.</text>`;
   return `<svg viewBox="0 ${-H} ${W} ${H + 12}" class="mesto" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tvoje město">`
     + `<rect x="0" y="0" width="${W}" height="12" class="ms-zem"/>${prazdno}${g}<line x1="0" y1="0" x2="${W}" y2="0" class="ms-l"/></svg>`;
 }

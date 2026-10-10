@@ -1,8 +1,7 @@
 # FajnGeometrie — rozpis učiva a obtížností
 
-Podklad pro stavbu modulů. Jeden modul = jeden ročník (6.–9.), sdílené jádro
-(obrázky, vyhodnocování, nápověda, konstrukční stavebnice) v jednom společném souboru.
-[K] = konstrukční téma, ostatní jsou výpočtová.
+Rozpis učiva a pravidla obtížností. Všechny ročníky (6.–9.) jsou v jedné aplikaci, ročník se přepíná na úvodní obrazovce;
+obsah každého ročníku je ve vlastním souboru `js/rN.js`. [K] = konstrukční téma, ostatní jsou výpočtová.
 
 ## Tři obtížnosti (zadání autora)
 
@@ -42,41 +41,41 @@ chyby (zapomenuté ÷2, průměr místo poloměru, obvod × obsah, chybí odmocn
 Ú1: kroky předvádí aplikace, žák jen odpovídá na dílčí otázky. Ú2: kroky jsou připravené,
 žák je řadí a doplňuje. Ú3: vše sám.
 
-## Učivo po ročnících
+## Učivo po ročnících (jak je v modulu)
+
+[K] = téma s konstrukčními úlohami.
 
 ### 6. ročník
-- Úhel: druhy, měření, sčítání a odčítání (stupně, minuty), vedlejší a vrcholové úhly, osa úhlu [K]
-- Osová souměrnost: obraz bodu a útvaru, osově souměrné útvary [K]
-- Trojúhelník: trojúhelníková nerovnost, součet vnitřních úhlů, vnější úhly, druhy;
-  výšky, těžnice, kružnice opsaná a vepsaná [K]; konstrukce sss [K]
-- Obvod a obsah čtverce a obdélníku, složené útvary; jednotky délky a obsahu
-- Krychle a kvádr: síť, povrch, objem; jednotky objemu včetně litrů
+- 601 Úhly: druhy, vedlejší a vrcholové úhly, stupně a minuty, úhly u rovnoběžek, hodiny
+- 602 Osová souměrnost: obrazy na čtvercové síti, osy souměrnosti útvarů
+- 603 Trojúhelník – úhly a strany: součet úhlů, druhy, trojúhelníková nerovnost, vnější úhel
+- 604 Trojúhelník – konstrukce [K]: sss, výška, těžnice, těžiště, kružnice opsaná a vepsaná
+- 605 Obvod a obsah: čtverec, obdélník, složené útvary, jednotky délky a obsahu
+- 606 Krychle a kvádr: povrch, objem, jednotky objemu, litry
 
 ### 7. ročník
-- Shodnost trojúhelníků: věty sss, sus, usu; konstrukce [K]
-- Středová souměrnost [K]
-- Rovnoběžník, kosočtverec: vlastnosti, výšky, obvod, obsah; konstrukce [K]
-- Obsah trojúhelníku
-- Lichoběžník: vlastnosti, obvod, obsah; konstrukce [K]
-- Hranoly: síť, povrch, objem
+- 701 Shodnost trojúhelníků [K]: věty sss, sus, usu, konstrukce sus, usu, Ssu
+- 702 Středová souměrnost: obrazy na síti, středově souměrné útvary
+- 703 Rovnoběžníky: vlastnosti, obvod, obsah, výšky, kosočtverec
+- 704 Obsah trojúhelníku a lichoběžníku
+- 705 Konstrukce čtyřúhelníků [K]: rovnoběžník, kosočtverec, lichoběžník
+- 706 Hranoly: povrch a objem
 
 ### 8. ročník
-- Pythagorova věta: přepona, odvěsna, úlohy z praxe, úhlopříčky v rovině i tělesech
-- Kružnice a kruh: délka kružnice, obsah kruhu, části kruhu;
-  vzájemná poloha přímky a kružnice, dvou kružnic; tečna; Thaletova kružnice [K]
-- Válec: síť, povrch, objem
-- Konstrukční úlohy: množiny bodů dané vlastnosti, trojúhelníky a čtyřúhelníky
-  zadané výškou či těžnicí [K]
+- 801 Pythagorova věta: přepona, odvěsna, obrácená věta, úlohy z praxe, tělesová úhlopříčka
+- 802 Kruh a kružnice: π, délka kružnice, obsah kruhu, části kruhu, mezikruží
+- 803 Tečna a Thaletova kružnice [K]: polohy přímky a kružnice, dvou kružnic, tětiva, tečna z bodu
+- 804 Válec: povrch a objem
+- 805 Konstrukční úlohy [K]: množiny bodů, trojúhelník z výšky a těžnice
 
 ### 9. ročník
-- Podobnost: poměr podobnosti, věty o podobnosti trojúhelníků, měřítko plánu a mapy,
-  dělení úsečky v poměru [K]
-- Goniometrické funkce v pravoúhlém trojúhelníku: sin, cos, tg; výpočet stran i úhlů; praxe
-- Jehlan, kužel, koule: síť, povrch, objem
-- Souhrn k přijímacím zkouškám: typové úlohy napříč ročníky
+- 901 Podobnost: poměr podobnosti, podobné trojúhelníky, měřítko mapy, obsah a k²
+- 902 Goniometrické funkce: sin, cos, tg, výpočet strany a úhlu, úlohy z praxe
+- 903 Jehlan, kužel, koule: objem a povrch
+- 904 Souhrn k přijímačkám: opakování napříč ročníky a složené úlohy
 
-## Co převzít ze starého modulu (fdc-plugin/geometrie.html)
-
-- SVG generátory útvarů a těles (po opravě kvádru a skrývání popisků)
-- Formát úlohy: zadání → obrázek → vzorec → dosazení → postup
-- Generátory výpočtů jako základ Ú1–Ú2 (8. a 9. ročník)
+## Co chybí a může přibýt
+- úhly v mnohoúhelnících a kruhové oblouky jako samostatné téma
+- sítě těles (rozpoznávání), řezy
+- dělení úsečky v poměru (konstrukce v 9. ročníku)
+- opakování s rozestupy podle chyb konkrétního žáka, přehled pro rodiče

@@ -10,17 +10,18 @@ const VYCHOZI = () => ({
   vyklad: {},   // '601': true = výklad už viděl
   stat: { uloh: 0, napoprve: 0, combo: 0, kon3: 0, serii: 0, cistych: 0, ubraneno: 0, obrana: {}, den: { datum: '', serie: 0 }, temata: {} },
 });
-export let stav = VYCHOZI();
+export const stav = VYCHOZI();
+function nastav(novy) { for (const k of Object.keys(stav)) delete stav[k]; Object.assign(stav, novy); }
 
 export function nacti() {
   try {
     const s = JSON.parse(localStorage.getItem(KLIC) || 'null');
-    if (s && s.v === 1) { const d = VYCHOZI(); stav = { ...d, ...s, stat: { ...d.stat, ...(s.stat || {}), den: { ...d.stat.den, ...((s.stat || {}).den || {}) } } }; }
+    if (s && s.v === 1) { const d = VYCHOZI(); nastav({ ...d, ...s, stat: { ...d.stat, ...(s.stat || {}), den: { ...d.stat.den, ...((s.stat || {}).den || {}) } } }); }
   } catch (e) { /* prázdné nebo zablokované úložiště – hraje se bez ukládání */ }
   return stav;
 }
 export function uloz() { try { localStorage.setItem(KLIC, JSON.stringify(stav)); } catch (e) { /* nic */ } }
-export function smaz() { stav = VYCHOZI(); uloz(); }
+export function smaz() { nastav(VYCHOZI()); uloz(); }
 
 export const HODNOSTI = [[0, 'Nováček'], [150, 'Učeň'], [400, 'Měřič'], [800, 'Rýsovač'], [1400, 'Kreslič'], [2200, 'Zeměměřič'], [3200, 'Stavitel'], [4500, 'Konstruktér'], [6000, 'Architekt'], [8000, 'Mistr geometrie']];
 export function hodnost(xp = stav.xp) {

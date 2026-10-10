@@ -9,7 +9,7 @@ const TC = { t: 'fg-t', a: 'fg-t fg-ta', h: 'fg-t fg-th', q: 'fg-t fg-tq', n: 'f
 
 export class Fig {
   constructor(o = {}) {
-    this.W = o.W || 320; this.H = o.H || 210; this.pad = o.pad ?? 30;
+    this.W = o.W || 320; this.H = o.H || 210; this.pad = o.pad ?? 34;
     this.it = []; this.bb = [Infinity, Infinity, -Infinity, -Infinity];
   }
   ext(x, y) { const b = this.bb; if (x < b[0]) b[0] = x; if (y < b[1]) b[1] = y; if (x > b[2]) b[2] = x; if (y > b[3]) b[3] = y; return this; }
@@ -199,7 +199,7 @@ export function fTri(pts, o = {}) {
 }
 // pravoúhlý trojúhelník s pravým úhlem u C: a = |BC| vodorovně, b = |AC| svisle
 export function fRightTri(a, b, o = {}) {
-  const C = [0, 0], B = [a, 0], A = [0, b], F = new Fig({ H: 200 });
+  const C = [0, 0], B = [a, 0], A = [0, b], F = new Fig({ H: 200, pad: 44 });
   F.poly([C, B, A], { fill: 1 }).right(C, B, A);
   F.mid(C, B, o.la || '', -14).mid(A, C, o.lb || '', -16).mid(B, A, o.lc || '', -15);
   if (o.alpha) F.ang(A, C, B, o.alpha);
@@ -208,7 +208,7 @@ export function fRightTri(a, b, o = {}) {
   return F.svg();
 }
 export function fSim(p1, l1, k, l2) {
-  const F = new Fig({ H: 190 }), w = Math.max(...p1.map(p => p[0])) + 1.2;
+  const F = new Fig({ H: 190 }), w = Math.max(...p1.map(p => p[0])) + 2.6;
   const p2 = p1.map(p => [w + p[0] * k, p[1] * k]), c1 = cen(p1), c2 = cen(p2);
   F.poly(p1, { fill: 1 }).poly(p2, { fill: 1 });
   l1.forEach((t, i) => sideLab(F, p1[i], p1[(i + 1) % 3], c1, t));
@@ -218,7 +218,7 @@ export function fSim(p1, l1, k, l2) {
 
 // ---------- čtyřúhelníky ----------
 export function fRect(a, b, o = {}) {
-  const F = new Fig({ H: 190 }), P = [[0, 0], [a, 0], [a, b], [0, b]];
+  const F = new Fig({ H: 190, pad: 44 }), P = [[0, 0], [a, 0], [a, b], [0, b]];
   F.poly(P, { fill: 1 }).mid(P[0], P[1], o.la || '', -14).mid(P[1], P[2], o.lb || '', -20);
   if (o.diag !== undefined) { F.seg(P[0], P[2], { c: 'a', dash: 1 }); if (o.diag) F.mid(P[0], P[2], o.diag, 13, { cls: 'a' }); }
   if (o.marks) P.forEach((p, i) => F.right(p, P[(i + 1) % 4], P[(i + 3) % 4]));
@@ -226,7 +226,7 @@ export function fRect(a, b, o = {}) {
 }
 // tvar L: velký obdélník A×B s vyříznutým rohem c×d vpravo nahoře
 export function fL(A, B, c, d, l = {}) {
-  const F = new Fig({ H: 200 }), P = [[0, 0], [A, 0], [A, B - d], [A - c, B - d], [A - c, B], [0, B]];
+  const F = new Fig({ H: 200, pad: 40 }), P = [[0, 0], [A, 0], [A, B - d], [A - c, B - d], [A - c, B], [0, B]];
   F.poly(P, { fill: 1 });
   F.mid(P[0], P[1], l.bottom || '', -14).mid(P[1], P[2], l.right || '', -20).mid(P[2], P[3], l.cutw || '', -13)
     .mid(P[3], P[4], l.cuth || '', -20).mid(P[4], P[5], l.top || '', -13).mid(P[5], P[0], l.left || '', -20);
@@ -252,7 +252,7 @@ export function fRhomb(e, f, o = {}) {
   return F.svg();
 }
 export function fTrap(a, c, v, off, o = {}) {
-  const A = [0, 0], B = [a, 0], C = [off + c, v], D = [off, v], F = new Fig({ H: 190 });
+  const A = [0, 0], B = [a, 0], C = [off + c, v], D = [off, v], F = new Fig({ H: 190, pad: 40 });
   F.poly([A, B, C, D], { fill: 1 }).mid(A, B, o.la || '', -14).mid(D, C, o.lc || '', 13);
   if (o.lb) F.mid(B, C, o.lb, -18);
   if (o.ld) F.mid(D, A, o.ld, -18);
@@ -266,7 +266,7 @@ export function fCircle(r, o = {}) {
   const F = new Fig({ H: 190 }), S = [0, 0];
   if (o.sector) F.sector(S, r, 0, o.sector, { fill: 'a', c: 'a' });
   F.circle(S, r, { fill: o.sector ? 0 : 1 }).pt(S, 'S', 'sw');
-  if (o.lr !== undefined) { F.seg(S, [r, 0], { c: 'a' }); if (o.lr) F.mid(S, [r, 0], o.lr, 12, { cls: 'a' }); }
+  if (o.lr !== undefined) { F.seg(S, [r, 0], { c: 'a' }); if (o.lr) F.mid(S, [r, 0], o.lr, o.sector ? -13 : 12, { cls: 'a' }); }
   if (o.ld !== undefined) { F.seg([-r, 0], [r, 0], { c: 'a' }); if (o.ld) F.lab([r / 2, 0], o.ld, { dy: -12, cls: 'a' }); }
   if (o.sector && o.lsec) F.ang(S, [r, 0], V.rot([r, 0], o.sector), o.lsec, { ccw: 1 });
   if (o.chord) { // tětiva ve vzdálenosti v od středu
@@ -293,7 +293,7 @@ export function fTangent(r, d, o = {}) {
 // ---------- tělesa (volné rovnoběžné promítání) ----------
 const K = 0.354;
 export function fCuboid(a, bb, c, o = {}) {
-  const k = [bb * K, bb * K], F = new Fig({ H: 200 });
+  const k = [bb * K, bb * K], F = new Fig({ H: 200, pad: 44 });
   const f = [[0, 0], [a, 0], [a, c], [0, c]], g = f.map(p => V.add(p, k));
   F.seg(f[0], g[0], { c: 'h', dash: 1 }).seg(g[0], g[1], { c: 'h', dash: 1 }).seg(g[0], g[3], { c: 'h', dash: 1 });
   F.poly(f, { fill: 1 }).poly([f[3], f[2], g[2], g[3]], { fill: 1 }).poly([f[1], g[1], g[2], f[2]], { fill: 1 });
@@ -301,13 +301,14 @@ export function fCuboid(a, bb, c, o = {}) {
   if (o.diag) { F.seg(f[0], g[2], { c: 'a', dash: 1 }); F.mid(f[0], g[2], o.diag, 13, { cls: 'a' }); }
   return F.svg();
 }
-// trojboký hranol: podstava pravoúhlý trojúhelník (odvěsny a, b), výška hranolu h
+// trojboký hranol stojící na podstavě: podstava je pravoúhlý trojúhelník (odvěsny a, b), výška hranolu h
 export function fPrism(a, bb, h, o = {}) {
-  const k = [h * K, h * K], F = new Fig({ H: 200 }), f = [[0, 0], [a, 0], [0, bb]], g = f.map(p => V.add(p, k));
-  F.seg(f[0], g[0], { c: 'h', dash: 1 }).seg(g[0], g[1], { c: 'h', dash: 1 }).seg(g[0], g[2], { c: 'h', dash: 1 });
-  F.poly(f, { fill: 1 }).poly([f[1], g[1], g[2], f[2]], { fill: 1 }).right(f[0], f[1], f[2]);
-  F.mid(f[0], f[1], o.la || '', -14).mid(f[2], f[0], o.lb || '', -18).mid(f[1], g[1], o.lh || '', -17);
-  if (o.lc) F.mid(f[1], f[2], o.lc, 13);
+  const F = new Fig({ H: 210, pad: 44 }), P0 = [0, 0], P1 = [a, 0], P2 = [bb * K, bb * K], up = p => [p[0], p[1] + h], T0 = up(P0), T1 = up(P1), T2 = up(P2);
+  F.seg(P0, P2, { c: 'h', dash: 1 }).seg(P1, P2, { c: 'h', dash: 1 }).seg(P2, T2, { c: 'h', dash: 1 });
+  F.poly([P0, P1, T1, T0], { fill: 1 }).poly([T0, T1, T2], { fill: 1 }).right(T0, T1, T2);
+  F.mid(P0, P1, o.la || '', -14).mid(P1, T1, o.lh || '', -22);
+  if (o.lb) F.mid(T0, T2, o.lb, 15);
+  if (o.lc) F.mid(T1, T2, o.lc, -15);
   return F.svg();
 }
 export function fCyl(r, h, o = {}) {
