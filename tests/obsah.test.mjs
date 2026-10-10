@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { ROCNIKY } from '../js/obsah.js';
 import { check, toChoice, konOver, odpoved } from '../js/ulohy.js';
 import { unitChoices, rd } from '../js/util.js';
-import { kOtazka, kNavnady, kStav, kExec, kCil, NACRTKY, nacrtekSvg, kSvg, kProved, kZapis, kSlovy } from '../js/kon.js';
+import { kOtazka, kNavnady, kStav, kExec, kCil, NACRTKY, nacrtekSvg, kSvg, kRozsah, kProved, kZapis, kSlovy } from '../js/kon.js';
 import { gridSvg } from '../js/fig.js';
 
 const N = Number(process.env.N || 150);
@@ -102,4 +102,26 @@ for (const r of ROCNIKY) for (const tema of r.temata) tema.u.forEach((gens, li) 
     assert.ok(tema.vyklad.length >= 3);
     for (const k of tema.vyklad) { assert.ok(k.h && k.t.length > 60); if (k.fig) assert.ok(k.fig().startsWith('<svg')); assert.ok(!/\d\.\d/.test(holy(k.t)), k.t); }
   });
+});
+
+// Co žák zapíše, musí být na rýsování vidět – i přímka, na které ještě neleží žádný bod.
+test('rýsování ukáže každou narýsovanou čáru', () => {
+  const videt = (st, kde) => {
+    const bb = kRozsah(st), uvnitr = p => p[0] > bb[0] && p[0] < bb[2] && p[1] > bb[1] && p[1] < bb[3];
+    for (const [n, L] of Object.entries(st.lines)) {
+      const c = [(bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2], t = (c[0] - L.p[0]) * L.d[0] + (c[1] - L.p[1]) * L.d[1], tt = L.ray ? Math.max(t, 0.5) : t;
+      assert.ok(uvnitr([L.p[0] + L.d[0] * tt, L.p[1] + L.d[1] * tt]), `${kde}: čára ${n} není na obrázku vidět`);
+    }
+  };
+  for (const len of [3, 6, 9, 12]) for (const dist of [2, 4, 7, 9]) {
+    const kr = [{ op: 'seg', a: 'A', b: 'B', len }, { op: 'par', name: 'p', to: 'AB', dist }], st = kProved(kr);
+    videt(st, `AB ${len}, rovnoběžka ${dist}`);
+    const pocet = s => (s.match(/<line/g) || []).length;
+    assert.ok(pocet(kSvg(st)) > pocet(kSvg(kProved(kr.slice(0, 1)))), `rovnoběžka ve vzdálenosti ${dist} od AB ${len} se nenakreslila`);
+    videt(kProved([...kr, { op: 'par', name: 'q', to: 'p', dist }, { op: 'ray', v: 'A', to: 'B', ang: 70, name: 'AX' }]), 'dvě rovnoběžky a úhel');
+  }
+  for (const r of ROCNIKY) for (const t of r.temata) for (const g of t.u.flat()) for (let i = 0; i < 25; i++) {
+    const u = g(); if (u.kind !== 'kon') break;
+    for (let k = 1; k <= u.plan.length; k++) videt(kProved([...u.init, ...u.plan.slice(0, k)]), `${t.id} po kroku ${k}`);
+  }
 });

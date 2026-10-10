@@ -85,6 +85,7 @@ const hodnota = Object.values(t.u.dano)[0];
 ok((await p.textContent('.kon-dano')).includes(hodnota) && (await p.textContent('.kon-dano')).includes('Sestroj'), 'řádek Dáno / Sestroj chybí nebo v něm nejsou hodnoty');
 ok(await je('.kon-obr.hotovy-nacrtek') && (await p.textContent('#k-obr')).includes('= ' + hodnota), 'po potvrzení má zůstat náčrtek s vepsanými hodnotami'); await shot('ux-13-nacrtek-hodnoty');
 await p.click('.kon-ops [data-op="seg"]'); await p.click('#k-pridat'); ok(!(await je('.kon-obr.hotovy-nacrtek')), 'po přidání kroku se má ukázat rýsování');
+ok(await vOkne('#k-posl') && (await p.textContent('#k-posl')).includes('AB'), 'pod obrázkem má být napsáno, co se narýsovalo naposledy');
 await p.click('#k-prep [data-p="nacrtek"]'); ok((await p.textContent('#k-obr')).includes('= ' + hodnota), 'přepínač zpět na náčrtek nefunguje');
 await p.evaluate(() => window.scrollTo(0, document.body.scrollHeight)); await p.waitForTimeout(150);
 ok(await vOkne('.kon-dano') && await vOkne('#k-obr'), 'při posunutí dolů má zůstat vidět zadání i obrázek'); await shot('ux-14-zadani-pri-posunu');

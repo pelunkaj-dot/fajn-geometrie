@@ -16,9 +16,9 @@ export function konUloha(root, u, api) {
   const dano = Array.isArray(u.dano) ? u.dano : Object.entries(u.dano).map(([k, v]) => `${znacka(k)} = ${v}`);
   root.innerHTML = `<div class="kon"><div class="kon-faze" id="k-faze"></div>
     <div class="kon-hlava"><p class="kon-dano"><span><b>Dáno:</b> ${dano.join(', ')}</span> <span><b>Sestroj:</b> ${u.sestroj}</span></p>
-      <div class="kon-plocha">${u.tpl ? '<div class="kon-prep" id="k-prep" hidden><button class="chip" data-p="nacrtek">Náčrtek</button><button class="chip" data-p="rys">Rýsování</button></div>' : ''}<div class="kon-obr" id="k-obr"></div></div></div>
+      <div class="kon-plocha">${u.tpl ? '<div class="kon-prep" id="k-prep" hidden><button class="chip" data-p="nacrtek">Náčrtek</button><button class="chip" data-p="rys">Rýsování</button></div>' : ''}<div class="kon-obr" id="k-obr"></div></div><p class="kon-posl" id="k-posl" hidden></p></div>
     <ol class="kon-zapis" id="k-zapis"></ol><div class="kon-panel" id="k-panel"></div></div>`;
-  const obr = $('#k-obr', root), zap = $('#k-zapis', root), panel = $('#k-panel', root), fazeEl = $('#k-faze', root), prep = $('#k-prep', root);
+  const obr = $('#k-obr', root), zap = $('#k-zapis', root), panel = $('#k-panel', root), fazeEl = $('#k-faze', root), prep = $('#k-prep', root), poslEl = $('#k-posl', root);
   // Obrázek má dvě podoby: náčrtek se zadanými hodnotami a rýsování. Dá se mezi nimi kdykoli přepnout;
   // po každém novém kroku se ukáže rýsování, aby byl vidět výsledek.
   let pohled = u.tpl ? 'nacrtek' : 'rys', poslKrok = false, prepZap = !!u.tpl && u.mode !== 3;
@@ -28,6 +28,10 @@ export function konUloha(root, u, api) {
     if (prep) { prep.hidden = !prepZap; $$('button', prep).forEach(b => b.classList.toggle('on', b.dataset.p === pohled)); }
     obr.innerHTML = pohled === 'nacrtek' ? nacrtekSvg(u.tpl, u.giv, u.dano, tvar()) : kSvg(st, { posledni: poslKrok });
     obr.classList.toggle('hotovy-nacrtek', pohled === 'nacrtek');
+    // pod obrázkem je vždy napsáno, co přibylo naposledy – zápis postupu může být při posouvání schovaný pod obrázkem
+    const s = kroky[kroky.length - 1];
+    poslEl.hidden = !s || pohled === 'nacrtek';
+    if (s) poslEl.innerHTML = `Naposledy narýsováno: <span class="zap">${kroky.length}. ${kZapis(s)}</span>`;
   }
   if (prep) $$('button', prep).forEach(b => b.onclick = () => { pohled = b.dataset.p; obraz(); });
   const kresli = posl => { poslKrok = !!posl; if (posl) pohled = 'rys'; obraz(); };
@@ -156,7 +160,7 @@ export function konUloha(root, u, api) {
         case 'seg': return m('len') ? { op, a: 'A', b: 'B', len: +val('len').slice(2) } : { op, a: val('a'), b: val('b') };
         case 'line': return { op, a: val('a'), b: val('b') };
         case 'circ': { const r = val('r'); return { op, name: jmeno(['k', 'l', 'm', 'n']), c: val('c'), r: r[0] === 'n' ? +r.slice(2) : { pp: [r[2], r[3]] } }; }
-        case 'ray': return { op, v: val('v'), to: val('to'), ang: +val('ang'), name: val('v') + ['X', 'Y', 'Z'].find(z => !st.lines[val('v') + z]) };
+        case 'ray': return { op, v: val('v'), to: val('to'), ang: +val('ang'), name: val('v') + (['X', 'Y', 'Z', 'U', 'W'].find(z => !Object.keys(st.lines).some(n => n.length === 2 && n[1] === z)) || 'X') }; // každá polopřímka má jiné písmeno, ať se na obrázku nepletou
         case 'perp': case 'paral': return { op, name: jmeno(['p', 'q', 'r', 's']), to: val('to'), thru: val('thru') };
         case 'par': return { op, name: jmeno(['p', 'q', 'r', 's']), to: val('to'), dist: +val('dist').slice(2) };
         case 'axis': return { op, name: jmeno(['o', 'p', 'q', 'r']), a: val('a'), b: val('b') };

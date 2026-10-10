@@ -268,15 +268,30 @@ function clip(p, d, x0, y0, x1, y1, ray) {
   }
   return t0 < t1 ? [V.add(p, V.mul(d, t0)), V.add(p, V.mul(d, t1))] : null;
 }
+// Výřez, který rýsování ukazuje. Musí v něm být vidět VŠECHNO, co žák zapsal: i přímka, na které ještě
+// neleží žádný bod (rovnoběžka ve vzdálenosti), a místa, kde se čáry protínají. Krok, který se zapíše
+// a na obrázku se neobjeví, je chyba.
+export function kRozsah(st) {
+  let bb = [Infinity, Infinity, -Infinity, -Infinity];
+  const e = (x, y) => { bb = [Math.min(bb[0], x), Math.min(bb[1], y), Math.max(bb[2], x), Math.max(bb[3], y)]; };
+  Object.values(st.pts).forEach(p => e(...p));
+  Object.values(st.circs).forEach(k => { const r = Math.min(k.r, 9); e(k.c[0] - r, k.c[1] - r); e(k.c[0] + r, k.c[1] + r); });
+  const stred = [(bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2], dosah = Math.max(10, 1.5 * Math.hypot(bb[2] - bb[0], bb[3] - bb[1]));
+  const blizko = p => { if (V.dist(p, stred) <= dosah) e(...p); };
+  const cary = Object.values(st.lines), spojnice = st.draw.filter(d => d[0] === 'seg' || d[0] === 'linepp').map(d => gl(st, d[1] + d[2])).filter(Boolean);
+  cary.forEach((L, i) => {
+    const t = V.dot(V.sub(stred, L.p), L.d);
+    e(...V.add(L.p, V.mul(L.d, L.ray ? Math.max(t, 3) : t))); // nejbližší místo přímky (ať je jakkoli daleko); z polopřímky aspoň 3 cm
+    [...cary.slice(i + 1), ...spojnice, ...Object.values(st.circs)].forEach(o => pruseciky(L, o).forEach(blizko));
+  });
+  const m = Math.max(1.2, (bb[2] - bb[0]) * 0.12); bb = [bb[0] - m, bb[1] - m, bb[2] + m, bb[3] + m];
+  if (bb[3] - bb[1] < 4) { bb[3] += 2; bb[1] -= 1; }
+  return bb;
+}
 export function kSvg(st, o = {}) {
   const F = new Fig({ W: 340, H: o.H || 250, pad: 26 }), names = Object.keys(st.pts);
   if (!names.length) return `<svg viewBox="0 0 340 ${o.H || 250}" class="fg" xmlns="http://www.w3.org/2000/svg"><text x="170" y="${(o.H || 250) / 2}" text-anchor="middle" class="fg-t fg-th">Tady se bude rýsovat.</text></svg>`;
-  let bb = [Infinity, Infinity, -Infinity, -Infinity];
-  const e = (x, y) => { bb = [Math.min(bb[0], x), Math.min(bb[1], y), Math.max(bb[2], x), Math.max(bb[3], y)]; };
-  names.forEach(n => e(...st.pts[n]));
-  Object.values(st.circs).forEach(k => { const r = Math.min(k.r, 9); e(k.c[0] - r, k.c[1] - r); e(k.c[0] + r, k.c[1] + r); });
-  const m = Math.max(1.2, (bb[2] - bb[0]) * 0.12); bb = [bb[0] - m, bb[1] - m, bb[2] + m, bb[3] + m];
-  if (bb[3] - bb[1] < 4) { bb[3] += 2; bb[1] -= 1; }
+  const bb = kRozsah(st);
   F.ext(bb[0], bb[1]).ext(bb[2], bb[3]);
   const posl = o.posledni ? st.draw.length - 1 : -1;
   st.draw.forEach((d, i) => {
