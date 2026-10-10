@@ -22,7 +22,7 @@ async function konstrukce(u) {
     return;
   }
   if (u.mode === 2) { for (const s of u.plan) { const z = await zap(s); await p.locator('.krok:not([disabled])').filter({ hasText: z }).first().click(); } return; }
-  if (u.tpl) { for (const k of u.giv) await p.click(`.nk-el[data-el="${k}"] .nk-hit`, { force: true }); await p.click('#k-ok'); }
+  if (u.tpl) { for (const k of u.giv) await p.dispatchEvent(`.nk-el[data-el="${k}"]`, 'click'); await p.click('#k-ok'); } // úhlopříčky se kříží, proto ne klik doprostřed
   const jm = {}; // jméno v plánu → jméno, které dala aplikace
   const ref = r => jm[r] || r;
   const vyber = async (id, hodnoty) => { const moz = await p.$$eval(`#f-${id} option`, o => o.map(x => x.value)); const h = hodnoty.find(x => moz.includes(x)); if (h === undefined) throw new Error(`pole ${id}: ${hodnoty} není v ${moz}`); await p.selectOption(`#f-${id}`, h); };

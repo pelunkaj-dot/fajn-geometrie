@@ -302,7 +302,7 @@ export function kSvg(st, o = {}) {
 
 // ---------- náčrtek ----------
 // Obecný (ne v měřítku) obrázek útvaru; žák v něm vyznačí, co je zadáno.
-const SUB = (z, i) => `${z}<tspan baseline-shift="sub" font-size="9">${i}</tspan>`;
+const SUB = (z, i) => `${z}<tspan dy="3" font-size="9">${i}</tspan>`;
 export const NACRTKY = {
   tri: { nazev: 'trojúhelník ABC', prvky: { a: 'strana a', b: 'strana b', c: 'strana c', al: 'úhel α', be: 'úhel β', ga: 'úhel γ', vc: 'výška na stranu c', tc: 'těžnice na stranu c' } },
   par: { nazev: 'rovnoběžník ABCD', prvky: { a: 'strana a', b: 'strana b', al: 'úhel α', be: 'úhel β', va: 'výška na stranu a', e: 'úhlopříčka e', f: 'úhlopříčka f' } },

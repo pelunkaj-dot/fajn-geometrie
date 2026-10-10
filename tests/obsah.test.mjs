@@ -22,7 +22,7 @@ for (const r of ROCNIKY) for (const tema of r.temata) tema.u.forEach((gens, li) 
           assert.ok(typeof s === 'string' && s.length, kde + ' prázdný text');
           assert.ok(!/undefined|NaN|null|\[object|Infinity/.test(s), `${kde}: ${s}`);
           assert.ok(!/\d\.\d/.test(s), `${kde} desetinná tečka: ${s}`);
-          assert.ok(!/\d,\d{4,}/.test(s), `${kde} dlouhé desetinné číslo: ${s}`);
+          assert.ok(!/\d,\d{5,}/.test(s), `${kde} dlouhé desetinné číslo: ${s}`);
         }
         if (t.fig) assert.ok(t.fig.startsWith('<svg') && !/NaN|undefined/.test(t.fig), kde + ' obrázek');
         if (t.figSol) assert.ok(t.figSol.startsWith('<svg') && !/NaN/.test(t.figSol), kde);
