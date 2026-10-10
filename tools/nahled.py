@@ -50,9 +50,10 @@ def main():
     zavislosti('app.js', set(), poradi)
     js = 'const __m = {};\n' + ''.join(modul(j) for j in poradi)
     html = (KOREN / 'index.html').read_text(encoding='utf-8')
+    html = html.replace('<script src="/fdc-plugin/fdc-guard.js"></script>\n', '')  # samostatný soubor nemá kde ochranu načíst
     html = html.replace('<link rel="stylesheet" href="css/style.css">', f'<style>\n{styly()}\n</style>')
     html = html.replace('<script type="module" src="js/app.js"></script>', ('<script>window.FG_DEMO = true;</script>\n' if demo else '') + f'<script>\n{js}</script>')
-    assert 'src="js/app.js"' not in html and 'href="css/style.css"' not in html
+    assert 'src="js/app.js"' not in html and 'fdc-guard' not in html and 'href="css/style.css"' not in html
     vystup.write_text(html, encoding='utf-8')
     print(f'{vystup} ({vystup.stat().st_size // 1024} kB, {len(poradi)} modulů)')
 

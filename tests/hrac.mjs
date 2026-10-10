@@ -7,6 +7,7 @@ export const URL = process.env.URL || 'http://127.0.0.1:8765/';
 export async function otevri(o = {}) {
   const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' }).catch(() => chromium.launch());
   const p = await b.newPage({ viewport: { width: o.w || 420, height: o.h || 860 } });
+  await p.route('**/fdc-plugin/fdc-guard.js', r => r.fulfill({ contentType: 'text/javascript', body: '' })); // jako s platným přístupem z fajndoucko.cz
   const chyby = []; p.on('console', m => { if (m.type() === 'error') chyby.push(m.text()); }); p.on('pageerror', e => chyby.push('PAGEERROR ' + e.message + '\n' + (e.stack || '').split('\n').slice(0, 4).join('\n')));
   const ok = (c, m) => { if (!c) { chyby.push('SELHALO: ' + m); console.log('  ✗ ' + m); } };
   const shot = async (n, plna) => { if (o.shots) await p.screenshot({ path: `${o.shots}/${n}.png`, fullPage: !!plna }); };
