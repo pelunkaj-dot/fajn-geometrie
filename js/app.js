@@ -124,7 +124,7 @@ function poUrovni(t, lvl, res, kdo) {
 function pripravStrazce(t) {
   const f = u => u.kind !== 'kon' || u.mode === 2, kdo = kdoMluvi();
   const ulohy = [...sestav(t.u[0], 3, 1, f), ...sestav(t.u[1], 3, 2, f), ...sestav(t.u[2], 2, 3, f)];
-  modal({ nadpis: `Strážce ${t.strazce}`, html: `<div class="sz-uvod">${strazceSvg(+t.id)}<p>${rekni(kdo, 'strazceUvod')}</p><p class="pozn">Osm úloh od základů po jedničkáře. Každá chyba stojí jeden ze tří životů. Nápovědy v souboji nejsou.</p></div>`,
+  modal({ nadpis: `Strážce ${t.strazce}`, html: `<div class="sz-uvod">${strazceSvg(+t.id)}<p>${rekni(kdo, 'strazceUvod')}</p><p class="pozn">${ulohy.length} úloh od základů po jedničkáře. Každá chyba stojí jeden ze tří životů. Nápovědy v souboji nejsou.</p></div>`,
     tlacitka: [{ t: 'Zatím ne' }, { t: 'Do souboje', hl: 1, fn: () => { bezici = serie(app, { typ: 'strazce', ulohy, kdo, zivoty: 3, strazce: { jmeno: t.strazce, seed: +t.id }, onZpet: kresli, onKonec: res => poStrazci(t, res, kdo) }); } }] });
 }
 function poStrazci(t, res, kdo) {
@@ -182,7 +182,7 @@ function vyzva() {
     if (DEMO) return plna(); odemkni();
     const [y, m, dd] = dnes().split('-').map(Number), kdo = kdoMluvi();
     setRng(mulberry(y * 10000 + m * 100 + dd + R.rocnik * 7919));
-    const gens = shuffle(R.temata).slice(0, 5).map(t => pick(t.u[1])), ulohy = gens.map(g => { let u; do { u = g(); } while (u.kind === 'kon' && u.mode === 3); return { u, lvl: 2 }; });
+    const tem = shuffle(R.temata), gens = Array.from({ length: 5 }, (_, i) => pick(tem[i % tem.length].u[1])), ulohy = gens.map(g => { let u; do { u = g(); } while (u.kind === 'kon' && u.mode === 3); return { u, lvl: 2 }; });
     setRng(null);
     bezici = serie(app, { typ: 'denni', ulohy, kdo, onZpet: kresli, onKonec: res => {
       const uz = stav.stat.den.datum === dnes(), kr = uz ? 0 : 20;
