@@ -30,8 +30,12 @@ Settings → Pages → Deploy from a branch → `main`, složka `/ (root)`. Hra 
 
 Ukázka (`index-demo.html`) pustí jen první téma každého ročníku na úrovni Základy.
 
-Ochrana plné verze (`fdc-guard.js` z repozitáře `fdc-plugin`) zatím zapojená není, aby šla hra zkoušet přímým odkazem.
-Zapojí se přidáním `<script src="/fdc-plugin/fdc-guard.js"></script>` jako prvního prvku `<head>` v `index.html`.
+Plná verze (`index.html`) je chráněná stejně jako ostatní moduly: první prvek `<head>` je
+`<script src="/fdc-plugin/fdc-guard.js"></script>` (z repozitáře `fdc-plugin`). Bez příchodu z fajndoucko.cz
+přesměruje na `index-demo.html`, která ochranu nemá. Náhled z `tools/nahled.py` ochranu vynechá
+a testy v prohlížeči ji nahradí prázdným skriptem (hrají jako s platným přístupem).
+
+Stav: GitHub Pages zatím nejsou zapnuté (zapnout ručně podle návodu výše).
 
 ## Testy
 

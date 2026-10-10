@@ -40,4 +40,6 @@ Vanilla JS, ES moduly, bez build kroku. Přehled souborů je v README.md.
 
 ## Stav (říjen 2026)
 Hotovo: ročníky 6–9, 21 témat × 3 úrovně, herní režimy, ukázková verze, jednosouborový náhled (`tools/nahled.py`).
-Nezapojeno: ochrana `fdc-guard.js` (viz README), přehled pro rodiče, opakování s rozestupy podle chyb.
+Ochrana `fdc-guard.js` je zapojená v `index.html` (ověřeno lokálně: přímý odkaz → `index-demo.html`, příchod z fajndoucko.cz → plná verze); `index-demo.html` je bez ochrany.
+GitHub Pages zatím nezapnuté (API přes proxy odmítnuto, zapnout ručně v Settings → Pages: `main`, `/`); nasazení neověřeno.
+Nezapojeno: přehled pro rodiče, opakování s rozestupy podle chyb.
