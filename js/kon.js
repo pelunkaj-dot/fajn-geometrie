@@ -308,31 +308,44 @@ export const NACRTKY = {
   par: { nazev: 'rovnoběžník ABCD', prvky: { a: 'strana a', b: 'strana b', al: 'úhel α', be: 'úhel β', va: 'výška na stranu a', e: 'úhlopříčka e', f: 'úhlopříčka f' } },
   trap: { nazev: 'lichoběžník ABCD', prvky: { a: 'základna a', b: 'rameno b', c: 'základna c', d: 'rameno d', al: 'úhel α', be: 'úhel β', v: 'výška v', e: 'úhlopříčka e' } },
 };
-export function nacrtekSvg(tpl, vybrane = []) {
-  const F = new Fig({ W: 340, H: 230, pad: 34 }), on = k => vybrane.includes(k);
-  const S = (k, a, b, txt, off, dash) => F.seg(a, b, { el: k, on: on(k), dash, c: dash ? 'h' : 's' }).mid(a, b, txt, off, { cls: on(k) ? 'a' : 'h' });
-  const U = (k, v, p1, p2, txt) => F.ang(v, p1, p2, txt, { el: k, on: on(k), c: 'h', cls: on(k) ? 'a' : 'h', r: 24 });
+// S `hodnoty` ({ prvek: '7 cm' }) je to hotový náčrtek jako v sešitě: zadané prvky jsou zvýrazněné
+// a mají u sebe hodnotu, pomocné čáry, které zadané nejsou, se nekreslí.
+export const ZNACKY = { a: 'a', b: 'b', c: 'c', d: 'd', e: 'e', f: 'f', v: 'v', al: 'α', be: 'β', ga: 'γ', vc: ['v', 'c'], tc: ['t', 'c'], va: ['v', 'a'] };
+export function nacrtekSvg(tpl, vybrane = [], hodnoty = null) {
+  const F = new Fig({ W: 340, H: 230, pad: hodnoty ? 48 : 34 }), on = k => vybrane.includes(k);
+  const ma = k => !!hodnoty && hodnoty[k] != null, pop = (k, txt) => (ma(k) ? `${txt} = ${hodnoty[k]}` : txt);
+  const jen = k => !hodnoty || on(k); // pomocná čára se v hotovém náčrtku kreslí, jen když je zadaná
+  const S = (k, a, b, txt, off, dash) => {
+    if (dash && !jen(k)) return;
+    F.seg(a, b, { el: k, on: on(k), dash, c: dash ? 'h' : 's' }).mid(a, b, pop(k, txt), off, { cls: on(k) ? 'a' : 'h', rot: ma(k) });
+  };
+  // zadaný úhel má hodnotu napsanou vně útvaru hned u vrcholu (kde = posun a zarovnání), uvnitř by se křížila s výškou
+  const U = (k, v, p1, p2, txt, kde) => {
+    F.ang(v, p1, p2, ma(k) ? '' : txt, { el: k, on: on(k), c: 'h', cls: on(k) ? 'a' : 'h', r: 24 });
+    if (ma(k)) F.lab(v, pop(k, txt), { ...kde, cls: 'a' });
+  };
+  const VLEVO = { dx: -4, dy: 17, anchor: 'start' }, VPRAVO = { dx: 4, dy: 17, anchor: 'end' }, NAHORE = { dx: 15, dy: -3, anchor: 'start' };
   const N = (pts, jm, c0) => pts.forEach((p, i) => { const u = V.unit(V.sub(p, c0)); F.lab(p, jm[i], { dx: u[0] * 14, dy: -u[1] * 14, cls: 'n' }); });
   if (tpl === 'tri') {
     const A = [0, 0], B = [8.4, 0], C = [2.2, 5.4], P = [2.2, 0], M = [4.2, 0];
     F.poly([A, B, C], { fill: 1, c: 'n' });
-    S('vc', C, P, SUB('v', 'c'), -13, 1); F.right(P, A, C); S('tc', C, M, SUB('t', 'c'), 14, 1);
+    S('vc', C, P, SUB('v', 'c'), -13, 1); if (jen('vc')) F.right(P, A, C); S('tc', C, M, SUB('t', 'c'), 14, 1);
     S('c', A, B, 'c', -15); S('a', B, C, 'a', -15); S('b', C, A, 'b', -15);
-    U('al', A, B, C, 'α'); U('be', B, C, A, 'β'); U('ga', C, A, B, 'γ');
+    U('al', A, B, C, 'α', VLEVO); U('be', B, C, A, 'β', VPRAVO); U('ga', C, A, B, 'γ', NAHORE);
     N([A, B, C], 'ABC', [3.5, 1.8]);
   } else if (tpl === 'par') {
     const A = [0, 0], B = [7, 0], D = [2.4, 4.4], C = [9.4, 4.4], P = [2.4, 0];
     F.poly([A, B, C, D], { fill: 1, c: 'n' });
-    S('e', A, C, 'e', 12, 1); S('f', B, D, 'f', -12, 1); S('va', D, P, SUB('v', 'a'), 15, 1); F.right(P, B, D);
+    S('e', A, C, 'e', 12, 1); S('f', B, D, 'f', -12, 1); S('va', D, P, SUB('v', 'a'), 15, 1); if (jen('va')) F.right(P, B, D);
     S('a', A, B, 'a', -15); S('b', B, C, 'b', -15); F.seg(C, D).seg(D, A);
-    U('al', A, B, D, 'α'); U('be', B, C, A, 'β');
+    U('al', A, B, D, 'α', VLEVO); U('be', B, C, A, 'β', VPRAVO);
     N([A, B, C, D], 'ABCD', [4.7, 2.2]);
   } else {
     const A = [0, 0], B = [9, 0], C = [6.6, 4.4], D = [2, 4.4], P = [2, 0];
     F.poly([A, B, C, D], { fill: 1, c: 'n' });
-    S('e', A, C, 'e', 12, 1); S('v', D, P, 'v', 14, 1); F.right(P, B, D);
+    S('e', A, C, 'e', 12, 1); S('v', D, P, 'v', 14, 1); if (jen('v')) F.right(P, B, D);
     S('a', A, B, 'a', -15); S('b', B, C, 'b', -15); S('c', C, D, 'c', -14); S('d', D, A, 'd', -15);
-    U('al', A, B, D, 'α'); U('be', B, C, A, 'β');
+    U('al', A, B, D, 'α', VLEVO); U('be', B, C, A, 'β', VPRAVO);
     N([A, B, C, D], 'ABCD', [4.4, 2.2]);
   }
   return F.svg();

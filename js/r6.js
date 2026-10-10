@@ -480,7 +480,7 @@ function t_vyskaUhel() {
 function kon_sss(mode) {
   const [a, bb, c] = trojStrany();
   return K({
-    mode, tpl: 'tri', giv: ['a', 'b', 'c'], text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, a = ${B(cm(a))}, b = ${B(cm(bb))}.`,
+    mode, tpl: 'tri', dano: { c: cm(c), a: cm(a), b: cm(bb) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, a = ${B(cm(a))}, b = ${B(cm(bb))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'circ', name: 'k', c: 'A', r: bb }, { op: 'circ', name: 'l', c: 'B', r: a }, { op: 'int', name: 'C', of: ['k', 'l'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['dist', 'B', 'C', a], ['dist', 'A', 'C', bb], ['poly', 'ABC']],
     lens: [c, a, bb], names: ['C'], ops: ['seg', 'circ', 'int', 'poly'], vysl: ['A', 'B', 'C'],
@@ -491,7 +491,7 @@ function kon_sss(mode) {
 function kon_vyska(mode) {
   const t = trojStrany({ ostro: 1 });
   return K({
-    mode, init: danyTroj(t), text: `Je dán trojúhelník ABC. Sestroj jeho výšku ${SUB('v', 'c')} z vrcholu C na stranu AB. Patu výšky označ P.`,
+    mode, init: danyTroj(t), dano: ['△ABC (je narýsovaný)'], sestroj: `výšku ${SUB('v', 'c')}; P = pata výšky`, text: `Je dán trojúhelník ABC. Sestroj jeho výšku ${SUB('v', 'c')} z vrcholu C na stranu AB. Patu výšky označ P.`,
     plan: [{ op: 'perp', name: 'p', thru: 'C', to: 'AB' }, { op: 'int', name: 'P', of: ['p', 'AB'] }, { op: 'seg', a: 'C', b: 'P' }],
     goal: [['foot', 'P', 'C', 'A', 'B'], ['segd', 'C', 'P']], names: ['P'], ops: ['perp', 'axis', 'mid', 'int', 'seg'],
     hints: ['Výška je kolmice z vrcholu na protější stranu.', 'Veď bodem C kolmici k přímce AB. Tam, kde protne AB, je pata výšky P.'],
@@ -500,7 +500,7 @@ function kon_vyska(mode) {
 function kon_teznice(mode) {
   const t = trojStrany();
   return K({
-    mode, init: danyTroj(t), text: `Je dán trojúhelník ABC. Sestroj jeho těžnici ${SUB('t', 'c')} z vrcholu C. Střed strany AB označ S.`,
+    mode, init: danyTroj(t), dano: ['△ABC (je narýsovaný)'], sestroj: `těžnici ${SUB('t', 'c')}; S = střed strany AB`, text: `Je dán trojúhelník ABC. Sestroj jeho těžnici ${SUB('t', 'c')} z vrcholu C. Střed strany AB označ S.`,
     plan: [{ op: 'mid', name: 'S', a: 'A', b: 'B' }, { op: 'seg', a: 'C', b: 'S' }],
     goal: [['mid', 'S', 'A', 'B'], ['segd', 'C', 'S']], names: ['S'], ops: ['perp', 'mid', 'axis', 'int', 'seg'],
     hints: ['Těžnice spojuje vrchol se středem protější strany.', 'Najdi střed S strany AB a spoj ho s vrcholem C.'],
@@ -509,7 +509,7 @@ function kon_teznice(mode) {
 function kon_opsana(mode) {
   const t = trojStrany({ ostro: 1 });
   return K({
-    mode, init: danyTroj(t), text: 'Je dán trojúhelník ABC. Sestroj kružnici, která je mu opsaná (prochází všemi třemi vrcholy). Její střed označ S.',
+    mode, init: danyTroj(t), dano: ['△ABC (je narýsovaný)'], sestroj: 'kružnici opsanou; S = její střed', text: 'Je dán trojúhelník ABC. Sestroj kružnici, která je mu opsaná (prochází všemi třemi vrcholy). Její střed označ S.',
     plan: [{ op: 'axis', name: 'o', a: 'A', b: 'B' }, { op: 'axis', name: 'p', a: 'B', b: 'C' }, { op: 'int', name: 'S', of: ['o', 'p'] }, { op: 'circ', name: 'k', c: 'S', r: { pp: ['S', 'A'] } }],
     goal: [['circ3', 'A', 'B', 'C']], names: ['S'], ops: ['axis', 'bis', 'mid', 'int', 'circ'],
     hints: ['Střed opsané kružnice je stejně daleko od všech tří vrcholů.', 'Body stejně vzdálené od A i B leží na ose úsečky AB. Střed S je průsečík os dvou stran. Poloměr je |SA|.'],
@@ -518,7 +518,7 @@ function kon_opsana(mode) {
 function kon_vepsana(mode) {
   const t = trojStrany({ ostro: 1 });
   return K({
-    mode, init: danyTroj(t), text: 'Je dán trojúhelník ABC. Sestroj kružnici, která je mu vepsaná (dotýká se všech tří stran). Střed označ S, bod dotyku se stranou AB označ P.',
+    mode, init: danyTroj(t), dano: ['△ABC (je narýsovaný)'], sestroj: 'kružnici vepsanou; S = její střed, P = bod dotyku se stranou AB', text: 'Je dán trojúhelník ABC. Sestroj kružnici, která je mu vepsaná (dotýká se všech tří stran). Střed označ S, bod dotyku se stranou AB označ P.',
     plan: [{ op: 'bis', name: 'o', v: 'A', a: 'B', b: 'C' }, { op: 'bis', name: 'p', v: 'B', a: 'A', b: 'C' }, { op: 'int', name: 'S', of: ['o', 'p'] },
       { op: 'perp', name: 'q', thru: 'S', to: 'AB' }, { op: 'int', name: 'P', of: ['q', 'AB'] }, { op: 'circ', name: 'k', c: 'S', r: { pp: ['S', 'P'] } }],
     goal: [['incirc', 'A', 'B', 'C']], names: ['S', 'P'], ops: ['axis', 'bis', 'perp', 'int', 'circ'],
@@ -528,7 +528,7 @@ function kon_vepsana(mode) {
 function kon_teziste(mode) {
   const t = trojStrany();
   return K({
-    mode, init: danyTroj(t), text: 'Je dán trojúhelník ABC. Sestroj jeho těžiště T. Střed strany AB označ S, střed strany BC označ R.',
+    mode, init: danyTroj(t), dano: ['△ABC (je narýsovaný)'], sestroj: 'těžiště T; S = střed strany AB, R = střed strany BC', text: 'Je dán trojúhelník ABC. Sestroj jeho těžiště T. Střed strany AB označ S, střed strany BC označ R.',
     plan: [{ op: 'mid', name: 'S', a: 'A', b: 'B' }, { op: 'mid', name: 'R', a: 'B', b: 'C' }, { op: 'seg', a: 'C', b: 'S' }, { op: 'seg', a: 'A', b: 'R' }, { op: 'int', name: 'T', of: ['CS', 'AR'] }],
     goal: [['centroid', 'T', 'A', 'B', 'C']], names: ['S', 'R', 'T'], ops: ['mid', 'axis', 'perp', 'int', 'seg'],
     hints: ['Těžiště je průsečík těžnic. Stačí sestrojit dvě.', 'Těžnice spojuje vrchol se středem protější strany.'],

@@ -52,7 +52,7 @@ function kon_sus(mode) {
   let c, bb; do { c = ri(5, 8); bb = ri(4, 7); } while (c === bb);
   const al = pick([40, 50, 60, 70, 110]);
   return K({
-    mode, tpl: 'tri', giv: ['c', 'b', 'al'], text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, b = ${B(cm(bb))}, α = ${B(st(al))}.`,
+    mode, tpl: 'tri', dano: { c: cm(c), b: cm(bb), al: st(al) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, b = ${B(cm(bb))}, α = ${B(st(al))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'circ', name: 'k', c: 'A', r: bb }, { op: 'int', name: 'C', of: ['AX', 'k'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['dist', 'A', 'C', bb], ['ang', 'B', 'A', 'C', al], ['poly', 'ABC']],
     lens: [c, bb], angs: [al], names: ['C'], ops: ['seg', 'ray', 'circ', 'int', 'poly'], vysl: ['A', 'B', 'C'],
@@ -64,7 +64,7 @@ function kon_usu(mode) {
   let al, be; do { al = pick([30, 40, 45, 50, 60, 70]); be = pick([30, 40, 45, 50, 60, 70]); } while (al === be || al + be > 125);
   const c = ri(5, 8);
   return K({
-    mode, tpl: 'tri', giv: ['c', 'al', 'be'], text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, α = ${B(st(al))}, β = ${B(st(be))}.`,
+    mode, tpl: 'tri', dano: { c: cm(c), al: st(al), be: st(be) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, α = ${B(st(al))}, β = ${B(st(be))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'ray', name: 'BY', v: 'B', to: 'A', ang: be }, { op: 'int', name: 'C', of: ['AX', 'BY'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['ang', 'B', 'A', 'C', al], ['ang', 'A', 'B', 'C', be], ['poly', 'ABC']],
     lens: [c], angs: [al, be], names: ['C'], ops: ['seg', 'ray', 'circ', 'int', 'poly'], vysl: ['A', 'B', 'C'],
@@ -76,7 +76,7 @@ function kon_usuGama() {
   let al, ga; do { al = pick([40, 50, 60, 70]); ga = pick([50, 60, 70, 80]); } while (al === ga || al + ga > 140 || 180 - al - ga === al || 180 - al - ga === ga);
   const c = ri(5, 8), be = 180 - al - ga;
   return K({
-    mode: 3, tpl: 'tri', giv: ['c', 'al', 'ga'], text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, α = ${B(st(al))}, γ = ${B(st(ga))}.`,
+    mode: 3, tpl: 'tri', dano: { c: cm(c), al: st(al), ga: st(ga) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, α = ${B(st(al))}, γ = ${B(st(ga))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'ray', name: 'BY', v: 'B', to: 'A', ang: be }, { op: 'int', name: 'C', of: ['AX', 'BY'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['ang', 'B', 'A', 'C', al], ['ang', 'A', 'C', 'B', ga], ['poly', 'ABC']],
     lens: [c], angs: shuffle([al, ga, be]), names: ['C'], ops: ['seg', 'ray', 'circ', 'int', 'poly'], vysl: ['A', 'B', 'C'],
@@ -89,7 +89,7 @@ function kon_Ssu() {
   if (dve) { al = pick([30, 40, 45]); c = ri(7, 8); const mn = Math.floor(c * Math.sin(al * Math.PI / 180) + 1.2); a = ri(mn, c - 1); }
   else { al = pick([40, 50, 60, 70]); c = ri(5, 7); a = c + ri(1, 2); }
   return K({
-    mode: 3, tpl: 'tri', giv: ['c', 'a', 'al'], text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, a = ${B(cm(a))}, α = ${B(st(al))}.`,
+    mode: 3, tpl: 'tri', dano: { c: cm(c), a: cm(a), al: st(al) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, a = ${B(cm(a))}, α = ${B(st(al))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'circ', name: 'k', c: 'B', r: a }, { op: 'int', name: 'C', of: ['AX', 'k'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['dist', 'B', 'C', a], ['ang', 'B', 'A', 'C', al], ['poly', 'ABC']],
     lens: [c, a], angs: [al], names: ['C'], ops: ['seg', 'ray', 'circ', 'int', 'poly'], vysl: ['A', 'B', 'C'],
@@ -468,7 +468,7 @@ const ROVN_OPS = ['seg', 'ray', 'circ', 'paral', 'int', 'poly'];
 function kon_rovn(mode, koso) {
   let a = ri(5, 8), bb = koso ? a : ri(3, a - 1); const al = pick([50, 60, 70, 110]);
   return K({
-    mode, tpl: 'par', giv: koso ? ['a', 'al'] : ['a', 'b', 'al'], text: koso ? `Sestroj kosočtverec ABCD: a = ${B(cm(a))}, α = ${B(st(al))}.` : `Sestroj rovnoběžník ABCD: a = ${B(cm(a))}, b = ${B(cm(bb))}, α = ${B(st(al))}.`,
+    mode, tpl: 'par', dano: koso ? { a: cm(a), al: st(al) } : { a: cm(a), b: cm(bb), al: st(al) }, sestroj: koso ? 'kosočtverec ABCD' : 'rovnoběžník ABCD', text: koso ? `Sestroj kosočtverec ABCD: a = ${B(cm(a))}, α = ${B(st(al))}.` : `Sestroj rovnoběžník ABCD: a = ${B(cm(a))}, b = ${B(cm(bb))}, α = ${B(st(al))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: a }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'circ', name: 'k', c: 'A', r: bb }, { op: 'int', name: 'D', of: ['AX', 'k'] },
       { op: 'paral', name: 'p', to: 'AB', thru: 'D' }, { op: 'paral', name: 'q', to: 'AX', thru: 'B' }, { op: 'int', name: 'C', of: ['p', 'q'] }, { op: 'poly', pts: ['A', 'B', 'C', 'D'], label: (koso ? 'kosočtverec' : 'rovnoběžník') + ' ABCD' }],
     goal: [['dist', 'A', 'B', a], ['dist', 'A', 'D', bb], ['ang', 'B', 'A', 'D', al], ['parl', 'A', 'B', 'D', 'C'], ['parl', 'A', 'D', 'B', 'C'], ['poly', 'ABCD']],
@@ -480,7 +480,7 @@ function kon_rovn(mode, koso) {
 function kon_rovnE(mode) {
   let a, bb, e; do { a = ri(5, 7); bb = ri(3, 5); e = ri(6, 9); } while (a === bb || e >= a + bb - 1 || e <= a - bb + 2 || e === a || e === bb);
   return K({
-    mode, tpl: 'par', giv: ['a', 'b', 'e'], text: `Sestroj rovnoběžník ABCD: a = ${B(cm(a))}, b = ${B(cm(bb))}, úhlopříčka e = |AC| = ${B(cm(e))}.`,
+    mode, tpl: 'par', dano: { a: cm(a), b: cm(bb), e: cm(e) }, sestroj: 'rovnoběžník ABCD', text: `Sestroj rovnoběžník ABCD: a = ${B(cm(a))}, b = ${B(cm(bb))}, úhlopříčka e = |AC| = ${B(cm(e))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: a }, { op: 'circ', name: 'k', c: 'A', r: e }, { op: 'circ', name: 'l', c: 'B', r: bb }, { op: 'int', name: 'C', of: ['k', 'l'] }, { op: 'seg', a: 'B', b: 'C' },
       { op: 'paral', name: 'p', to: 'AB', thru: 'C' }, { op: 'paral', name: 'q', to: 'BC', thru: 'A' }, { op: 'int', name: 'D', of: ['p', 'q'] }, { op: 'poly', pts: ['A', 'B', 'C', 'D'], label: 'rovnoběžník ABCD' }],
     goal: [['dist', 'A', 'B', a], ['dist', 'B', 'C', bb], ['dist', 'A', 'C', e], ['parl', 'A', 'B', 'D', 'C'], ['parl', 'A', 'D', 'B', 'C'], ['poly', 'ABCD']],
@@ -492,7 +492,7 @@ function kon_rovnE(mode) {
 function kon_lich(mode) {
   let a, al, be, v; do { a = ri(7, 9); v = ri(3, 4); al = pick([50, 60, 70]); be = pick([45, 60, 75]); } while (al === be || a - v / Math.tan(al * Math.PI / 180) - v / Math.tan(be * Math.PI / 180) < 2);
   return K({
-    mode, tpl: 'trap', giv: ['a', 'al', 'be', 'v'], text: `Sestroj lichoběžník ABCD (AB ∥ CD): a = ${B(cm(a))}, α = ${B(st(al))}, β = ${B(st(be))}, výška v = ${B(cm(v))}.`,
+    mode, tpl: 'trap', dano: { a: cm(a), al: st(al), be: st(be), v: cm(v) }, sestroj: 'lichoběžník ABCD, AB ∥ CD', text: `Sestroj lichoběžník ABCD (AB ∥ CD): a = ${B(cm(a))}, α = ${B(st(al))}, β = ${B(st(be))}, výška v = ${B(cm(v))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: a }, { op: 'par', name: 'p', to: 'AB', dist: v }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'ray', name: 'BY', v: 'B', to: 'A', ang: be },
       { op: 'int', name: 'D', of: ['AX', 'p'] }, { op: 'int', name: 'C', of: ['BY', 'p'] }, { op: 'poly', pts: ['A', 'B', 'C', 'D'], label: 'lichoběžník ABCD' }],
     goal: [['dist', 'A', 'B', a], ['ang', 'B', 'A', 'D', al], ['ang', 'A', 'B', 'C', be], ['hgt', 'D', 'A', 'B', v], ['hgt', 'C', 'A', 'B', v], ['poly', 'ABCD']],
@@ -504,7 +504,7 @@ function kon_lich(mode) {
 function kon_lichC() {
   let a, al, v, c; do { a = ri(7, 9); v = ri(3, 4); al = pick([50, 60, 70]); c = ri(3, 5); } while (v / Math.tan(al * Math.PI / 180) + c > a - 0.5 || c === v);
   return K({
-    mode: 3, tpl: 'trap', giv: ['a', 'c', 'al', 'v'], text: `Sestroj lichoběžník ABCD (AB ∥ CD): a = ${B(cm(a))}, c = ${B(cm(c))}, α = ${B(st(al))}, výška v = ${B(cm(v))}.`,
+    mode: 3, tpl: 'trap', dano: { a: cm(a), c: cm(c), al: st(al), v: cm(v) }, sestroj: 'lichoběžník ABCD, AB ∥ CD', text: `Sestroj lichoběžník ABCD (AB ∥ CD): a = ${B(cm(a))}, c = ${B(cm(c))}, α = ${B(st(al))}, výška v = ${B(cm(v))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: a }, { op: 'par', name: 'p', to: 'AB', dist: v }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'int', name: 'D', of: ['AX', 'p'] },
       { op: 'circ', name: 'k', c: 'D', r: c }, { op: 'int', name: 'C', of: ['p', 'k'], pick: 1 }, { op: 'poly', pts: ['A', 'B', 'C', 'D'], label: 'lichoběžník ABCD' }],
     goal: [['dist', 'A', 'B', a], ['ang', 'B', 'A', 'D', al], ['hgt', 'D', 'A', 'B', v], ['dist', 'D', 'C', c], ['parl', 'A', 'B', 'D', 'C'], ['ang', 'A', 'D', 'C', 180 - al], ['poly', 'ABCD']],

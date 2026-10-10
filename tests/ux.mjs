@@ -80,7 +80,15 @@ await p.click('#h-zpet'); await p.click('.rocniky [data-r="7"]'); await p.click(
 t = await U(); await p.click('#k-ok'); ok(await je('.ul-zv.info') && !(await je('.ul-zv.bad')), 'prázdný náčrtek má jen upozornit');
 for (const k of t.u.giv) await p.dispatchEvent(`.nk-el[data-el="${k}"]`, 'click'); await p.click('#k-ok');
 await p.click('#k-ok'); ok(await je('.ul-zv.info') && !(await je('.ul-zv.bad')), 'prázdný zápis postupu má jen upozornit');
-await p.click('.kon-ops [data-op="seg"]'); await p.click('#k-pridat'); await p.click('.kon-ops [data-op="ray"]'); await p.waitForTimeout(100);
+// zadání zůstává na očích: řádek Dáno / Sestroj, náčrtek s hodnotami a přepínač Náčrtek / Rýsování
+const hodnota = Object.values(t.u.dano)[0];
+ok((await p.textContent('.kon-dano')).includes(hodnota) && (await p.textContent('.kon-dano')).includes('Sestroj'), 'řádek Dáno / Sestroj chybí nebo v něm nejsou hodnoty');
+ok(await je('.kon-obr.hotovy-nacrtek') && (await p.textContent('#k-obr')).includes('= ' + hodnota), 'po potvrzení má zůstat náčrtek s vepsanými hodnotami'); await shot('ux-13-nacrtek-hodnoty');
+await p.click('.kon-ops [data-op="seg"]'); await p.click('#k-pridat'); ok(!(await je('.kon-obr.hotovy-nacrtek')), 'po přidání kroku se má ukázat rýsování');
+await p.click('#k-prep [data-p="nacrtek"]'); ok((await p.textContent('#k-obr')).includes('= ' + hodnota), 'přepínač zpět na náčrtek nefunguje');
+await p.evaluate(() => window.scrollTo(0, document.body.scrollHeight)); await p.waitForTimeout(150);
+ok(await vOkne('.kon-dano') && await vOkne('#k-obr'), 'při posunutí dolů má zůstat vidět zadání i obrázek'); await shot('ux-14-zadani-pri-posunu');
+await p.click('#k-prep [data-p="rys"]'); await p.click('.kon-ops [data-op="ray"]'); await p.waitForTimeout(100);
 ok(!(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'zápis postupu na šířce 360 přetéká do strany'); await shot('ux-12-zapis');
 
 console.log(chyby.length ? 'CHYBY:\n' + chyby.join('\n') : 'Bez chyb.');

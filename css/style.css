@@ -207,9 +207,18 @@ b { font-weight: 700; }
 .kon-faze:empty { display: none; }
 .kon-faze span { font: 600 .85rem 'Baloo 2', sans-serif; padding: 2px 10px; border: 2px solid var(--line); border-radius: 999px; color: var(--muted); }
 .kon-faze span.ted { border-color: var(--ink); background: var(--ink); color: var(--panel); }
-/* rýsovací plocha zůstává při posouvání nahoře, aby byl výsledek každého kroku hned vidět */
-.kon-obr { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; position: sticky; top: 60px; z-index: 1; box-shadow: 0 -12px 0 var(--panel); }
-.kon-obr .fg { max-height: min(300px, 36vh); }
+/* zadání a obrázek zůstávají při posouvání nahoře: žák nemusí nic držet v hlavě */
+.kon-hlava { position: sticky; top: 60px; z-index: 1; background: var(--panel); box-shadow: 0 -12px 0 var(--panel); padding-bottom: 4px; }
+.kon-dano { margin: 0 0 6px; padding: 6px 10px; background: var(--info-bg); border-radius: 8px; font-size: .98rem; line-height: 1.4; }
+.kon-dano span { display: block; } .kon-dano b { font-family: 'Baloo 2', sans-serif; font-weight: 600; }
+.kon-plocha { position: relative; }
+.kon-prep { position: absolute; top: 6px; right: 6px; z-index: 1; display: flex; gap: 4px; }
+.kon-prep .chip { padding: 2px 10px; font-size: .85rem; border-width: 1.5px; background: var(--panel); }
+.kon-prep .chip.on { background: var(--ink); color: var(--panel); }
+.kon-obr { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+.kon-obr .fg { max-height: min(300px, 34vh); }
+.hotovy-nacrtek .nk-el { cursor: default; }
+@media (max-height: 520px) { .kon-hlava { position: static; } } /* telefon naležato: přichycená hlava by zabrala celou obrazovku */
 .kon-zapis { margin: 10px 0 0; padding: 8px 10px 8px 2.2em; background: var(--hint-bg); border-radius: 10px; }
 .kon-zapis li { margin: 3px 0; }
 .kon-zapis small { display: block; color: var(--muted); font-size: .86rem; line-height: 1.3; }

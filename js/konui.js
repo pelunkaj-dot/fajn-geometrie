@@ -1,6 +1,6 @@
 // Konstrukční úloha v prohlížeči: vedený postup (1), skládání z připravených kroků (2),
 // samostatně náčrtek + zápis postupu + počet řešení (3). Rýsuje jádro v kon.js.
-import { kExec, kCil, kKopie, kZapis, kSlovy, kOtazka, kNavnady, kSvg, kProved, kPocetPruseciku, NACRTKY, nacrtekSvg } from './kon.js';
+import { kExec, kCil, kKopie, kZapis, kSlovy, kOtazka, kNavnady, kSvg, kProved, kPocetPruseciku, NACRTKY, nacrtekSvg, ZNACKY } from './kon.js';
 import { shuffle, cz } from './util.js';
 import { $, $$ } from './ui.js';
 
@@ -11,9 +11,24 @@ const prvku = n => n === 1 ? '1 prvek' : n < 5 ? n + ' prvky' : n + ' prvků';
 export function konUloha(root, u, api) {
   let kroky = [], st = kProved(u.init), chyb = 0;
   const prepocitej = () => { st = kProved(u.init); kroky.forEach(s => kExec(st, s)); };
-  root.innerHTML = `<div class="kon"><div class="kon-faze" id="k-faze"></div><div class="kon-obr" id="k-obr"></div><ol class="kon-zapis" id="k-zapis"></ol><div class="kon-panel" id="k-panel"></div></div>`;
-  const obr = $('#k-obr', root), zap = $('#k-zapis', root), panel = $('#k-panel', root), fazeEl = $('#k-faze', root);
-  const kresli = posl => { obr.innerHTML = kSvg(st, { posledni: posl }); };
+  // Co je dáno a co se má sestrojit, je vidět po celou dobu (jako zápis v sešitě) a drží se nahoře i při posouvání.
+  const znacka = k => { const z = ZNACKY[k] || k; return Array.isArray(z) ? `${z[0]}<sub>${z[1]}</sub>` : z; };
+  const dano = Array.isArray(u.dano) ? u.dano : Object.entries(u.dano).map(([k, v]) => `${znacka(k)} = ${v}`);
+  root.innerHTML = `<div class="kon"><div class="kon-faze" id="k-faze"></div>
+    <div class="kon-hlava"><p class="kon-dano"><span><b>Dáno:</b> ${dano.join(', ')}</span> <span><b>Sestroj:</b> ${u.sestroj}</span></p>
+      <div class="kon-plocha">${u.tpl ? '<div class="kon-prep" id="k-prep" hidden><button class="chip" data-p="nacrtek">Náčrtek</button><button class="chip" data-p="rys">Rýsování</button></div>' : ''}<div class="kon-obr" id="k-obr"></div></div></div>
+    <ol class="kon-zapis" id="k-zapis"></ol><div class="kon-panel" id="k-panel"></div></div>`;
+  const obr = $('#k-obr', root), zap = $('#k-zapis', root), panel = $('#k-panel', root), fazeEl = $('#k-faze', root), prep = $('#k-prep', root);
+  // Obrázek má dvě podoby: náčrtek se zadanými hodnotami a rýsování. Dá se mezi nimi kdykoli přepnout;
+  // po každém novém kroku se ukáže rýsování, aby byl vidět výsledek.
+  let pohled = u.tpl ? 'nacrtek' : 'rys', poslKrok = false, prepZap = !!u.tpl && u.mode !== 3;
+  function obraz() {
+    if (prep) { prep.hidden = !prepZap; $$('button', prep).forEach(b => b.classList.toggle('on', b.dataset.p === pohled)); }
+    obr.innerHTML = pohled === 'nacrtek' ? nacrtekSvg(u.tpl, u.giv, u.dano) : kSvg(st, { posledni: poslKrok });
+    obr.classList.toggle('hotovy-nacrtek', pohled === 'nacrtek');
+  }
+  if (prep) $$('button', prep).forEach(b => b.onclick = () => { pohled = b.dataset.p; obraz(); });
+  const kresli = posl => { poslKrok = !!posl; if (posl) pohled = 'rys'; obraz(); };
   const zapis = slovy => {
     zap.innerHTML = kroky.map(s => `<li><span class="zap">${kZapis(s)}</span>${slovy ? `<small>${kSlovy(s)}</small>` : ''}</li>`).join('');
     zap.hidden = !kroky.length;
@@ -64,7 +79,7 @@ export function konUloha(root, u, api) {
     vykresli();
   }
   function odhal(pak) {
-    kroky = [...u.plan]; prepocitej(); kresli(); zapis(true);
+    kroky = [...u.plan]; prepocitej(); pohled = 'rys'; kresli(); zapis(true);
     panel.innerHTML = '<p class="kon-hotovo">Tohle je jeden ze správných postupů. Projdi si ho krok za krokem.</p>';
     if (pak) pak(); else api.konec(chyb, true);
   }
@@ -78,7 +93,7 @@ export function konUloha(root, u, api) {
   const FAZE = [...(u.tpl ? [['n', 'Náčrtek']] : []), ['z', 'Zápis postupu'], ...(u.nsol != null ? [['d', 'Počet řešení']] : [])];
   function nacrtek() {
     let vyb = [], pokusy = 0; const T = NACRTKY[u.tpl];
-    faze('n', FAZE); zap.hidden = true;
+    faze('n', FAZE); zap.hidden = true; obr.classList.remove('hotovy-nacrtek');
     const ukaz = () => {
       obr.innerHTML = nacrtekSvg(u.tpl, vyb);
       $$('.nk-el', obr).forEach(g => g.onclick = () => { const k = g.dataset.el; vyb = vyb.includes(k) ? vyb.filter(x => x !== k) : [...vyb, k]; api.krok(); ukaz(); });
@@ -98,7 +113,7 @@ export function konUloha(root, u, api) {
 
   function zapisFaze() {
     let pokusy = 0, op = null;
-    faze('z', FAZE); kresli(); zapis();
+    faze('z', FAZE); prepZap = true; pohled = 'nacrtek'; kresli(); zapis();
     const body = () => Object.keys(st.pts), volna = () => u.names.filter(n => !st.pts[n]);
     const primky = () => {
       const out = Object.entries(st.lines).map(([n, L]) => [n, (L.ray && n.length === 2 ? '↦' : '') + n]), pary = [];

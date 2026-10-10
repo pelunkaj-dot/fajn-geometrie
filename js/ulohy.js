@@ -22,7 +22,13 @@ export function DM(o) { return { kind: 'dm', hints: [], steps: [], ...o }; }
 // --- čtvercová síť: žák ťuká obrazy bodů ---
 export function GR(o) { return { kind: 'grid', hints: [], steps: [], ...o }; }
 // --- konstrukční úloha: mode 1 vedená, 2 skládání z připravených kroků, 3 samostatně ---
-export function K(o) { return { kind: 'kon', init: [], hints: [], steps: [], lens: [], angs: [], names: [], ...o }; }
+// dano: u úloh s náčrtkem objekt { prvek náčrtku: hodnota } (z něj se odvodí giv), jinak pole krátkých zápisů.
+// sestroj: co má vzniknout a jak se mají jmenovat nové body. Obojí zůstává při řešení stále na očích.
+export function K(o) {
+  const t = { kind: 'kon', init: [], hints: [], steps: [], lens: [], angs: [], names: [], dano: [], sestroj: '', ...o };
+  if (!Array.isArray(t.dano)) t.giv = Object.keys(t.dano);
+  return t;
+}
 
 // výsledek s π: hlavní s 3,14, uznává se i s přesným π
 export function pia(f, dec = 1) {

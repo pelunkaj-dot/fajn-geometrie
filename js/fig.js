@@ -41,7 +41,7 @@ export class Fig {
     const X = x => f1(ox + (x - x0) * s), Y = y => f1(H - oy - (y - y0) * s);
     const P = p => [ox + (p[0] - x0) * s, H - oy - (p[1] - y0) * s];
     const cls = (o, base = 's') => SC[o.c || base] + (o.dash ? ' fg-d' : '') + (o.fill ? (o.fill === 'a' ? ' fg-fa' : ' fg-f') : ' fg-nf');
-    const tx = (x, y, txt, o = {}) => `<text x="${f1(x)}" y="${f1(y)}" dy=".35em" text-anchor="${o.anchor || 'middle'}" class="${TC[o.cls || (txt === '?' ? 'q' : 't')]}">${txt}</text>`;
+    const tx = (x, y, txt, o = {}) => `<text x="${f1(x)}" y="${f1(y)}" dy=".35em" text-anchor="${o.anchor || 'middle'}"${o.rot ? ` transform="rotate(${f1(o.rot)} ${f1(x)} ${f1(y)})"` : ''} class="${TC[o.cls || (txt === '?' ? 'q' : 't')]}">${txt}</text>`;
     const out = [], texts = [];
     for (const it of this.it) {
       const t = it[0];
@@ -102,7 +102,9 @@ export class Fig {
         texts.push(tx(Ps[0] + (o.dx || 0), Ps[1] + (o.dy || 0), txt, o));
       } else if (t === 'mid') {
         const [, a, b, txt, off, o] = it; const m = P(V.mid(a, b)), d = V.unit(V.sub(b, a));
-        texts.push(tx(m[0] - d[1] * off, m[1] - d[0] * off, txt, o));
+        let rot = 0; // o.rot: popisek se natočí podél úsečky (čte se zleva nebo zdola)
+        if (o.rot) { rot = Math.atan2(-d[1], d[0]) * 180 / Math.PI; if (rot > 90) rot -= 180; if (rot <= -90 && rot > -90.01) rot = -90; else if (rot < -90) rot += 180; if (rot === 90) rot = -90; }
+        texts.push(tx(m[0] - d[1] * off, m[1] - d[0] * off, txt, { ...o, rot }));
       }
     }
     return `<svg viewBox="0 0 ${W} ${H}" class="fg" xmlns="http://www.w3.org/2000/svg" role="img">${out.join('')}${texts.join('')}${extra}</svg>`;

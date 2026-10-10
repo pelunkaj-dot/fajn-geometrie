@@ -366,7 +366,7 @@ function pk_opsana() {
 function kon_thales(mode) {
   let c, a; do { c = 2 * ri(3, 4); a = ri(3, c - 2); } while (a === c / 2);
   return K({
-    mode, tpl: 'tri', giv: ['c', 'a', 'ga'], text: `Sestroj pravoúhlý trojúhelník ABC s pravým úhlem u vrcholu C: přepona c = ${B(cm(c))}, odvěsna a = ${B(cm(a))}. Střed přepony označ S.`,
+    mode, tpl: 'tri', dano: { c: cm(c), a: cm(a), ga: '90°' }, sestroj: '△ABC; S = střed přepony AB', text: `Sestroj pravoúhlý trojúhelník ABC s pravým úhlem u vrcholu C: přepona c = ${B(cm(c))}, odvěsna a = ${B(cm(a))}. Střed přepony označ S.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'mid', name: 'S', a: 'A', b: 'B' }, { op: 'circ', name: 'k', c: 'S', r: { pp: ['S', 'A'] } }, { op: 'circ', name: 'l', c: 'B', r: a }, { op: 'int', name: 'C', of: ['k', 'l'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['dist', 'B', 'C', a], ['ang', 'A', 'C', 'B', 90], ['poly', 'ABC']],
     lens: [c, a], angs: [90], names: ['S', 'C'], ops: ['seg', 'mid', 'axis', 'circ', 'int', 'poly'], vysl: ['A', 'B', 'C'],
@@ -378,6 +378,7 @@ function kon_tecna(mode) {
   const r = ri(2, 3), d = r + ri(3, 4);
   return K({
     mode, init: [{ op: 'given', pts: { S: [0, 0], M: [d, 0] }, circs: { k: { c: 'S', r } } }],
+    dano: [`k(S; ${cm(r)})`, `|SM| = ${cm(d)}`], sestroj: 'tečnu z bodu M ke kružnici k; O = střed úsečky SM, T = bod dotyku',
     text: `Je dána kružnice k(S; ${cm(r)}) a bod M, |SM| = ${cm(d)}. Sestroj tečnu z bodu M ke kružnici k. Střed úsečky SM označ O, bod dotyku T.`,
     plan: [{ op: 'mid', name: 'O', a: 'S', b: 'M' }, { op: 'circ', name: 'l', c: 'O', r: { pp: ['O', 'S'] } }, { op: 'int', name: 'T', of: ['l', 'k'] }, { op: 'line', a: 'M', b: 'T' }],
     goal: [['tangent', 'M', 'k']], names: ['O', 'T'], ops: ['mid', 'axis', 'perp', 'circ', 'int', 'line'],
@@ -529,7 +530,7 @@ const TROJ_OPS = ['seg', 'par', 'ray', 'mid', 'circ', 'int', 'poly'];
 function kon_vc(mode) {
   let c, vc, b; do { c = ri(6, 8); vc = ri(3, 4); b = ri(vc + 1, 6); } while (b === c || vc === b);
   return K({
-    mode, tpl: 'tri', giv: ['c', 'vc', 'b'], text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('v', 'c')} = ${B(cm(vc))}, b = ${B(cm(b))}.`,
+    mode, tpl: 'tri', dano: { c: cm(c), vc: cm(vc), b: cm(b) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('v', 'c')} = ${B(cm(vc))}, b = ${B(cm(b))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'par', name: 'p', to: 'AB', dist: vc }, { op: 'circ', name: 'k', c: 'A', r: b }, { op: 'int', name: 'C', of: ['p', 'k'], pick: 1 }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['hgt', 'C', 'A', 'B', vc], ['dist', 'A', 'C', b], ['poly', 'ABC']],
     lens: [c, vc, b], names: ['C'], ops: TROJ_OPS, vysl: ['A', 'B', 'C'],
@@ -540,7 +541,7 @@ function kon_vc(mode) {
 function kon_tc(mode) {
   let c, tc, a; do { c = 2 * ri(3, 4); tc = ri(3, 5); a = ri(3, 6); } while (Math.abs(tc - a) >= c / 2 - 0.5 || tc + a <= c / 2 + 1 || tc === a || a === c || tc === c);
   return K({
-    mode, tpl: 'tri', giv: ['c', 'tc', 'a'], text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('t', 'c')} = ${B(cm(tc))}, a = ${B(cm(a))}. Střed strany AB označ S.`,
+    mode, tpl: 'tri', dano: { c: cm(c), tc: cm(tc), a: cm(a) }, sestroj: '△ABC; S = střed strany AB', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('t', 'c')} = ${B(cm(tc))}, a = ${B(cm(a))}. Střed strany AB označ S.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'mid', name: 'S', a: 'A', b: 'B' }, { op: 'circ', name: 'k', c: 'S', r: tc }, { op: 'circ', name: 'l', c: 'B', r: a }, { op: 'int', name: 'C', of: ['k', 'l'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['med', 'C', 'A', 'B', tc], ['dist', 'B', 'C', a], ['poly', 'ABC']],
     lens: [c, tc, a], names: ['S', 'C'], ops: TROJ_OPS, vysl: ['A', 'B', 'C'],
@@ -551,7 +552,7 @@ function kon_tc(mode) {
 function kon_vcAl(mode) {
   const c = ri(6, 8), vc = ri(3, 4), al = pick([40, 50, 60, 70]);
   return K({
-    mode, tpl: 'tri', giv: ['c', 'al', 'vc'], text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, α = ${B(st(al))}, ${SUB('v', 'c')} = ${B(cm(vc))}.`,
+    mode, tpl: 'tri', dano: { c: cm(c), al: st(al), vc: cm(vc) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, α = ${B(st(al))}, ${SUB('v', 'c')} = ${B(cm(vc))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'par', name: 'p', to: 'AB', dist: vc }, { op: 'int', name: 'C', of: ['AX', 'p'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['ang', 'B', 'A', 'C', al], ['hgt', 'C', 'A', 'B', vc], ['poly', 'ABC']],
     lens: [c, vc], angs: [al], names: ['C'], ops: TROJ_OPS, vysl: ['A', 'B', 'C'],
@@ -562,7 +563,7 @@ function kon_vcAl(mode) {
 function kon_vcTc() {
   let c, vc, tc; do { c = 2 * ri(3, 4); vc = ri(3, 4); tc = vc + ri(1, 2); } while (tc === c || vc === c);
   return K({
-    mode: 3, tpl: 'tri', giv: ['c', 'vc', 'tc'], text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('v', 'c')} = ${B(cm(vc))}, ${SUB('t', 'c')} = ${B(cm(tc))}. Střed strany AB označ S.`,
+    mode: 3, tpl: 'tri', dano: { c: cm(c), vc: cm(vc), tc: cm(tc) }, sestroj: '△ABC; S = střed strany AB', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('v', 'c')} = ${B(cm(vc))}, ${SUB('t', 'c')} = ${B(cm(tc))}. Střed strany AB označ S.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'par', name: 'p', to: 'AB', dist: vc }, { op: 'mid', name: 'S', a: 'A', b: 'B' }, { op: 'circ', name: 'k', c: 'S', r: tc }, { op: 'int', name: 'C', of: ['p', 'k'], pick: 1 }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['hgt', 'C', 'A', 'B', vc], ['med', 'C', 'A', 'B', tc], ['poly', 'ABC']],
     lens: [c, vc, tc], names: ['S', 'C'], ops: TROJ_OPS, vysl: ['A', 'B', 'C'],

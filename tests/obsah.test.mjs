@@ -61,6 +61,10 @@ for (const r of ROCNIKY) for (const tema of r.temata) tema.u.forEach((gens, li) 
             const q = kOtazka(t, k);
             if (q) assert.ok(q.bad.length >= 2 && !q.bad.includes(q.ok) && new Set(q.bad).size === q.bad.length, `${kde} otázka ${JSON.stringify(q)}`);
           });
+          assert.ok(t.sestroj && t.sestroj.length > 3, kde + ' chybí „Sestroj“');
+          const dano = Array.isArray(t.dano) ? t.dano : Object.values(t.dano);
+          assert.ok(dano.length >= 1 && dano.every(d => typeof d === 'string' && d.length && !/\d\.\d|undefined|NaN/.test(d)), `${kde} „Dáno“: ${JSON.stringify(t.dano)}`);
+          if (t.tpl) { assert.ok(!Array.isArray(t.dano), kde + ' úloha s náčrtkem má mít dano jako objekt'); const ns = nacrtekSvg(t.tpl, t.giv, t.dano); for (const v of dano) assert.ok(ns.includes('= ' + v), `${kde} v náčrtku chybí hodnota ${v}`); }
           if (t.tpl) { assert.ok(NACRTKY[t.tpl]); for (const k of t.giv) assert.ok(NACRTKY[t.tpl].prvky[k], `${kde} prvek ${k}`); assert.ok(nacrtekSvg(t.tpl, t.giv).includes('nk-on')); }
           if (t.mode === 3) { assert.ok(t.ops && t.ops.length, kde + ' chybí nabídka kroků'); for (const s of t.plan) assert.ok(t.ops.includes(s.op), `${kde} krok ${s.op} není v nabídce`); }
           // návnady (úroveň 2) musí vést ke špatnému výsledku
