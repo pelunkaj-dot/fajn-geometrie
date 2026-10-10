@@ -64,7 +64,8 @@ for (const r of ROCNIKY) for (const tema of r.temata) tema.u.forEach((gens, li) 
           assert.ok(t.sestroj && t.sestroj.length > 3, kde + ' chybí „Sestroj“');
           const dano = Array.isArray(t.dano) ? t.dano : Object.values(t.dano);
           assert.ok(dano.length >= 1 && dano.every(d => typeof d === 'string' && d.length && !/\d\.\d|undefined|NaN/.test(d)), `${kde} „Dáno“: ${JSON.stringify(t.dano)}`);
-          if (t.tpl) { assert.ok(!Array.isArray(t.dano), kde + ' úloha s náčrtkem má mít dano jako objekt'); const ns = nacrtekSvg(t.tpl, t.giv, t.dano); for (const v of dano) assert.ok(ns.includes('= ' + v), `${kde} v náčrtku chybí hodnota ${v}`); }
+          if (t.tpl) { assert.ok(!Array.isArray(t.dano), kde + ' úloha s náčrtkem má mít dano jako objekt'); const ns = nacrtekSvg(t.tpl, t.giv, t.dano, kProved([...t.init, ...t.plan]).pts); for (const v of dano) assert.ok(ns.includes('= ' + v), `${kde} v náčrtku chybí hodnota ${v}`); assert.ok(!/NaN/.test(ns), kde + ' náčrtek');
+            assert.throws(() => nacrtekSvg(t.tpl, t.giv, t.dano), 'náčrtek s hodnotami bez skutečných bodů se nesmí vykreslit'); }
           if (t.tpl) { assert.ok(NACRTKY[t.tpl]); for (const k of t.giv) assert.ok(NACRTKY[t.tpl].prvky[k], `${kde} prvek ${k}`); assert.ok(nacrtekSvg(t.tpl, t.giv).includes('nk-on')); }
           if (t.mode === 3) { assert.ok(t.ops && t.ops.length, kde + ' chybí nabídka kroků'); for (const s of t.plan) assert.ok(t.ops.includes(s.op), `${kde} krok ${s.op} není v nabídce`); }
           // návnady (úroveň 2) musí vést ke špatnému výsledku
@@ -76,6 +77,20 @@ for (const r of ROCNIKY) for (const tema of r.temata) tema.u.forEach((gens, li) 
         }
       }
     });
+  });
+  if (li === 0 && tema.kon) test(`${tema.id} náčrtek odpovídá hodnotám`, () => {
+    const delka = (svg, hodnota) => { // délka zvýrazněné úsečky, u které je popisek s danou hodnotou, se pozná podle pořadí v SVG
+      const cary = [...svg.matchAll(/<g class="nk-el nk-on" data-el="(\w+)"><line x1="([\d.-]+)" y1="([\d.-]+)" x2="([\d.-]+)" y2="([\d.-]+)"/g)];
+      return Object.fromEntries(cary.map(m => [m[1], Math.hypot(m[4] - m[2], m[5] - m[3])]));
+    };
+    let porovnani = 0;
+    for (const gens of tema.u) for (const g of gens) for (let i = 0; i < 40; i++) {
+      const t = g(); if (t.kind !== 'kon' || !t.tpl) continue;
+      const d = delka(nacrtekSvg(t.tpl, t.giv, t.dano, kProved([...t.init, ...t.plan]).pts)), cm = k => parseFloat(String(t.dano[k]).replace(',', '.'));
+      const klice = Object.keys(d).filter(k => /cm$/.test(t.dano[k] || ''));
+      for (const x of klice) for (const y of klice) if (cm(x) > cm(y)) { porovnani++; assert.ok(d[x] > d[y], `${tema.id}: ${x} = ${t.dano[x]} je v náčrtku kratší než ${y} = ${t.dano[y]}`); }
+    }
+    assert.ok(porovnani > 20, 'málo porovnání');
   });
   if (li === 0) test(`${tema.id} rychlé úlohy`, () => {
     assert.ok(tema.rychle && tema.rychle.length >= 2);

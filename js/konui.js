@@ -22,9 +22,11 @@ export function konUloha(root, u, api) {
   // Obrázek má dvě podoby: náčrtek se zadanými hodnotami a rýsování. Dá se mezi nimi kdykoli přepnout;
   // po každém novém kroku se ukáže rýsování, aby byl vidět výsledek.
   let pohled = u.tpl ? 'nacrtek' : 'rys', poslKrok = false, prepZap = !!u.tpl && u.mode !== 3;
+  // hotový náčrtek má skutečný tvar výsledku (body z vyřešeného plánu), aby hodnoty neodporovaly obrázku
+  let _tvar = null; const tvar = () => (_tvar || (_tvar = kProved([...u.init, ...u.plan]).pts));
   function obraz() {
     if (prep) { prep.hidden = !prepZap; $$('button', prep).forEach(b => b.classList.toggle('on', b.dataset.p === pohled)); }
-    obr.innerHTML = pohled === 'nacrtek' ? nacrtekSvg(u.tpl, u.giv, u.dano) : kSvg(st, { posledni: poslKrok });
+    obr.innerHTML = pohled === 'nacrtek' ? nacrtekSvg(u.tpl, u.giv, u.dano, tvar()) : kSvg(st, { posledni: poslKrok });
     obr.classList.toggle('hotovy-nacrtek', pohled === 'nacrtek');
   }
   if (prep) $$('button', prep).forEach(b => b.onclick = () => { pohled = b.dataset.p; obraz(); });
@@ -113,7 +115,7 @@ export function konUloha(root, u, api) {
 
   function zapisFaze() {
     let pokusy = 0, op = null;
-    faze('z', FAZE); prepZap = true; pohled = 'nacrtek'; kresli(); zapis();
+    faze('z', FAZE); prepZap = !!u.tpl; pohled = u.tpl ? 'nacrtek' : 'rys'; kresli(); zapis();
     const body = () => Object.keys(st.pts), volna = () => u.names.filter(n => !st.pts[n]);
     const primky = () => {
       const out = Object.entries(st.lines).map(([n, L]) => [n, (L.ray && n.length === 2 ? '↦' : '') + n]), pary = [];

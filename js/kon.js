@@ -308,10 +308,14 @@ export const NACRTKY = {
   par: { nazev: 'rovnoběžník ABCD', prvky: { a: 'strana a', b: 'strana b', al: 'úhel α', be: 'úhel β', va: 'výška na stranu a', e: 'úhlopříčka e', f: 'úhlopříčka f' } },
   trap: { nazev: 'lichoběžník ABCD', prvky: { a: 'základna a', b: 'rameno b', c: 'základna c', d: 'rameno d', al: 'úhel α', be: 'úhel β', v: 'výška v', e: 'úhlopříčka e' } },
 };
-// S `hodnoty` ({ prvek: '7 cm' }) je to hotový náčrtek jako v sešitě: zadané prvky jsou zvýrazněné
-// a mají u sebe hodnotu, pomocné čáry, které zadané nejsou, se nekreslí.
+// Bez hodnot je to obecný útvar, ve kterém žák vyznačuje, co je dáno.
+// S `hodnoty` ({ prvek: '7 cm' }) je to hotový náčrtek jako v sešitě: zadané prvky jsou zvýrazněné a mají u sebe hodnotu,
+// pomocné čáry, které zadané nejsou, se nekreslí. Hotový náčrtek se VŽDY kreslí ze skutečných bodů řešení (`body`),
+// aby delší strana byla i na obrázku delší a tupý úhel tupý – hodnota nesmí odporovat tomu, co je vidět.
 export const ZNACKY = { a: 'a', b: 'b', c: 'c', d: 'd', e: 'e', f: 'f', v: 'v', al: 'α', be: 'β', ga: 'γ', vc: ['v', 'c'], tc: ['t', 'c'], va: ['v', 'a'] };
-export function nacrtekSvg(tpl, vybrane = [], hodnoty = null) {
+const OBECNE = { tri: { A: [0, 0], B: [8.4, 0], C: [2.2, 5.4] }, par: { A: [0, 0], B: [7, 0], C: [9.4, 4.4], D: [2.4, 4.4] }, trap: { A: [0, 0], B: [9, 0], C: [6.6, 4.4], D: [2, 4.4] } };
+export function nacrtekSvg(tpl, vybrane = [], hodnoty = null, body = null) {
+  if (hodnoty && !body) throw new Error('Náčrtek s hodnotami musí dostat skutečné body řešení.');
   const F = new Fig({ W: 340, H: 230, pad: hodnoty ? 48 : 34 }), on = k => vybrane.includes(k);
   const ma = k => !!hodnoty && hodnoty[k] != null, pop = (k, txt) => (ma(k) ? `${txt} = ${hodnoty[k]}` : txt);
   const jen = k => !hodnoty || on(k); // pomocná čára se v hotovém náčrtku kreslí, jen když je zadaná
@@ -321,32 +325,49 @@ export function nacrtekSvg(tpl, vybrane = [], hodnoty = null) {
   };
   // zadaný úhel má hodnotu napsanou vně útvaru hned u vrcholu (kde = posun a zarovnání), uvnitř by se křížila s výškou
   const U = (k, v, p1, p2, txt, kde) => {
+    if (hodnoty && !on(k)) return; // nezadané úhly v hotovém náčrtku jen překážejí
     F.ang(v, p1, p2, ma(k) ? '' : txt, { el: k, on: on(k), c: 'h', cls: on(k) ? 'a' : 'h', r: 24 });
     if (ma(k)) F.lab(v, pop(k, txt), { ...kde, cls: 'a' });
   };
-  const VLEVO = { dx: -4, dy: 17, anchor: 'start' }, VPRAVO = { dx: 4, dy: 17, anchor: 'end' }, NAHORE = { dx: 15, dy: -3, anchor: 'start' };
-  const N = (pts, jm, c0) => pts.forEach((p, i) => { const u = V.unit(V.sub(p, c0)); F.lab(p, jm[i], { dx: u[0] * 14, dy: -u[1] * 14, cls: 'n' }); });
+  const VLEVO = { dx: 12, dy: 23, anchor: 'end' }, VPRAVO = { dx: -12, dy: 23, anchor: 'start' }, NAHORE = { dx: 15, dy: -3, anchor: 'start' };
+  const B0 = body || OBECNE[tpl], A = B0.A, B = B0.B, C = B0.C, D = B0.D;
+  const pata = X => { const d = V.unit(V.sub(B, A)); return V.add(A, V.mul(d, V.dot(V.sub(X, A), d))); };
+  const vrcholy = tpl === 'tri' ? [A, B, C] : [A, B, C, D], c0 = [0, 1].map(i => vrcholy.reduce((s, p) => s + p[i], 0) / vrcholy.length);
+  F.poly(vrcholy, { fill: 1, c: 'n' });
+  // Popisek vnitřní čáry (výška, těžnice, úhlopříčka) jde na tu stranu čáry, kde je k ostatním čarám dál.
+  const xs = vrcholy.map(p => p[0]), ys = vrcholy.map(p => p[1]);
+  const mer = Math.min(244 / (Math.max(...xs) - Math.min(...xs) || 1), 134 / (Math.max(...ys) - Math.min(...ys) || 1)); // px na jednotku
+  const odUsecky = (p, a, b) => { const d = V.sub(b, a), t = Math.max(0, Math.min(1, V.dot(V.sub(p, a), d) / (V.dot(d, d) || 1))); return V.dist(p, V.add(a, V.mul(d, t))); };
+  const strany = vrcholy.map((p, i) => [p, vrcholy[(i + 1) % vrcholy.length]]), vnitrni = [];
+  const kam = (a, b, off = 15) => {
+    const u = V.unit(V.sub(b, a)), n = V.perp(u), m = V.mid(a, b), jine = [...strany, ...vnitrni.filter(([x, y]) => x !== a || y !== b)];
+    const volno = z => Math.min(...[-22, 0, 22].flatMap(pos => jine.map(([x, y]) => odUsecky(V.add(m, V.add(V.mul(u, pos / mer), V.mul(n, z * off / mer))), x, y))));
+    return volno(1) >= volno(-1) ? off : -off;
+  };
+  // výška z bodu X na AB: když pata padne mimo stranu, dokreslí se prodloužení strany
+  const vyska = (k, X, txt, off) => {
+    if (!jen(k)) return () => {};
+    const P = pata(X), t = V.dot(V.sub(P, A), V.unit(V.sub(B, A))), dal = V.dist(P, A) > V.dist(P, B) ? A : B;
+    vnitrni.push([X, P]);
+    return () => {
+      if (t < -1e-6) F.seg(A, P, { c: 'h', dash: 1 }); else if (t > V.dist(A, B) + 1e-6) F.seg(B, P, { c: 'h', dash: 1 });
+      S(k, X, P, txt, hodnoty ? kam(X, P) : off, 1); F.right(P, dal, X);
+    };
+  };
+  const cara = (k, a, b, txt, off) => { if (!jen(k)) return () => {}; vnitrni.push([a, b]); return () => S(k, a, b, txt, hodnoty ? kam(a, b) : off, 1); };
   if (tpl === 'tri') {
-    const A = [0, 0], B = [8.4, 0], C = [2.2, 5.4], P = [2.2, 0], M = [4.2, 0];
-    F.poly([A, B, C], { fill: 1, c: 'n' });
-    S('vc', C, P, SUB('v', 'c'), -13, 1); if (jen('vc')) F.right(P, A, C); S('tc', C, M, SUB('t', 'c'), 14, 1);
+    [vyska('vc', C, SUB('v', 'c'), -13), cara('tc', C, V.mid(A, B), SUB('t', 'c'), 14)].forEach(f => f());
     S('c', A, B, 'c', -15); S('a', B, C, 'a', -15); S('b', C, A, 'b', -15);
     U('al', A, B, C, 'α', VLEVO); U('be', B, C, A, 'β', VPRAVO); U('ga', C, A, B, 'γ', NAHORE);
-    N([A, B, C], 'ABC', [3.5, 1.8]);
   } else if (tpl === 'par') {
-    const A = [0, 0], B = [7, 0], D = [2.4, 4.4], C = [9.4, 4.4], P = [2.4, 0];
-    F.poly([A, B, C, D], { fill: 1, c: 'n' });
-    S('e', A, C, 'e', 12, 1); S('f', B, D, 'f', -12, 1); S('va', D, P, SUB('v', 'a'), 15, 1); if (jen('va')) F.right(P, B, D);
+    [cara('e', A, C, 'e', 12), cara('f', B, D, 'f', -12), vyska('va', D, SUB('v', 'a'), 15)].forEach(f => f());
     S('a', A, B, 'a', -15); S('b', B, C, 'b', -15); F.seg(C, D).seg(D, A);
     U('al', A, B, D, 'α', VLEVO); U('be', B, C, A, 'β', VPRAVO);
-    N([A, B, C, D], 'ABCD', [4.7, 2.2]);
   } else {
-    const A = [0, 0], B = [9, 0], C = [6.6, 4.4], D = [2, 4.4], P = [2, 0];
-    F.poly([A, B, C, D], { fill: 1, c: 'n' });
-    S('e', A, C, 'e', 12, 1); S('v', D, P, 'v', 14, 1); if (jen('v')) F.right(P, B, D);
+    [cara('e', A, C, 'e', 12), vyska('v', D, 'v', 14)].forEach(f => f());
     S('a', A, B, 'a', -15); S('b', B, C, 'b', -15); S('c', C, D, 'c', -14); S('d', D, A, 'd', -15);
     U('al', A, B, D, 'α', VLEVO); U('be', B, C, A, 'β', VPRAVO);
-    N([A, B, C, D], 'ABCD', [4.4, 2.2]);
   }
+  vrcholy.forEach((p, i) => { const u = V.unit(V.sub(p, c0)); F.lab(p, 'ABCD'[i], { dx: u[0] * 14, dy: -u[1] * 14, cls: 'n' }); });
   return F.svg();
 }

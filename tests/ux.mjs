@@ -91,5 +91,12 @@ ok(await vOkne('.kon-dano') && await vOkne('#k-obr'), 'při posunutí dolů má 
 await p.click('#k-prep [data-p="rys"]'); await p.click('.kon-ops [data-op="ray"]'); await p.waitForTimeout(100);
 ok(!(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'zápis postupu na šířce 360 přetéká do strany'); await shot('ux-12-zapis');
 
+// úloha bez náčrtku (zadaný útvar je narýsovaný): žádný přepínač, na ploše je rovnou zadaný trojúhelník
+await p.click('#h-zpet'); { const u = p.locator('.okno-akce button', { hasText: 'Ukončit' }); if (await u.count()) await u.click(); }
+await p.click('.rocniky [data-r="6"]');
+for (let k = 0; k < 12; k++) { await p.click('.tema[data-id="604"] [data-l="3"]'); t = await U(); if (!t.u.tpl) break; await p.click('#h-zpet'); }
+ok(!t.u.tpl && !(await je('.hotovy-nacrtek')) && !(await je('#k-prep')), 'úloha se zadaným útvarem nemá mít náčrtek ani přepínač');
+ok((await p.textContent('#k-obr')).includes('A') && (await p.textContent('.kon-dano')).includes('Sestroj'), 'u úlohy se zadaným útvarem chybí obrázek nebo řádek Dáno / Sestroj'); await shot('ux-15-zadany-utvar');
+
 console.log(chyby.length ? 'CHYBY:\n' + chyby.join('\n') : 'Bez chyb.');
 await b.close(); process.exit(chyby.length ? 1 : 0);
