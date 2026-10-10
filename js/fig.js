@@ -395,7 +395,7 @@ export function gridSvg(t, znacky = [], reseni = null) {
     ? `<${t.uzavrit === false || pts.length < 3 ? 'polyline' : 'polygon'} points="${pts.map(p => X(p[0]) + ',' + Y(p[1])).join(' ')}" class="${cls}"/>` : '';
   s += poly(t.body, 'fg-s fg-f');
   if (reseni) s += poly(reseni, 'fg-a fg-fa');
-  for (let x = 0; x <= t.cols; x++) for (let y = 0; y <= t.rows; y++) s += `<circle cx="${X(x)}" cy="${Y(y)}" r="11" class="fg-uzel" data-x="${x}" data-y="${y}"/>`;
+  for (let x = 0; x <= t.cols; x++) for (let y = 0; y <= t.rows; y++) s += `<circle cx="${X(x)}" cy="${Y(y)}" r="14" class="fg-uzel" data-x="${x}" data-y="${y}"/>`;
   if (t.stred) s += `<circle cx="${X(t.stred[0])}" cy="${Y(t.stred[1])}" r="4.5" class="fg-pa"/><text x="${X(t.stred[0]) + 11}" y="${Y(t.stred[1]) - 9}" class="fg-t fg-ta">S</text>`;
   t.body.forEach((p, i) => { s += `<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4" class="fg-p"/><text x="${X(p[0]) - 10}" y="${Y(p[1]) - 9}" class="fg-t fg-tn">${t.jmena[i]}</text>`; });
   znacky.forEach(p => { s += `<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="6" class="fg-znacka"/>`; });

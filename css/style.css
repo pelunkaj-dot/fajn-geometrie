@@ -127,7 +127,7 @@ b { font-weight: 700; }
 
 /* ---------- série úloh ---------- */
 .hra { min-height: 100vh; display: flex; flex-direction: column; }
-.postup { flex: 1; height: 12px; }
+.postup { flex: 1; height: 12px; min-width: 24px; }
 .hra-poc { font-family: 'Baloo 2', sans-serif; font-weight: 600; min-width: 46px; text-align: right; }
 .combo { font: 600 .82rem 'Baloo 2', sans-serif; background: var(--hi); color: #fff; border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
 .zivoty i { font-style: normal; color: var(--line); font-size: 1.15rem; }
@@ -171,6 +171,7 @@ b { font-weight: 700; }
 .res-kroky li { margin: 2px 0; }
 .ul-akce { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 14px; }
 .ul-akce:empty { display: none; }
+.ul-akce.lepi { position: sticky; bottom: 0; z-index: 2; background: var(--panel); margin: 14px -14px -14px; padding: 10px 14px 12px; border-top: 1px solid var(--line); border-radius: 0 0 12px 12px; }
 
 /* ---------- obrázky ---------- */
 .fg-s, .fg-a, .fg-h, .fg-k, .fg-q, .fg-arc { stroke-linejoin: round; stroke-linecap: round; }
@@ -206,8 +207,9 @@ b { font-weight: 700; }
 .kon-faze:empty { display: none; }
 .kon-faze span { font: 600 .85rem 'Baloo 2', sans-serif; padding: 2px 10px; border: 2px solid var(--line); border-radius: 999px; color: var(--muted); }
 .kon-faze span.ted { border-color: var(--ink); background: var(--ink); color: var(--panel); }
-.kon-obr { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
-.kon-obr .fg { max-height: 300px; }
+/* rýsovací plocha zůstává při posouvání nahoře, aby byl výsledek každého kroku hned vidět */
+.kon-obr { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; position: sticky; top: 60px; z-index: 1; box-shadow: 0 -12px 0 var(--panel); }
+.kon-obr .fg { max-height: min(300px, 36vh); }
 .kon-zapis { margin: 10px 0 0; padding: 8px 10px 8px 2.2em; background: var(--hint-bg); border-radius: 10px; }
 .kon-zapis li { margin: 3px 0; }
 .kon-zapis small { display: block; color: var(--muted); font-size: .86rem; line-height: 1.3; }
@@ -252,8 +254,11 @@ b { font-weight: 700; }
 .bublina { display: flex; gap: 12px; align-items: center; text-align: left; background: var(--panel); border: 2px solid var(--ink); border-radius: 14px; padding: 10px 14px; max-width: 460px; margin: 0 auto 14px; }
 .bublina p { margin: 0; }
 .vysl-pov { font-size: 1.1rem; }
-.vysl-odz { margin: 0 auto 14px; max-width: 300px; }
-.vysl-akce { display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 8px auto 0; }
+.vysl-odz { margin: 0 auto 10px; max-width: 460px; } .vysl-odz p { margin-bottom: 6px; }
+.odz-rada { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.odz-m { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px 3px 4px; border: 2px solid var(--ink); border-radius: 999px; background: var(--panel); font: 600 .92rem 'Baloo 2', sans-serif; }
+.odz-m .odz-z { width: 28px; height: 28px; font-size: .7rem; background: var(--hi); color: #fff; }
+.vysl-akce { display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 0 auto; padding: 14px 0 6px; position: sticky; bottom: 0; background: linear-gradient(transparent, var(--bg) 14px); }
 
 /* ---------- město, odznaky, přehled ---------- */
 .mesto-pano { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 6px; margin-bottom: 8px; }
@@ -304,7 +309,12 @@ b { font-weight: 700; }
 .okno-pozadi { position: fixed; inset: 0; z-index: 20; background: rgba(10, 18, 40, .55); display: grid; place-items: center; padding: 12px; overflow: auto; }
 .okno { background: var(--panel); color: var(--ink); border: 2px solid var(--ink); border-radius: 16px; padding: 16px; width: 100%; max-width: 440px; box-shadow: 0 6px 0 var(--ink); }
 .okno-siroke { max-width: 620px; }
-.okno-h { font-size: 1.4rem; margin-bottom: .4em; }
+.okno { position: relative; }
+.okno-x { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 10px; background: var(--panel); font-weight: 700; font-size: 1rem; line-height: 1; }
+.okno-x:hover { border-color: var(--accent); }
+.odkaz { display: block; border: 0; background: none; padding: 8px 0 0; color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-align: left; }
+.koupe { text-align: center; } .koupe .mesto-1 { max-height: 110px; margin: 0 auto 10px; }
+.okno-h { font-size: 1.4rem; margin-bottom: .4em; padding-right: 46px; }
 .okno-akce { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 14px; }
 .vyklad-t { font-size: 1.04rem; } .vyklad-p { color: var(--muted); font-size: .85rem; margin: 10px 0 0; }
 #toast { position: fixed; left: 50%; bottom: 84px; transform: translate(-50%, 20px); z-index: 30; background: var(--ink); color: var(--panel); padding: 9px 16px; border-radius: 10px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; max-width: 92vw; text-align: center; }
@@ -317,7 +327,10 @@ b { font-weight: 700; }
 @media (max-width: 520px) {
   body { font-size: 16px; }
   .urovne { grid-template-columns: repeat(2, 1fr); }
-  .hod { min-width: 70px; } .logo { font-size: 1.05rem; }
+  .hod { min-width: 64px; } .logo { font-size: 1.05rem; }
+  .lista, .hra-lista { gap: 6px; padding: 8px; }
+  .hra-lista .ik { width: 36px; height: 36px; }
+  .hra-strazce .hra-poc { display: none; }
   .volby.ctyri { grid-template-columns: 1fr 1fr; }
   .okno-akce .btn { flex: 1; }
 }

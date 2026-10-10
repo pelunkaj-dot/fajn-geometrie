@@ -4,7 +4,7 @@ import { toChoice } from './ulohy.js';
 import { pick } from './util.js';
 import { mestoSvg } from './mesto.js';
 import { zvuk } from './zvuky.js';
-import { $, $$ } from './ui.js';
+import { $, $$, modal, zvukBtn, napojZvuk } from './ui.js';
 
 const VLNY = [{ n: 5, cas: 22 }, { n: 6, cas: 18 }, { n: 7, cas: 15 }];
 const TVARY = ['50,4 96,38 78,94 22,94 4,38', '50,2 98,50 50,98 2,50', '50,4 93,28 93,74 50,96 7,74 7,28', '50,6 96,90 4,90'];
@@ -20,11 +20,18 @@ export function obrana(root, cfg) {
   let vlna = 0, vVlne = 0, skore = 0, stity = 5, combo = 0, zasahu = 0, u = null, p = 0, cas = 0, posl = 0, bezi = false, raf = 0, konec = false, pauza = false;
   const zakladni = ['domek', 'vez', 'skola', 'mrakodrap', 'hvezdarna'];
   root.innerHTML = `<div class="hra obr">
-    <header class="hra-lista"><button class="ik" id="o-zpet" aria-label="Ukončit">✕</button><span class="obr-hud">Vlna <b id="o-vlna">1</b>/3</span><span class="obr-hud">Body <b id="o-skore">0</b></span><span class="combo" id="o-combo" hidden></span><span class="zivoty" id="o-stity"></span></header>
+    <header class="hra-lista"><button class="ik" id="o-zpet" aria-label="Ukončit">✕</button><span class="obr-hud">Vlna <b id="o-vlna">1</b>/3</span><span class="obr-hud">Body <b id="o-skore">0</b></span><span class="combo" id="o-combo" hidden></span><span class="zivoty" id="o-stity"></span>${zvukBtn()}</header>
     <div class="arena" id="o-arena"><div class="meteor" id="o-met"><svg viewBox="0 0 100 100"><polygon id="o-tvar" points=""/></svg></div><div class="arena-mesto">${mestoSvg(cfg.mesto.length ? cfg.mesto.slice(-7) : zakladni, { H: 150 })}</div><div class="arena-hlas" id="o-hlas"></div></div>
     <div class="obr-ul"><p class="ul-text" id="o-text"></p><p class="ul-q" id="o-q"></p><div class="volby ctyri" id="o-volby"></div></div></div>`;
   const met = $('#o-met', root), arena = $('#o-arena', root);
-  $('#o-zpet', root).onclick = () => { stop(); cfg.onZpet(); };
+  // Odchod: hra se pozastaví a zeptá se (křížek, Esc i Zpět v prohlížeči).
+  function chceOdejit() {
+    if (konec) return;
+    pauza = true;
+    modal({ nadpis: 'Ukončit obranu?', html: '<p>Hra je pozastavená. Rozehraná obrana se nezapočítá.</p>', tlacitka: [{ t: 'Pokračovat', hl: 1 }, { t: 'Ukončit', fn: () => { stop(); cfg.onZpet(); } }],
+      poZavreni: () => { pauza = document.hidden; posl = performance.now(); } });
+  }
+  $('#o-zpet', root).onclick = chceOdejit; napojZvuk(root);
 
   function hud() {
     $('#o-vlna', root).textContent = vlna + 1; $('#o-skore', root).textContent = skore;
@@ -73,5 +80,5 @@ export function obrana(root, cfg) {
   const vid = () => { pauza = document.hidden; posl = performance.now(); };
   document.addEventListener('visibilitychange', vid);
   hlas('Vlna 1'); novy(); raf = requestAnimationFrame(smycka);
-  return { stop };
+  return { stop, zpet: chceOdejit };
 }

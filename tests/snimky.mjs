@@ -6,7 +6,7 @@ const { b, p, chyby, ok, shot, U, odpovez, serie, domu, vyklad } = await otevri(
 const stavNa = async s => { await p.evaluate(s => { const st = window.__fg.stav; Object.assign(st, s); window.__fg.uloz(); }, s); await p.goto(URL + 'index.html'); await p.waitForTimeout(250); };
 const doDruhu = async (test) => { for (let k = 0; k < 12; k++) { const t = await U(); if (test(t.u)) return t; await odpovez(t); await p.click('#u-dal'); } throw new Error('druh úlohy nenalezen'); };
 const start = async (id, l) => { await p.click(`.tema[data-id="${id}"] [data-l="${l}"]`); await vyklad(); };
-const pryc = async () => { await p.click('#h-zpet'); await p.locator('.okno-akce button', { hasText: 'Ukončit' }).click(); };
+const pryc = async () => { await p.click('#h-zpet'); const u = p.locator('.okno-akce button', { hasText: 'Ukončit' }); if (await u.count()) await u.click(); };
 
 await p.goto(URL + 'index.html'); await p.waitForTimeout(400); await shot('01-uvitani');
 await p.click('.okno-akce .hl');
@@ -51,7 +51,9 @@ await start('604', 2); t = await doDruhu(u => u.kind === 'kon' && u.plan.length 
 // špatné pořadí: krok, který ještě nejde provést, jen upozorní
 const posl = await p.evaluate(async s => (await import('/js/kon.js')).kZapis(s), t.u.plan[t.u.plan.length - 1]);
 await p.locator('.krok').filter({ hasText: posl }).first().click(); ok(await p.$('.ul-zv.info'), 'krok mimo pořadí má jen upozornit'); ok((await p.$$('#k-zapis li')).length === 0, 'krok mimo pořadí se neměl přidat');
-await p.click('#k-ok'); ok(await p.$('.ul-zv.bad'), 'kontrola nedokončené konstrukce má být chyba'); await pryc();
+await p.click('#k-ok'); ok(await p.$('.ul-zv.info') && !(await p.$('.ul-zv.bad')), 'kontrola prázdné konstrukce má jen upozornit, ne stát pokus');
+const prvni = await p.evaluate(async s => (await import('/js/kon.js')).kZapis(s), t.u.plan[0]);
+await p.locator('.krok:not([disabled])').filter({ hasText: prvni }).first().click(); await p.click('#k-ok'); ok(await p.$('.ul-zv.bad'), 'kontrola nedokončené konstrukce má být chyba'); await pryc();
 await start('604', 3); t = await doDruhu(u => u.kind === 'kon' && u.tpl); await p.click('.nk-el[data-el="a"] .nk-hit', { force: true }); await shot('12-nacrtek');
 await p.click('#k-ok'); ok((await p.textContent('#u-zv')).includes('prvky'), 'neúplný náčrtek má být chyba');
 await p.click('.nk-el[data-el="a"] .nk-hit', { force: true }); await odpovez(t); ok((await U()).hotovo, 'konstrukce na úrovni 3 nedokončena'); await shot('13-kon-hotovo', true);
@@ -86,7 +88,7 @@ for (let k = 0; k < 40 && !(await p.$('.vysl')); k++) {
 await p.waitForSelector('.vysl', { timeout: 120000 }); await shot('21-obrana-vysl'); await domu();
 
 // město a odznaky
-await stavNa({ krystaly: 900 }); await p.click('.nav [data-z="mesto"]'); await p.click('.obchod button[data-id="pyramida"]'); await p.waitForTimeout(700); await shot('22-mesto', true);
+await stavNa({ krystaly: 900 }); await p.click('.nav [data-z="mesto"]'); await p.click('.obchod button[data-id="pyramida"]'); await p.click('.okno-akce .hl'); await p.waitForTimeout(700); await shot('22-mesto', true);
 ok(await p.evaluate(() => window.__fg.stav.mesto.includes('pyramida') && window.__fg.stav.krystaly === 740), 'koupě stavby se nezapsala');
 await p.click('.nav [data-z="odznaky"]'); await shot('23-odznaky', true);
 

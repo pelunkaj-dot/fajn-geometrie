@@ -7,7 +7,7 @@ import { konUloha } from './konui.js';
 import { zvuk } from './zvuky.js';
 import { rekni } from './hlasky.js';
 import { avatar } from './postavy.js';
-import { $, $$, modal, jeModal } from './ui.js';
+import { $, $$, modal, jeModal, zvukBtn, napojZvuk } from './ui.js';
 
 export const BODY = [10, 15, 25];
 const NAZEV_KROKU = ['O co jde', 'Jak na to', 'Dosazení'];
@@ -25,7 +25,7 @@ export function strazceSvg(seed) {
 // cfg: { typ: 'uroven'|'strazce'|'denni', nazev, ulohy: [{u, lvl}], kdo, zivoty, strazce: {jmeno, seed}, vyklad(), onKonec(res), onZpet() }
 export function serie(root, cfg) {
   const N = cfg.ulohy.length, res = { body: [], xp: 0, odhaleno: 0, comboMax: 0, kon3: 0, vyhra: true, n: N, vyreseno: 0, napoprve: 0 };
-  let i = 0, combo = 0, zivoty = cfg.zivoty || 0, t = null, konec = false;
+  let i = 0, combo = 0, zivoty = cfg.zivoty || 0, t = null, konec = false, aktivita = false;
   const strazce = cfg.typ === 'strazce';
 
   root.innerHTML = `<div class="hra hra-${cfg.typ}">
@@ -35,12 +35,19 @@ export function serie(root, cfg) {
       <span class="hra-poc" id="h-poc"></span>
       <span class="combo" id="h-combo" hidden></span>
       ${strazce ? '<span class="zivoty" id="h-ziv"></span>' : ''}
+      ${zvukBtn()}
       ${cfg.vyklad ? '<button class="ik" id="h-vyklad" aria-label="Výklad k tématu">?</button>' : ''}
     </header>
     ${strazce ? `<div class="sz-panel"><div class="sz-obr" id="h-sz">${strazceSvg(cfg.strazce.seed)}</div><div class="sz-info"><b>${cfg.strazce.jmeno}</b><div class="sz-hp"><i id="h-hp"></i></div><small id="h-hpt"></small></div></div>` : ''}
     <main class="hra-telo" id="h-telo"></main></div>`;
   const telo = $('#h-telo', root);
-  $('#h-zpet', root).onclick = () => modal({ nadpis: 'Ukončit sérii?', html: '<p>Rozdělaná série se nezapočítá.</p>', tlacitka: [{ t: 'Pokračovat v sérii', hl: 1 }, { t: 'Ukončit', fn: () => { uklid(); cfg.onZpet(); } }] });
+  // Odchod ze série: dokud hráč nic neudělal, odejde hned; jinak se zeptáme (křížek, Esc i Zpět).
+  function chceOdejit() {
+    if (konec) return;
+    if (!aktivita && i === 0) { uklid(); return cfg.onZpet(); }
+    modal({ nadpis: 'Ukončit sérii?', html: '<p>Rozdělaná série se nezapočítá.</p>', tlacitka: [{ t: 'Pokračovat v sérii', hl: 1 }, { t: 'Ukončit', fn: () => { uklid(); cfg.onZpet(); } }] });
+  }
+  $('#h-zpet', root).onclick = chceOdejit; napojZvuk(root);
   if (cfg.vyklad) $('#h-vyklad', root).onclick = cfg.vyklad;
 
   function lista() {
@@ -92,7 +99,7 @@ export function serie(root, cfg) {
     } else if (u.kind === 'kon') {
       konUloha(odp, u, {
         chyba: (text, kolikata) => { chybaKon(text, kolikata); }, info: text => bublina('info', text), ok: text => { zvuk.ok(combo); bublina('ok', text); },
-        krok: () => zvuk.krok(), konec: (chyb, odhaleno) => { t.pokus = chyb; if (odhaleno) odhal(true); else spravne(true); },
+        krok: () => { aktivita = true; zvuk.krok(); const z = $('#u-zv', telo); if (z.classList.contains('info')) { z.className = 'ul-zv'; z.innerHTML = ''; } }, konec: (chyb, odhaleno) => { t.pokus = chyb; if (odhaleno) odhal(true); else spravne(true); },
       });
     }
     akce();
@@ -102,6 +109,7 @@ export function serie(root, cfg) {
 
   function akce() {
     const el = $('#u-akce', telo), u = t.u;
+    el.classList.toggle('lepi', t.hotovo || u.kind !== 'kon');
     if (t.hotovo) {
       el.innerHTML = `<button class="btn hl" id="u-dal">${i + 1 < N ? 'Další úloha' : 'Dokončit'}</button>`;
       $('#u-dal', el).onclick = dalsi; $('#u-dal', el).focus({ preventScroll: true }); return;
@@ -115,6 +123,7 @@ export function serie(root, cfg) {
     const u = t.u; if (t.nap >= u.hints.length) return;
     const k = t.nap++, nap = $('#u-nap', telo);
     nap.insertAdjacentHTML('beforeend', `<div class="napoveda"><span class="nap-n">${t.strict || u.kind === 'kon' || u.hints.length < 3 ? 'Nápověda' : NAZEV_KROKU[k] || 'Nápověda'}</span>${u.hints[k]}</div>`);
+    aktivita = true;
     if (!sama) zvuk.napoveda();
     akce();
   }
@@ -146,6 +155,7 @@ export function serie(root, cfg) {
   }
   function spatne(msg) {
     if (konec) return;
+    aktivita = true;
     t.pokus++; combo = 0; zvuk.chyba(); lista();
     const inp = $('#u-in', telo); if (inp) { inp.classList.remove('trese'); void inp.offsetWidth; inp.classList.add('trese'); inp.select(); }
     if (ztratZivot()) return;
@@ -157,7 +167,7 @@ export function serie(root, cfg) {
   }
   function chybaKon(text, kolikata) { // chyba uvnitř konstrukční úlohy (počítá si je sama)
     if (konec) return;
-    combo = 0; zvuk.chyba(); lista();
+    aktivita = true; combo = 0; zvuk.chyba(); lista();
     if (ztratZivot()) return;
     const druha = kolikata === 2 && !strazce && t.nap < t.u.hints.length;
     if (druha) napoveda(true);
@@ -170,7 +180,7 @@ export function serie(root, cfg) {
     const alt = u.kind === 'num' && u.alt.length ? `<p class="pozn">S tlačítkem π na kalkulačce vyjde ${cz(u.alt[0], u.dec ?? 3)} ${u.unit}. Uznávají se oba výsledky.</p>` : '';
     el.innerHTML = `<div class="reseni"><p class="res-odp">Správná odpověď: <b>${odpoved(u)}</b></p>${u.figSol ? `<div class="ul-obr">${u.figSol}</div>` : ''}${u.steps.length ? `<ol class="res-kroky">${u.steps.map(s => `<li>${s}</li>`).join('')}</ol>` : ''}${alt}</div>`;
   }
-  function zamkni() { t.hotovo = true; $$('#u-odp input, #u-odp .volba, #u-odp .chip', telo).forEach(x => x.disabled = true); }
+  function zamkni() { t.hotovo = true; aktivita = true; $$('#u-odp input, #u-odp .volba, #u-odp .chip', telo).forEach(x => x.disabled = true); }
   function spravne(zKon) {
     const prvni = t.pokus === 0; zamkni();
     if (prvni && t.nap === 0) combo++;
@@ -181,13 +191,15 @@ export function serie(root, cfg) {
     zvuk.ok(combo); reseni();
     bublina('ok', `+${xp} bodů${prvni && combo >= 2 ? ` · ${combo}× v řadě` : ''}`, rekni(cfg.kdo, prvni ? 'ok' : 'okPozdeji'));
     if (strazce) { const s = $('#h-sz', root); s.classList.remove('zasah'); void s.offsetWidth; s.classList.add('zasah'); }
-    lista(); akce();
+    lista(); akce(); ukazZpravu();
   }
   function odhal(zKon) {
     zamkni(); combo = 0; res.body.push(0); res.odhaleno++; zvuk.odhaleni(); reseni();
     bublina('bad', '', rekni(cfg.kdo, 'odhaleni'));
-    lista(); akce();
+    lista(); akce(); ukazZpravu();
   }
+  // po vyhodnocení posuň obrazovku ke zpětné vazbě (na telefonu bývá pod okrajem)
+  function ukazZpravu() { const z = $('#u-zv', telo); if (z && z.scrollIntoView) z.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
   function dalsi() {
     if (!t.hotovo || konec) return;
     i++;
@@ -204,5 +216,5 @@ export function serie(root, cfg) {
   document.addEventListener('keydown', klavesa);
   window.__fgUloha = () => t; // pro testy
   ukaz();
-  return { uklid };
+  return { uklid, zpet: chceOdejit };
 }

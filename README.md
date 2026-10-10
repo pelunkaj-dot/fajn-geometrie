@@ -40,6 +40,7 @@ node --test tests/*.test.mjs       # obsah: každý generátor úloh se spustí 
 python3 -m http.server 8765 --bind 127.0.0.1 &
 node tests/prohlizec.mjs           # automatický hráč projde v prohlížeči všech 63 úrovní
 node tests/snimky.mjs /tmp/snimky  # chybové cesty, strážce, výzva, obrana, město, motivy + snímky
+node tests/ux.mjs                 # ovládání a navigace na úzkém telefonu
 ```
 
 Testy v prohlížeči potřebují Playwright (cesta k němu jde nastavit proměnnou `PW`).

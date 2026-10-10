@@ -59,7 +59,7 @@ export function konUloha(root, u, api) {
         vykresli();
       });
       $('#k-zpet', panel).onclick = () => { kroky.pop(); pool[poradi.pop()].pouzit = false; prepocitej(); kresli(); zapis(); vykresli(); };
-      $('#k-ok', panel).onclick = () => { chyb++; pokusy++; if (pokusy >= 3) return odhal(); api.chyba(kCil(st, u.goal) || '', pokusy); };
+      $('#k-ok', panel).onclick = () => { if (!kroky.length) return api.info('Nejdřív vyber aspoň jeden krok.'); chyb++; pokusy++; if (pokusy >= 3) return odhal(); api.chyba(kCil(st, u.goal) || '', pokusy); };
     }
     vykresli();
   }
@@ -86,6 +86,7 @@ export function konUloha(root, u, api) {
     };
     panel.innerHTML = `<p class="kon-ot">Náčrtek: ${T.nazev} od ruky, ne v měřítku. Ťukni v něm na všechno, co znáš ze zadání.</p><p class="kon-vyb" id="k-vyb"></p><div class="kon-akce"><button class="btn hl" id="k-ok">Náčrtek je hotový</button></div>`;
     $('#k-ok', panel).onclick = () => {
+      if (!vyb.length) return api.info('Nejdřív v náčrtku ťukni na to, co znáš ze zadání.');
       const ok = vyb.length === u.giv.length && u.giv.every(k => vyb.includes(k));
       if (ok) { api.ok('Náčrtek sedí. Teď zapiš postup.'); return zapisFaze(); }
       chyb++; pokusy++;
@@ -168,7 +169,7 @@ export function konUloha(root, u, api) {
         vykresli();
       };
       $('#k-zpet', panel).onclick = () => { kroky.pop(); prepocitej(); kresli(); zapis(); vykresli(); };
-      $('#k-ok', panel).onclick = () => { chyb++; pokusy++; if (pokusy >= 3) return odhal(u.nsol != null ? () => diskuse(true) : null); api.chyba(kCil(st, u.goal) || '', pokusy); };
+      $('#k-ok', panel).onclick = () => { if (!kroky.length) return api.info('Nejdřív přidej aspoň jeden krok.'); chyb++; pokusy++; if (pokusy >= 3) return odhal(u.nsol != null ? () => diskuse(true) : null); api.chyba(kCil(st, u.goal) || '', pokusy); };
     }
     vykresli();
   }

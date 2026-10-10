@@ -28,11 +28,13 @@ Vanilla JS, ES moduly, bez build kroku. Přehled souborů je v README.md.
 - **Konstrukce** (`js/kon.js`): krok je objekt (`{op:'circ', name:'k', c:'A', r:5}`), jádro ho opravdu spočítá. Správnost se ověřuje na výsledku (`goal`), ne porovnáním se vzorem – uzná se každý správný postup. Úroveň 1 vede krok za krokem, 2 skládá z připravených kroků (s návnadami), 3 píše žák sám.
 - **Hodnocení série**: napoprvé 1 bod, s chybou 0,5, s ukázaným řešením 0. Hvězdy ★ ≥ 60 %, ★★ ≥ 80 %, ★★★ ≥ 95 % bez ukázaného řešení.
 - **Hra**: body → hodnosti, nové hvězdy/strážci/výzva/obrana → krystaly → stavby ve městě. Strážce tématu se odemkne po 3 hvězdách v tématu (8 úloh, 3 životy, bez nápověd).
+- **Ovládání**: odevšad musí vést cesta pryč. Každé okno (`modal` v `js/ui.js`) má křížek a zavře ho i Esc, ťuknutí vedle a Zpět v prohlížeči; výjimka je jen uvítání (`pevne`). Zpět nikdy neopustí rozehranou hru: zavře okno → zeptá se na ukončení série → vrátí na výpravu (`zpet()` v `js/app.js`). Nevratná akce (koupě stavby, smazání postupu) se ptá. Kontrola prázdné odpovědi nestojí pokus. Vypínač zvuku je v liště na každé obrazovce.
 - Stav hráče: `localStorage`, klíč `fajngeo_v1` (`js/stav.js`). Objekt `stav` se nikdy nepřiřazuje znovu, jen mění.
 
 ## Testy (spouštěj po každé změně)
 - `node --test tests/*.test.mjs` – každý generátor 150×: texty, desetinné čárky, správná odpověď projde, špatná ne, pasti se neshodují s výsledkem, konstrukční plán vede k cíli, návnady ne.
 - `node tests/prohlizec.mjs [ročník]` – automatický hráč projde všechny úrovně přes skutečné rozhraní (server na portu 8765).
+- `node tests/ux.mjs [složka]` – ovládání na šířce 360: křížky, Esc, Zpět v prohlížeči, dotazy před odchodem a koupí, tlačítka vidět bez posouvání.
 - `node tests/snimky.mjs <složka>` – chybové cesty, strážce, výzva, obrana, město, motivy, ukázka.
 - `KROKY=1 node tools/vzorky.mjs 7 703` – výpis ukázek ke čtení.
 
