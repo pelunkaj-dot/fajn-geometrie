@@ -939,3 +939,6 @@ export const R6 = { rocnik: 6, temata: [
     u: [[k_krObjem, k_krPovrch, k_kvObjem, k_pocty, k_prevodV1], [k_kvPovrch, k_hranaZPovrchu, k_vyskaZObjemu, k_prevodV2, k_akvarium, k_hrany], [k_bazen, k_bezVika, k_krychlicky, k_hladina, k_stejnyObjem, k_natirani]],
     rychle: [k_krObjem, k_krPovrch, k_kvObjem, k_pocty, k_prevodV1] },
 ] };
+
+// úlohy pro souhrnné opakování v 9. ročníku
+export const MIX6 = { u1: [t_treti, o_obdObv, o_obdObs, k_kvObjem, uh_ved1], u2: [t_rovnoram, t_vnejsi, o_L_obsah, k_kvPovrch, k_akvarium] };

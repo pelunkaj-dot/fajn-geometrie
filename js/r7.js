@@ -714,3 +714,6 @@ export const R7 = { rocnik: 7, temata: [
     u: [[h_objemSp, h_pocty, h_plast, h_povrchZCasti, h_pojem], [h_objemTroj, h_povrchTroj, h_vyskaZObjemu, h_objemLich, h_litry], [h_prikop, h_stan, h_tram, h_sestiboky, h_cokolada]],
     rychle: [h_objemSp, h_pocty, h_plast, h_povrchZCasti, h_pojem] },
 ] };
+
+// úlohy pro souhrnné opakování v 9. ročníku
+export const MIX7 = { u1: [tl_troj, r_obsah, tl_lich, h_objemSp, r_uhel], u2: [r_kosoObsah, tl_lichVyska, h_objemTroj, r_druhaVyska, h_povrchTroj] };

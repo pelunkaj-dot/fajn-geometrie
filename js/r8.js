@@ -666,3 +666,6 @@ export const R8 = { rocnik: 8, temata: [
     u: [[mn_mnozina, () => kon_vc(1), () => kon_tc(1), mn_prunik, () => kon_vcAl(1)], [() => kon_vc(2), () => kon_tc(2), () => kon_vcAl(2), mn_pocet, mn_obsahZKonstrukce], [() => kon_vc(3), () => kon_tc(3), () => kon_vcAl(3), kon_vcTc]],
     rychle: [mn_prunik, pk_spolecne, pk_pojem] },
 ] };
+
+// úlohy pro souhrnné opakování v 9. ročníku
+export const MIX8 = { u1: [p_prepona, p_odvesna, kr_delka, kr_obsah, v_objem, p_mocniny], u2: [p_uhlopricka, p_rovnoram, kr_obsahZPrumeru, kr_mezikruzi, v_povrch, pk_tetiva] };
