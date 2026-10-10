@@ -45,7 +45,7 @@ await odpovez({ ...t, u: { ...t.u, ans: t.u.ans.slice(1) } }); await p.waitForTi
 
 // konstrukce 1, 2, 3
 await start('604', 1); t = await doDruhu(u => u.kind === 'kon' && u.plan.length > 3);
-for (let i = 0; i < 3; i++) { if (await p.$('#k-dal')) await p.click('#k-dal'); else { const spr = await p.evaluate(async ({ u, i }) => (await import('/js/kon.js')).kOtazka(u, i).ok, { u: t.u, i }); await p.locator('.kon-panel .volba', { hasText: spr }).first().click(); } }
+for (let i = 0; i < 3; i++) { if (await p.$('#k-dal')) await p.click('#k-dal'); else { const spr = await p.evaluate(async ({ u, i }) => (await import('/js/kon.js')).kOtazka(u, i).ok, { u: t.u, i }); await p.locator('.kon-panel .volba').filter({ hasText: new RegExp('^' + spr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$') }).first().click(); } }
 await shot('10-kon-vedena'); await pryc();
 await start('604', 2); t = await doDruhu(u => u.kind === 'kon' && u.plan.length > 3); await shot('11-kon-skladani');
 // špatné pořadí: krok, který ještě nejde provést, jen upozorní

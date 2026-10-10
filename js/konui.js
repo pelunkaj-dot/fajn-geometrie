@@ -175,7 +175,7 @@ export function konUloha(root, u, api) {
 
   function diskuse(odhaleno) {
     faze('d', FAZE);
-    const moz = ['žádné', 'jedno', 'dvě']; let spatne = 0;
+    const moz = u.nsolMoz || ['žádné', 'jedno', 'dvě']; let spatne = 0;
     const el = document.createElement('div');
     el.innerHTML = `<p class="kon-ot">${u.nsolOtazka || 'Kolik řešení má úloha v jedné polorovině určené přímkou AB?'}</p><div class="volby">${moz.map((m, i) => `<button class="volba" data-i="${i}">${m}</button>`).join('')}</div>`;
     panel.appendChild(el);

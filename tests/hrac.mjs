@@ -17,7 +17,7 @@ async function konstrukce(u) {
     for (let i = 0; i < u.plan.length; i++) {
       if (await p.$('#k-dal')) { await p.click('#k-dal'); continue; }
       const spr = await p.evaluate(async ({ u, i }) => (await import('/js/kon.js')).kOtazka(u, i).ok, { u, i });
-      await p.locator('.kon-panel .volba', { hasText: spr }).first().click();
+      await p.locator('.kon-panel .volba').filter({ hasText: new RegExp('^' + spr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$') }).first().click();
     }
     return;
   }

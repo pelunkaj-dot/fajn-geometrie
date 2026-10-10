@@ -271,7 +271,8 @@ export function fCircle(r, o = {}) {
   if (o.sector && o.lsec) F.ang(S, [r, 0], V.rot([r, 0], o.sector), o.lsec, { ccw: 1 });
   if (o.chord) { // tětiva ve vzdálenosti v od středu
     const hw = Math.sqrt(r * r - o.chord.v * o.chord.v), A = [-hw, o.chord.v], B = [hw, o.chord.v], M = [0, o.chord.v];
-    F.seg(A, B, { c: 'a' }).seg(S, M, { c: 'h', dash: 1 }).seg(S, B, { c: 'h', dash: 1 }).right(M, B, S);
+    F.seg(A, B, { c: 'a' });
+    if (!o.chord.jen) F.seg(S, M, { c: 'h', dash: 1 }).seg(S, B, { c: 'h', dash: 1 }).right(M, B, S);
     if (o.chord.lt) F.mid(A, M, o.chord.lt, 12, { cls: 'a' });
     if (o.chord.lv) F.mid(S, M, o.chord.lv, 14, { cls: 'h' });
     if (o.chord.lr) F.mid(S, B, o.chord.lr, -14, { cls: 'h' });

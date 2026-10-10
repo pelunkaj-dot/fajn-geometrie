@@ -38,7 +38,7 @@ for (const r of ROCNIKY) for (const tema of r.temata) tema.u.forEach((gens, li) 
           for (const [v, msg] of t.traps) { assert.ok(msg && Number.isFinite(v), kde); assert.ok([t.ans, ...t.alt].every(a => Math.abs(a - v) > h), `${kde} past ${v} = správná odpověď ${t.ans}`); }
           for (const strict of [false, true]) assert.ok(check(t, { val: t.ans, unit: t.unit }, strict).ok, kde + ' správná odpověď neprošla');
           for (const a of t.alt) assert.ok(check(t, { val: a, unit: t.unit }, true).ok, kde);
-          assert.ok(!check(t, { val: t.ans + (t.dec == null ? 1 : 10 ** -t.dec * 3), unit: t.unit }, false).ok, kde + ' špatná odpověď prošla');
+          assert.ok(!check(t, { val: Math.max(t.ans, ...t.alt) + (t.dec == null ? 1 : 10 ** -t.dec * 3), unit: t.unit }, false).ok, kde + ' špatná odpověď prošla');
           if (t.units) { const uc = unitChoices(t.unit); assert.ok(uc && uc.includes(t.unit) && new Set(uc).size === 4, `${kde} jednotky ${t.unit}`); assert.ok(!check(t, { val: t.ans, unit: uc.find(x => x !== t.unit) }, true).ok); }
           assert.ok(odpoved(t).length);
         } else if (t.kind === 'choice') {
