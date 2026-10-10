@@ -314,12 +314,12 @@ export function nacrtekSvg(tpl, vybrane = []) {
   const U = (k, v, p1, p2, txt) => F.ang(v, p1, p2, txt, { el: k, on: on(k), c: 'h', cls: on(k) ? 'a' : 'h', r: 24 });
   const N = (pts, jm, c0) => pts.forEach((p, i) => { const u = V.unit(V.sub(p, c0)); F.lab(p, jm[i], { dx: u[0] * 14, dy: -u[1] * 14, cls: 'n' }); });
   if (tpl === 'tri') {
-    const A = [0, 0], B = [8, 0], C = [3, 5.4], P = [3, 0], M = [4, 0];
+    const A = [0, 0], B = [8.4, 0], C = [2.2, 5.4], P = [2.2, 0], M = [4.2, 0];
     F.poly([A, B, C], { fill: 1, c: 'n' });
-    S('vc', C, P, SUB('v', 'c'), 16, 1); F.right(P, A, C); S('tc', C, M, SUB('t', 'c'), -16, 1);
+    S('vc', C, P, SUB('v', 'c'), -13, 1); F.right(P, A, C); S('tc', C, M, SUB('t', 'c'), 14, 1);
     S('c', A, B, 'c', -15); S('a', B, C, 'a', -15); S('b', C, A, 'b', -15);
     U('al', A, B, C, 'α'); U('be', B, C, A, 'β'); U('ga', C, A, B, 'γ');
-    N([A, B, C], 'ABC', [3.7, 1.8]);
+    N([A, B, C], 'ABC', [3.5, 1.8]);
   } else if (tpl === 'par') {
     const A = [0, 0], B = [7, 0], D = [2.4, 4.4], C = [9.4, 4.4], P = [2.4, 0];
     F.poly([A, B, C, D], { fill: 1, c: 'n' });

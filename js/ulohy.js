@@ -33,7 +33,7 @@ export const PI_T = '(π ≐ 3,14)';
 
 // Text správné odpovědi pro zobrazení
 export function odpoved(t) {
-  if (t.kind === 'num') return cz(t.ans, t.dec ?? 3) + (t.unit ? ' ' + t.unit : '');
+  if (t.kind === 'num') return cz(t.ans, t.dec ?? 3) + (t.unit ? (t.unit === '°' || t.unit === '′' ? '' : ' ') + t.unit : '');
   if (t.kind === 'choice') return t.opts[t.ans];
   if (t.kind === 'dm') { const m = t.ans % 60; return `${Math.floor(t.ans / 60)}°${m ? ' ' + m + '′' : ''}`; }
   return '';

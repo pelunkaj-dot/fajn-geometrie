@@ -690,7 +690,7 @@ function o_dlazdice() {
   });
 }
 function o_plot() {
-  const a = ri(18, 45), bb = ri(12, 30), g = pick([3, 4, 5]), p = pick([85, 120, 145, 160]), d = 2 * (a + bb) - g;
+  const bb = ri(12, 30), a = bb + ri(4, 18), g = pick([3, 4, 5]), p = pick([85, 120, 145, 160]), d = 2 * (a + bb) - g;
   return N({
     text: `Obdélníkový pozemek má rozměry ${a} m a ${bb} m. Oplotí se pletivem, jen na bránu širokou ${g} m se pletivo nedává. Metr pletiva stojí ${p} Kč.`, q: 'Kolik korun bude pletivo stát?', ans: d * p, unit: 'Kč',
     traps: [[2 * (a + bb) * p, 'Od obvodu je potřeba odečíst šířku brány.'], [d, 'To je délka pletiva v metrech. Ptáme se na cenu.']],
