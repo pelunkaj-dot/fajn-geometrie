@@ -18,6 +18,8 @@ Geometrie pro 2. stupeň ZŠ po ročnících (6–9), každé téma ve třech ob
 
 Nejsou to ukázky: hotový rozsáhlý modul, hra má děti bavit.
 
+**Pro koho:** modul vyhledávají hlavně slabší a průměrní žáci, ne jedničkáři. Odborný pojem proto vždy podej tak, aby si ho žák uměl představit: v zadání a nápovědě s krátkým vysvětlením v závorce, např. „délka kružnice (obvod kruhu)“. Přesnost se neobětuje, jen se k ní přidá cesta. Silnějšího žáka vysvětlení neurazí.
+
 ## Architektura
 Vanilla JS, ES moduly, bez build kroku. Přehled souborů je v README.md.
 - **Úloha** je obyčejný objekt z generátoru (`N` číslo, `C` výběr, `DM` stupně a minuty, `GR` síť, `K` konstrukce – viz `js/ulohy.js`). Pole: `text`, `q`, `fig`, `ans`, `unit`, `dec`, `alt`, `traps` (typické chyby se zprávou), `hints`, `steps`, `units` (na úrovni 3 volí jednotku žák).
