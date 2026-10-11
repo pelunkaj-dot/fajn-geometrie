@@ -348,3 +348,45 @@ b { font-weight: 700; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ukázka */
+.demo-pruh { margin: 10px 0 0; padding: 8px 12px; border: 2px dashed var(--accent); border-radius: 12px; background: var(--hint-bg); text-align: center; font-size: .95rem; }
+.pro-rodice { text-align: center; margin: 18px 0 4px; }
+
+/* přehled pro rodiče */
+.rod h3 { font-size: 1.1rem; margin: 18px 0 6px; }
+.rod h4 { font-size: .95rem; margin: 10px 0 2px; color: var(--muted); }
+.rod-l { display: block; font-weight: 700; margin: 6px 0 4px; }
+.rod-in { display: block; width: 100%; padding: 10px 12px; margin-bottom: 8px; border: 2px solid var(--ink); border-radius: 10px; background: var(--bg); color: var(--ink); font: inherit; }
+.rod-err { min-height: 1.3em; color: var(--bad); font-size: .92rem; margin: 0; }
+.rod-akce { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; margin-top: 6px; }
+.rod-dlazdice { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.rod-dlazdice div { border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; text-align: center; }
+.rod-dlazdice b { display: block; font: 800 1.4rem/1.1 'Baloo 2', sans-serif; color: var(--accent); } .rod-dlazdice span { color: var(--muted); font-size: .84rem; }
+@media (min-width: 560px) { .rod-dlazdice { grid-template-columns: repeat(3, 1fr); } }
+.rod-dop { margin: 12px 0 6px; padding: 10px 12px; border-radius: 10px; background: var(--info-bg); }
+.rod-leg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .84rem; color: var(--muted); margin: 6px 0; }
+.rod-leg i, .rod-bar i, .rod-sl i { display: inline-block; }
+.rod-leg i { width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.s1 { background: var(--ok); } .s2 { background: var(--hi); } .s3 { background: var(--bad); }
+.rod-graf { display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; align-items: end; height: 120px; }
+.rod-den { display: flex; flex-direction: column; align-items: center; height: 100%; min-width: 0; }
+.rod-sl { flex: 1; width: 100%; max-width: 22px; display: flex; flex-direction: column; justify-content: flex-end; border-bottom: 1px solid var(--line); }
+.rod-sl i { width: 100%; }
+.rod-dv, .rod-dd { font-size: .7rem; color: var(--muted); line-height: 1.4; }
+.rod-row { display: grid; grid-template-columns: minmax(0, 1fr) 70px auto; grid-template-areas: 'pl pn m' 'bar bar bar'; gap: 2px 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+.rod-pl { grid-area: pl; } .rod-pl small, .rod-pn small { display: block; color: var(--muted); font-size: .8rem; }
+.rod-bar { grid-area: bar; display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--line); }
+.rod-pn { grid-area: pn; text-align: right; font-weight: 700; } .rod-pn small { font-weight: 400; }
+.rod-m { grid-area: m; font-size: .8rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.rod-m.ok { background: var(--ok-bg); color: var(--ok); } .rod-m.mid { background: var(--info-bg); color: var(--hi); } .rod-m.low { background: var(--bad-bg); color: var(--bad); } .rod-m.na { color: var(--muted); }
+.rod-sez { padding-left: 1.2em; } .rod-sez li { margin: 6px 0; } .rod-sez small { color: var(--muted); }
+.rod-tab { width: 100%; border-collapse: collapse; font-size: .9rem; } .rod-tab td { padding: 4px 4px 4px 0; border-bottom: 1px solid var(--line); vertical-align: top; } .rod-tab small { color: var(--muted); }
+.rod-tisk { justify-content: flex-start; margin-top: 16px; }
+@media print {
+  body > *:not(.okno-pozadi) { display: none !important; }
+  .okno-pozadi { position: static; background: none; padding: 0; display: block; }
+  .okno { max-width: none; border: 0; box-shadow: none; }
+  .okno-x, .okno-akce, .rod-tisk { display: none !important; }
+  .s1, .s2, .s3, .rod-leg i { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

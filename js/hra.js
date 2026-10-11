@@ -22,7 +22,7 @@ export function strazceSvg(seed) {
     <polyline points="38,66 44,61 50,66 56,61 62,66" class="sz-p"/></svg>`;
 }
 
-// cfg: { typ: 'uroven'|'strazce'|'denni', nazev, ulohy: [{u, lvl}], kdo, zivoty, strazce: {jmeno, seed}, vyklad(), onKonec(res), onZpet() }
+// cfg: { typ: 'uroven'|'strazce'|'denni', nazev, ulohy: [{u, lvl, tema}], kdo, zivoty, strazce: {jmeno, seed}, vyklad(), onKonec(res), onZpet(), zaznam(úloha) }
 export function serie(root, cfg) {
   const N = cfg.ulohy.length, res = { body: [], xp: 0, odhaleno: 0, comboMax: 0, kon3: 0, vyhra: true, n: N, vyreseno: 0, napoprve: 0 };
   let i = 0, combo = 0, zivoty = cfg.zivoty || 0, t = null, konec = false, aktivita = false;
@@ -67,7 +67,7 @@ export function serie(root, cfg) {
 
   function ukaz() {
     const { u, lvl } = cfg.ulohy[i];
-    t = { u, lvl, pokus: 0, nap: 0, hotovo: false, strict: lvl === 3, max: u.kind === 'choice' ? Math.min(3, u.opts.length - 1) : 3, znacky: [], jedn: null };
+    t = { u, lvl, pokus: 0, nap: 0, hotovo: false, strict: lvl === 3, max: u.kind === 'choice' ? Math.min(3, u.opts.length - 1) : 3, znacky: [], jedn: null, od: Date.now(), chyby: [] };
     lista();
     telo.innerHTML = `<article class="ul ul-${u.kind}">
       <div class="ul-zadani">${u.fig && u.kind !== 'kon' ? `<div class="ul-obr">${u.fig}</div>` : ''}<p class="ul-text">${u.text || ''}</p>${u.q ? `<p class="ul-q">${u.q}</p>` : ''}</div>
@@ -156,7 +156,7 @@ export function serie(root, cfg) {
   function spatne(msg) {
     if (konec) return;
     aktivita = true;
-    t.pokus++; combo = 0; zvuk.chyba(); lista();
+    t.pokus++; combo = 0; zvuk.chyba(); lista(); if (msg) t.chyby.push(msg);
     const inp = $('#u-in', telo); if (inp) { inp.classList.remove('trese'); void inp.offsetWidth; inp.classList.add('trese'); inp.select(); }
     if (ztratZivot()) return;
     if (t.pokus >= t.max) return odhal();
@@ -180,6 +180,7 @@ export function serie(root, cfg) {
     const alt = u.kind === 'num' && u.alt.length ? `<p class="pozn">S tlačítkem π na kalkulačce vyjde ${cz(u.alt[0], u.dec ?? 3)} ${u.unit}. Uznávají se oba výsledky.</p>` : '';
     el.innerHTML = `<div class="reseni"><p class="res-odp">Správná odpověď: <b>${odpoved(u)}</b></p>${u.figSol ? `<div class="ul-obr">${u.figSol}</div>` : ''}${u.steps.length ? `<ol class="res-kroky">${u.steps.map(s => `<li>${s}</li>`).join('')}</ol>` : ''}${alt}</div>`;
   }
+  function zapis(vysl) { if (cfg.zaznam) cfg.zaznam({ tema: cfg.ulohy[i].tema, lvl: t.lvl, vysl, ms: Date.now() - t.od, chyby: t.chyby, text: [t.u.text, t.u.q].filter(Boolean).join(' '), odp: odpoved(t.u) }); }
   function zamkni() { t.hotovo = true; aktivita = true; $$('#u-odp input, #u-odp .volba, #u-odp .chip', telo).forEach(x => x.disabled = true); }
   function spravne(zKon) {
     const prvni = t.pokus === 0; zamkni();
@@ -188,13 +189,13 @@ export function serie(root, cfg) {
     if (t.strict) xp = Math.max(5, xp - 5 * t.nap);
     res.xp += xp; res.body.push(prvni ? 1 : 0.5); res.vyreseno++; if (prvni) res.napoprve++; res.comboMax = Math.max(res.comboMax, combo);
     if (zKon && prvni && t.u.mode === 3) res.kon3++;
-    zvuk.ok(combo); reseni();
+    zvuk.ok(combo); reseni(); zapis(prvni && t.nap === 0 ? 0 : 1);
     bublina('ok', `+${xp} bodů${prvni && combo >= 2 ? ` · ${combo}× v řadě` : ''}`, rekni(cfg.kdo, prvni ? 'ok' : 'okPozdeji'));
     if (strazce) { const s = $('#h-sz', root); s.classList.remove('zasah'); void s.offsetWidth; s.classList.add('zasah'); }
     lista(); akce(); ukazZpravu();
   }
   function odhal(zKon) {
-    zamkni(); combo = 0; res.body.push(0); res.odhaleno++; zvuk.odhaleni(); reseni();
+    zamkni(); combo = 0; res.body.push(0); res.odhaleno++; zvuk.odhaleni(); reseni(); zapis(2);
     bublina('bad', '', rekni(cfg.kdo, 'odhaleni'));
     lista(); akce(); ukazZpravu();
   }

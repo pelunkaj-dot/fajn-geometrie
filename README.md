@@ -28,7 +28,15 @@ python3 tools/nahled.py x.html --demo
 Settings → Pages → Deploy from a branch → `main`, složka `/ (root)`. Hra pak běží na
 `https://pelunkaj-dot.github.io/fajn-geometrie/`, ukázková verze na `…/index-demo.html`.
 
-Ukázka (`index-demo.html`) pustí jen první téma každého ročníku na úrovni Základy.
+Ukázka (`index-demo.html`) omezuje množství, ne obsah: všechna témata a úrovně, ale jen 3 dokončené série,
+jedna obrana města a jedna denní výzva (`DEMO_SERII` a `stav.demo` v `js/app.js`). Strážce se jen představí, město jde prohlédnout, ne stavět.
+Počítadlo je v `localStorage`, takže ho jde obejít smazáním dat prohlížeče (stejně jako u ostatních modulů).
+
+**Pro rodiče** (`js/rodice.js`): tlačítko pod seznamem témat a v Nastavení. Přehled je chráněný heslem
+(solený SHA-256 v uloženém stavu, zapomenuté heslo s kontrolou dospělého nesmaže výsledky). Ukazuje napoprvé / s pomocí /
+neúspěšně, čas řešení, aktivitu za 14 dní, zvládnutí po tématech a úrovních, typické chyby (rady z pastí úloh),
+úlohy s ukázaným řešením, poslední výsledky, doporučení co hrát dál a popis didaktiky; jde vytisknout.
+Vymazat postup jde jen odtud (heslo, nastavení a počítadlo ukázky zůstanou).
 
 Plná verze (`index.html`) je chráněná stejně jako ostatní moduly: první prvek `<head>` je
 `<script src="/fdc-plugin/fdc-guard.js"></script>` (z repozitáře `fdc-plugin`). Bez příchodu z fajndoucko.cz
@@ -60,6 +68,7 @@ Ke kontrole textů a výpočtů: `KROKY=1 node tools/vzorky.mjs 8 801` vypíše 
 | `js/hra.js` | série úloh, postup při chybě, nápovědy, body |
 | `js/obrana.js`, `js/mesto.js`, `js/odznaky.js` | herní režimy |
 | `js/app.js` | obrazovky a navigace |
+| `js/rodice.js` | záznam výsledků a přehled pro rodiče |
 | `docs/UCIVO.md` | rozpis učiva a pravidla obtížností |
 
 Písma Atkinson Hyperlegible a Baloo 2 jsou přiložená ve `fonts/` (licence SIL OFL), nic se nenačítá odjinud.

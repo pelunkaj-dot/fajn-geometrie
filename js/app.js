@@ -1,12 +1,13 @@
 // FajnGeometrie – obrazovky a herní smyčka kolem sérií úloh.
 import { ROCNIKY, NAZVY_UROVNI } from './obsah.js';
-import { stav, nacti, uloz, smaz, hodnost, hvezdy, hvezdyTematu, dnes, vcera } from './stav.js';
+import { stav, nacti, uloz, hodnost, hvezdy, hvezdyTematu, dnes, vcera } from './stav.js';
 import { serie, strazceSvg } from './hra.js';
 import { obrana } from './obrana.js';
 import { STAVBY, stavba, mestoSvg, stavbaSvg } from './mesto.js';
 import { ODZNAKY, noveOdznaky } from './odznaky.js';
 import { zvuk, odemkni, nastavZvuk } from './zvuky.js';
 import { rekni } from './hlasky.js';
+import { rodice, zapisUlohu, zapisSerii } from './rodice.js';
 import { avatar, obrazek } from './postavy.js';
 import { $, $$, modal, zavriModal, jeModal, modalPevny, toast, hv, KRYSTAL, zvukBtn, napojZvuk } from './ui.js';
 import { shuffle, pick, setRng, mulberry } from './util.js';
@@ -17,7 +18,9 @@ let zalozka = 'vyprava', bezici = null, naVysledku = false, fokusTema = null;
 const POPIS_UROVNE = ['od úplného začátku, s výkladem a nápovědou', 'kratší zadání, jedna až dvě úvahy', 'složitá zadání, přesná odpověď'];
 const rocnik = () => ROCNIKY.find(r => r.rocnik === stav.rocnik) || ROCNIKY[0];
 const kdoMluvi = () => stav.postavy ? pick(['Matýsek', 'Terezka']) : 'Nikdo';
-const vDemu = (tema, lvl) => !DEMO || (rocnik().temata[0].id === tema.id && lvl === 1);
+// Ukázka omezuje množství, ne obsah: všechna témata a úrovně, ale jen DEMO_SERII dokončených sérií, jedna obrana a jedna výzva.
+const DEMO_SERII = 3;
+const demoZbyva = () => DEMO_SERII - stav.demo.serie;
 
 const IK = {
   vyprava: '<polygon points="12,3 21,20 3,20"/>', obrana: '<circle cx="14" cy="14" r="6"/><path d="M3 3l6 6M3 9l3 3M9 3l3 3"/>', vyzva: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
@@ -54,25 +57,31 @@ function vyprava() {
   const R = rocnik(), h = hodnost();
   ram(`<section class="uvod" id="uvod-mesto">${mestoSvg(stav.mesto, { H: stav.mesto.length ? 150 : 64 })}
       <p class="uvod-t">${h.dalsi ? `Do hodnosti ${h.dalsi} zbývá <b>${h.zbyva}</b> bodů.` : 'Nejvyšší hodnost je tvoje.'}</p></section>
+    ${DEMO ? `<p class="demo-pruh">${demoZbyva() > 0 ? `Ukázka: vyzkoušej cokoli. Zbývající série: <b>${demoZbyva()}</b> ze ${DEMO_SERII}.` : 'Ukázka je u konce. Celá hra je na <b>fajndoucko.cz</b>.'}</p>` : ''}
     <div class="rocniky" role="tablist" aria-label="Ročník">${ROCNIKY.map(r => `<button role="tab" aria-selected="${r.rocnik === R.rocnik}" class="${r.rocnik === R.rocnik ? 'on' : ''}" data-r="${r.rocnik}">${r.rocnik}. ročník</button>`).join('')}</div>
     <div class="temata">${R.temata.map(t => {
       const sh = hvezdyTematu(t.id), sOk = stav.strazci[t.id], sOdem = sh >= 3;
       return `<section class="tema" data-id="${t.id}">
         <div class="tema-h"><span class="tema-ik" aria-hidden="true">${t.ikona}</span><div class="tema-n"><h2>${t.nazev}</h2><p>${t.popis}</p></div><button class="btn mini" data-vyklad>Výklad</button></div>
-        <div class="urovne">${[1, 2, 3].map(l => `<button class="uroven${vDemu(t, l) ? '' : ' zamek'}" data-l="${l}"><span class="ur-c">${l}</span><span class="ur-n">${NAZVY_UROVNI[l - 1]}</span>${vDemu(t, l) ? hv(hvezdy(t.id, l)) : '<span class="ur-z">v plné verzi</span>'}</button>`).join('')}
-          <button class="uroven strazce-b${sOk ? ' porazen' : ''}${sOdem && !DEMO ? '' : ' zamek'}" data-s><span class="ur-c">${sOk ? '✓' : '!'}</span><span class="ur-n">${t.strazce}</span><span class="ur-z">${DEMO ? 'v plné verzi' : sOk ? 'strážce poražen' : sOdem ? 'souboj se strážcem' : `ještě ${3 - sh} ${3 - sh === 1 ? 'hvězda' : 'hvězdy'}`}</span></button></div>
-      </section>`; }).join('')}</div>`);
+        <div class="urovne">${[1, 2, 3].map(l => `<button class="uroven" data-l="${l}"><span class="ur-c">${l}</span><span class="ur-n">${NAZVY_UROVNI[l - 1]}</span>${hv(hvezdy(t.id, l))}</button>`).join('')}
+          <button class="uroven strazce-b${sOk ? ' porazen' : ''}${sOdem && !DEMO ? '' : ' zamek'}" data-s><span class="ur-c">${sOk ? '✓' : '!'}</span><span class="ur-n">${t.strazce}</span><span class="ur-z">${DEMO ? 'podívat se' : sOk ? 'strážce poražen' : sOdem ? 'souboj se strážcem' : `ještě ${3 - sh} ${3 - sh === 1 ? 'hvězda' : 'hvězdy'}`}</span></button></div>
+      </section>`; }).join('')}</div>
+    <p class="pro-rodice"><button class="btn mini" id="b-rod">Pro rodiče</button></p>`);
+  $('#b-rod').onclick = () => rodice(kresli);
   $('#uvod-mesto').onclick = () => { zalozka = 'mesto'; kresli(); };
   if (fokusTema) { const el = $(`.tema[data-id="${fokusTema}"]`); fokusTema = null; if (el) el.scrollIntoView({ block: 'center' }); }
   $$('.rocniky button').forEach(b => b.onclick = () => { stav.rocnik = +b.dataset.r; uloz(); kresli(); });
   $$('.tema').forEach(el => {
     const t = rocnik().temata.find(x => x.id === el.dataset.id);
     $('[data-vyklad]', el).onclick = () => ukazVyklad(t);
-    $$('[data-l]', el).forEach(b => b.onclick = () => { const l = +b.dataset.l; if (!vDemu(t, l)) return plna(); odemkni(); pripravUroven(t, l); });
-    $('[data-s]', el).onclick = () => { if (DEMO) return plna(); if (hvezdyTematu(t.id) < 3) return toast('Strážce se probudí, až v tématu získáš aspoň tři hvězdy.'); odemkni(); pripravStrazce(t); };
+    $$('[data-l]', el).forEach(b => b.onclick = () => { odemkni(); pripravUroven(t, +b.dataset.l); });
+    $('[data-s]', el).onclick = () => { if (DEMO) return strazceUkazka(t); if (hvezdyTematu(t.id) < 3) return toast('Strážce se probudí, až v tématu získáš aspoň tři hvězdy.'); odemkni(); pripravStrazce(t); };
   });
 }
-function plna() { modal({ nadpis: 'Tohle je ukázka', html: '<p>V ukázce si vyzkoušíš první téma každého ročníku na úrovni Základy. Všechna témata, úrovně, strážce i město jsou v plné verzi na <b>fajndoucko.cz</b>.</p>', tlacitka: [{ t: 'Rozumím', hl: 1 }] }); }
+function plna(co = 'Ukázka je u konce') { modal({ nadpis: co, html: `<p>V ukázce si můžeš vyzkoušet ${DEMO_SERII} série úloh z libovolných témat a úrovní, jednu obranu města a jednu denní výzvu. Neomezeně hrát, porážet strážce a stavět město můžeš v plné verzi na <b>fajndoucko.cz</b>.</p>`, tlacitka: [{ t: 'Rozumím', hl: 1 }] }); }
+function strazceUkazka(t) {
+  modal({ nadpis: `Strážce ${t.strazce}`, html: `<div class="sz-uvod">${strazceSvg(+t.id)}<p>Každé téma hlídá strážce. Probudí se, až v tématu získáš aspoň tři hvězdy.</p><p class="pozn">Souboj má 8 úloh od základů po jedničkáře, tři životy a žádné nápovědy. Strážce porazíš v plné verzi.</p></div>`, tlacitka: [{ t: 'Rozumím', hl: 1 }] });
+}
 
 // Výklad k tématu. S `pak` (před první sérií Základů) jde přeskočit rovnou na úlohy; křížek vrací na výpravu.
 function ukazVyklad(t, pak) {
@@ -90,21 +99,22 @@ function ukazVyklad(t, pak) {
   ukaz();
 }
 
-function sestav(gens, n, lvl, filtr) {
+function sestav(gens, n, lvl, filtr, tema) {
   const out = []; let pytel = [], pokusu = 0;
   while (out.length < n && pokusu++ < 400) {
     if (!pytel.length) pytel = shuffle(gens);
     const u = pytel.pop()();
     if (filtr && !filtr(u)) continue;
-    out.push({ u, lvl });
+    out.push({ u, lvl, tema });
   }
   return out;
 }
 function pripravUroven(t, lvl) {
   fokusTema = t.id;
+  if (DEMO && demoZbyva() <= 0) return plna();
   const start = () => {
     const n = t.kon ? [6, 6, 5][lvl - 1] : [10, 10, 8][lvl - 1], kdo = kdoMluvi();
-    bezici = serie(app, { typ: 'uroven', ulohy: sestav(t.u[lvl - 1], n, lvl), kdo, vyklad: () => ukazVyklad(t), onZpet: kresli, onKonec: res => poUrovni(t, lvl, res, kdo) });
+    bezici = serie(app, { typ: 'uroven', ulohy: sestav(t.u[lvl - 1], n, lvl, null, t.id), kdo, vyklad: () => ukazVyklad(t), onZpet: kresli, zaznam: zapisUlohu, onKonec: res => poUrovni(t, lvl, res, kdo) });
   };
   if (lvl === 1 && !stav.vyklad[t.id]) ukazVyklad(t, start); else start();
 }
@@ -120,10 +130,11 @@ function poUrovni(t, lvl, res, kdo) {
   const h = podil >= 0.95 && !res.odhaleno ? 3 : podil >= 0.8 ? 2 : podil >= 0.6 ? 1 : 0;
   const klic = `${t.id}-${lvl}`, pred = hvezdy(t.id, lvl), kr = Math.max(0, h - pred) * 5 * lvl;
   stav.urovne[klic] = { hv: Math.max(pred, h), her: ((stav.urovne[klic] || {}).her || 0) + 1 };
+  zapisSerii({ typ: 'uroven', tema: t.id, lvl, hv: h, acc: Math.round(podil * 100), n: res.n }); if (DEMO) stav.demo.serie++;
   stav.krystaly += kr; const povyseni = pripis(res), nove = noveOdznaky(stav, ROCNIKY); uloz();
   zvuk[h ? 'hotovo' : 'neuspech'](h);
-  const dalsiL = lvl < 3 && h >= 1 && vDemu(t, lvl + 1) ? lvl + 1 : null, muzeStrazce = !DEMO && !stav.strazci[t.id] && hvezdyTematu(t.id) >= 3;
-  vysledek({ nadpis: ['Tentokrát to nestačilo', 'Úroveň splněna', 'Dobrá práce', 'Bezchybně'][h], hvezdy: h, radky: [`${res.napoprve} z ${res.n} napoprvé`, `úspěšnost ${Math.round(podil * 100)} %`], xp: res.xp, kr, kdo, hlaska: rekni(kdo, 'hv' + h), povyseni, nove,
+  const dalsiL = lvl < 3 && h >= 1 ? lvl + 1 : null, muzeStrazce = !DEMO && !stav.strazci[t.id] && hvezdyTematu(t.id) >= 3;
+  vysledek({ nadpis: ['Tentokrát to nestačilo', 'Úroveň splněna', 'Dobrá práce', 'Bezchybně'][h], hvezdy: h, radky: [`${res.napoprve} z ${res.n} napoprvé`, `úspěšnost ${Math.round(podil * 100)} %`, ...(DEMO ? [demoZbyva() > 0 ? `zbývající série v ukázce: ${demoZbyva()}` : 'ukázka je u konce'] : [])], xp: res.xp, kr, kdo, hlaska: rekni(kdo, 'hv' + h), povyseni, nove,
     akce: [...(dalsiL ? [{ t: `Úroveň ${NAZVY_UROVNI[dalsiL - 1]}`, hl: 1, fn: () => pripravUroven(t, dalsiL) }] : muzeStrazce && lvl === 3 ? [{ t: `Vyzvat strážce`, hl: 1, fn: () => pripravStrazce(t) }] : []),
       ...(h === 0 ? [{ t: 'Přečíst výklad', fn: () => ukazVyklad(t) }, ...(lvl > 1 ? [{ t: `Zkusit úroveň ${NAZVY_UROVNI[lvl - 2]}`, fn: () => pripravUroven(t, lvl - 1) }] : [])] : []),
       { t: 'Hrát znovu', hl: !dalsiL && !(muzeStrazce && lvl === 3), fn: () => pripravUroven(t, lvl) }, { t: 'Zpět na výpravu', fn: kresli }] });
@@ -133,13 +144,14 @@ function poUrovni(t, lvl, res, kdo) {
 function pripravStrazce(t) {
   fokusTema = t.id;
   const f = u => u.kind !== 'kon' || u.mode === 2, kdo = kdoMluvi();
-  const ulohy = [...sestav(t.u[0], 3, 1, f), ...sestav(t.u[1], 3, 2, f), ...sestav(t.u[2], 2, 3, f)];
+  const ulohy = [...sestav(t.u[0], 3, 1, f, t.id), ...sestav(t.u[1], 3, 2, f, t.id), ...sestav(t.u[2], 2, 3, f, t.id)];
   modal({ nadpis: `Strážce ${t.strazce}`, html: `<div class="sz-uvod">${strazceSvg(+t.id)}<p>${rekni(kdo, 'strazceUvod')}</p><p class="pozn">${ulohy.length} úloh od základů po jedničkáře. Každá chyba stojí jeden ze tří životů. Nápovědy v souboji nejsou.</p></div>`,
-    tlacitka: [{ t: 'Zatím ne' }, { t: 'Do souboje', hl: 1, fn: () => { bezici = serie(app, { typ: 'strazce', ulohy, kdo, zivoty: 3, strazce: { jmeno: t.strazce, seed: +t.id }, onZpet: kresli, onKonec: res => poStrazci(t, res, kdo) }); } }] });
+    tlacitka: [{ t: 'Zatím ne' }, { t: 'Do souboje', hl: 1, fn: () => { bezici = serie(app, { typ: 'strazce', ulohy, kdo, zivoty: 3, strazce: { jmeno: t.strazce, seed: +t.id }, onZpet: kresli, zaznam: zapisUlohu, onKonec: res => poStrazci(t, res, kdo) }); } }] });
 }
 function poStrazci(t, res, kdo) {
   const poprve = res.vyhra && !stav.strazci[t.id], kr = poprve ? 30 : 0;
   if (res.vyhra) stav.strazci[t.id] = true;
+  zapisSerii({ typ: 'strazce', tema: t.id, acc: Math.round(100 * res.vyreseno / res.n), n: res.n });
   stav.krystaly += kr; const povyseni = pripis(res), nove = noveOdznaky(stav, ROCNIKY); uloz();
   zvuk[res.vyhra ? 'hotovo' : 'neuspech'](3);
   vysledek({ nadpis: res.vyhra ? `${t.strazce} je poražen` : `${t.strazce} vyhrál`, obr: `<div class="vysl-sz${res.vyhra ? ' porazen' : ''}">${strazceSvg(+t.id)}</div>`, radky: [`${res.vyreseno} z ${res.n} úloh vyřešeno`], xp: res.xp, kr, kdo, hlaska: rekni(kdo, res.vyhra ? 'strazceVyhra' : 'strazceProhra'), povyseni, nove,
@@ -169,14 +181,16 @@ function obranaUvod() {
     <p>Na město padají meteory. Každý nese jednu rychlou úlohu z ${R.rocnik}. ročníku. Správná odpověď meteor sestřelí, špatná ho popožene. Tři vlny, pět štítů.</p>
     <div class="obr-nahled">${mestoSvg(stav.mesto.length ? stav.mesto.slice(-7) : ['domek', 'vez', 'skola', 'mrakodrap', 'hvezdarna'], { H: 150 })}</div>
     <p class="pozn">${stav.mesto.length ? 'Bráníš stavby, které máš ve svém městě.' : 'Zatím bráníš cvičné město. Vlastní stavby si postavíš v záložce Město.'} Rekord pro ${R.rocnik}. ročník: <b>${rek}</b> bodů.</p>
-    <button class="btn hl velke" id="b-obr">${DEMO ? 'V plné verzi' : 'Bránit město'}</button></section>`);
+    ${DEMO ? `<p class="pozn">${stav.demo.obrana ? 'Obranu už máš v ukázce za sebou.' : 'V ukázce si obranu zahraješ jednou.'}</p>` : ''}
+    <button class="btn hl velke" id="b-obr">${DEMO && stav.demo.obrana ? 'V plné verzi' : 'Bránit město'}</button></section>`);
   $('#b-obr').onclick = () => {
-    if (DEMO) return plna(); odemkni();
+    if (DEMO) { if (stav.demo.obrana) return plna('Obranu už znáš'); stav.demo.obrana++; uloz(); } odemkni();
     bezici = obrana(app, { rocnik: R, mesto: stav.mesto, onZpet: kresli, onKonec: r => {
       const o = stav.stat.obrana, rekord = r.skore > (o[R.rocnik] || 0), kr = Math.floor(r.skore / 40);
+      zapisSerii({ typ: 'obrana', acc: null, n: r.zasahu });
       if (rekord) o[R.rocnik] = r.skore; if (r.ubraneno) stav.stat.ubraneno = (stav.stat.ubraneno || 0) + 1;
       stav.krystaly += kr; stav.xp += r.skore >> 1; const nove = noveOdznaky(stav, ROCNIKY); uloz(); zvuk[r.ubraneno ? 'hotovo' : 'neuspech'](3);
-      vysledek({ nadpis: r.ubraneno ? 'Město je ubráněno' : 'Štíty padly', radky: [`${r.skore} bodů`, `${r.zasahu} sestřelených meteorů`, rekord ? 'nový rekord' : `rekord ${o[R.rocnik] || 0}`], xp: r.skore >> 1, kr, kdo: 'Nikdo', nove, akce: [{ t: 'Bránit znovu', hl: 1, fn: () => { zalozka = 'obrana'; kresli(); $('#b-obr').click(); } }, { t: 'Zpět', fn: kresli }] });
+      vysledek({ nadpis: r.ubraneno ? 'Město je ubráněno' : 'Štíty padly', radky: [`${r.skore} bodů`, `${r.zasahu} sestřelených meteorů`, rekord ? 'nový rekord' : `rekord ${o[R.rocnik] || 0}`], xp: r.skore >> 1, kr, kdo: 'Nikdo', nove, akce: [...(DEMO ? [] : [{ t: 'Bránit znovu', hl: 1, fn: () => { zalozka = 'obrana'; kresli(); $('#b-obr').click(); } }]), { t: 'Zpět', hl: DEMO, fn: kresli }] });
     } });
   };
 }
@@ -188,14 +202,16 @@ function vyzva() {
     <p>Každý den pět úloh napříč tématy ${R.rocnik}. ročníku. Za splnění je 20 krystalů. Když výzvu plníš den po dni, roste ti řada.</p>
     <p class="den-rada"><b>${serieDni}</b> ${serieDni === 1 ? 'den' : serieDni >= 2 && serieDni <= 4 ? 'dny' : 'dní'} v řadě</p>
     ${hotovo ? '<p class="pozn">Dnešní výzva je splněná. Další bude zítra. Můžeš si ji zahrát znovu, už bez odměny.</p>' : ''}
-    <button class="btn hl velke" id="b-den">${DEMO ? 'V plné verzi' : hotovo ? 'Zahrát znovu' : 'Začít výzvu'}</button></section>`);
+    ${DEMO ? `<p class="pozn">${stav.demo.vyzva ? 'Výzvu už máš v ukázce za sebou.' : 'V ukázce si výzvu zahraješ jednou.'}</p>` : ''}
+    <button class="btn hl velke" id="b-den">${DEMO && stav.demo.vyzva ? 'V plné verzi' : hotovo ? 'Zahrát znovu' : 'Začít výzvu'}</button></section>`);
   $('#b-den').onclick = () => {
-    if (DEMO) return plna(); odemkni();
+    if (DEMO) { if (stav.demo.vyzva) return plna('Výzvu už znáš'); stav.demo.vyzva++; uloz(); } odemkni();
     const [y, m, dd] = dnes().split('-').map(Number), kdo = kdoMluvi();
     setRng(mulberry(y * 10000 + m * 100 + dd + R.rocnik * 7919));
-    const tem = shuffle(R.temata), gens = Array.from({ length: 5 }, (_, i) => pick(tem[i % tem.length].u[1])), ulohy = gens.map(g => { let u; do { u = g(); } while (u.kind === 'kon' && u.mode === 3); return { u, lvl: 2 }; });
+    const tem = shuffle(R.temata), gens = Array.from({ length: 5 }, (_, i) => [pick(tem[i % tem.length].u[1]), tem[i % tem.length].id]), ulohy = gens.map(([g, tema]) => { let u; do { u = g(); } while (u.kind === 'kon' && u.mode === 3); return { u, lvl: 2, tema }; });
     setRng(null);
-    bezici = serie(app, { typ: 'denni', ulohy, kdo, onZpet: kresli, onKonec: res => {
+    bezici = serie(app, { typ: 'denni', ulohy, kdo, onZpet: kresli, zaznam: zapisUlohu, onKonec: res => {
+      zapisSerii({ typ: 'denni', lvl: 2, acc: Math.round(100 * res.napoprve / res.n), n: res.n });
       const uz = stav.stat.den.datum === dnes(), kr = uz ? 0 : 20;
       if (!uz) { stav.stat.den = { datum: dnes(), serie: stav.stat.den.datum === vcera() ? stav.stat.den.serie + 1 : 1 }; }
       stav.krystaly += kr; const povyseni = pripis(res), nove = noveOdznaky(stav, ROCNIKY); uloz(); zvuk.hotovo(2);
@@ -210,7 +226,7 @@ function mesto(nova) {
   ram(`<section class="karta mesto-k"><h1>Tvoje město</h1>
     <div class="mesto-pano">${mestoSvg(stav.mesto, { H: 170, nova })}</div>
     <p class="pozn">${nova ? rekni(kdo, 'mesto') : 'Stavby jsou složené z útvarů a těles, které tu počítáš. Krystaly získáváš za nové hvězdy, poražené strážce, denní výzvu a obranu města.'}</p>
-    <p class="mesto-stav">${KRYSTAL}<b>${stav.krystaly}</b> krystalů · ${stav.mesto.length} z ${STAVBY.length} staveb</p></section>
+    <p class="mesto-stav">${KRYSTAL}<b>${stav.krystaly}</b> krystalů · ${stav.mesto.length} z ${STAVBY.length} staveb</p>${DEMO ? '<p class="pozn">V ukázce si stavby prohlédneš, stavět můžeš v plné verzi.</p>' : ''}</section>
     <div class="obchod">${STAVBY.map(s => { const ma = stav.mesto.includes(s.id), staci = stav.krystaly >= s.cena;
       return `<div class="stavba${ma ? ' ma' : ''}"><div class="stavba-o">${stavbaSvg(s.id)}</div><b>${s.nazev}</b><small>${s.tvary}</small>
         <button class="btn mini${ma || !staci ? '' : ' hl'}" data-id="${s.id}" ${ma || !staci || DEMO ? 'disabled' : ''}>${ma ? 'postaveno' : `${KRYSTAL}${s.cena}`}</button></div>`; }).join('')}</div>`);
@@ -243,13 +259,13 @@ function nastaveni() {
       <p class="nast-n">Motiv</p><div class="prep" id="n-motiv">${M.map(([k, n]) => `<button class="chip${stav.motiv === k ? ' on' : ''}" data-m="${k}">${n}</button>`).join('')}</div>
       <label class="radek"><input type="checkbox" id="n-zvuk" ${stav.zvuk ? 'checked' : ''}> Zvuky</label>
       <label class="radek"><input type="checkbox" id="n-post" ${stav.postavy ? 'checked' : ''}> Matýsek a Terezka</label>
-      <button class="btn mini" id="n-smaz">Vymazat celý postup</button></div>`,
+      <p class="nast-n">Pro rodiče</p><p class="pozn">Přehled výsledků chráněný heslem. Postup ve hře jde vymazat jen tam.</p><button class="btn mini" id="n-rod">Přehled pro rodiče</button></div>`,
     tlacitka: [{ t: 'Hotovo', hl: 1 }], poZavreni: kresli,
     poOtevreni: el => {
       $$('#n-motiv .chip', el).forEach(b => b.onclick = () => { stav.motiv = b.dataset.m; uloz(); motiv(); $$('#n-motiv .chip', el).forEach(x => x.classList.toggle('on', x === b)); });
       $('#n-zvuk', el).onchange = e => { stav.zvuk = e.target.checked; uloz(); motiv(); };
       $('#n-post', el).onchange = e => { stav.postavy = e.target.checked; uloz(); };
-      $('#n-smaz', el).onclick = () => modal({ nadpis: 'Vymazat postup?', html: '<p>Smažou se hvězdy, body, krystaly, město i odznaky. Nejde to vrátit.</p>', tlacitka: [{ t: 'Nechat', hl: 1, fn: nastaveni }, { t: 'Vymazat', fn: () => { smaz(); motiv(); zalozka = 'vyprava'; kresli(); } }], poZavreni: kresli });
+      $('#n-rod', el).onclick = () => rodice(kresli);
     } });
 }
 

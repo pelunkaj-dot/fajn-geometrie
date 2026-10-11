@@ -70,7 +70,7 @@ const n = await serie('strážce'); ok(await p.$('.vysl'), 'souboj neskončil v�
 ok(await p.$('.tema[data-id="601"] .strazce-b.porazen'), 'strážce není označený jako poražený');
 // prohra se strážcem
 await p.click('.tema[data-id="601"] [data-s]'); await p.click('.okno-akce .hl');
-for (let k = 0; k < 14 && !(await p.$('.vysl')); k++) { t = await U(); if (!t) break; if (t.hotovo) { if (await p.$('#u-dal')) await p.click('#u-dal'); else await p.waitForTimeout(300); continue; } await odpovez(t, false).catch(() => {}); await p.waitForTimeout(80); }
+for (let k = 0; k < 40 && !(await p.$('.vysl')); k++) { t = await U(); if (!t) break; if (t.hotovo) { if (await p.$('#u-dal')) await p.click('#u-dal'); else await p.waitForTimeout(300); continue; } await odpovez(t, false).catch(() => {}); await p.waitForTimeout(80); }
 await p.waitForSelector('.vysl', { timeout: 5000 }); ok((await p.textContent('.vysl h1')).includes('vyhrál'), 'po ztrátě životů má vyhrát strážce'); await domu();
 
 // denní výzva
@@ -98,12 +98,22 @@ await start('603', 2); t = await doDruhu(u => u.kind === 'num' && u.fig); await 
 await p.click('#b-nast'); await p.click('#n-motiv [data-m="girl"]'); await p.click('.okno-akce .hl'); await shot('27-ruzovy');
 await start('604', 2); t = await doDruhu(u => u.kind === 'kon'); await odpovez(t); await shot('28-ruzovy-kon'); await pryc();
 await p.click('#b-nast'); await p.click('#n-motiv [data-m="light"]'); await p.click('.okno-akce .hl');
+// přehled pro rodiče: nastavení hesla, přehled, podruhé už bez hesla
+await p.click('#b-rod'); await p.fill('#r-h1', '1234'); await p.fill('#r-h2', '123'); await p.click('#r-ok'); ok((await p.textContent('#r-err')).includes('neshodují'), 'rodiče: rozdílná hesla mají vadit');
+await p.fill('#r-h2', '1234'); await p.click('#r-ok'); await p.waitForSelector('.rod-dlazdice'); ok((await p.textContent('.rod')).includes('Zvládnutí témat'), 'rodiče: přehled se má otevřít'); await shot('33-rodice', true);
+await p.keyboard.press('Escape'); ok(!(await p.$('.okno-pozadi')), 'rodiče: Esc má přehled zavřít');
+await p.click('#b-rod'); ok(await p.$('.rod-dlazdice'), 'rodiče: v jedné návštěvě už heslo nechtít');
+await p.click('#r-smaz'); ok((await p.textContent('.okno-h')).includes('Vymazat'), 'rodiče: vymazání se má ptát'); await p.click('.okno-akce .hl'); ok(await p.$('.rod-dlazdice'), 'rodiče: Nechat vrací do přehledu'); await p.keyboard.press('Escape');
 // široká obrazovka
 await p.setViewportSize({ width: 1100, height: 800 }); await p.waitForTimeout(150); await shot('29-pocitac');
 // ukázková verze
 await p.setViewportSize({ width: 420, height: 860 }); await p.goto(URL + 'index-demo.html'); await p.waitForTimeout(300); if (await p.$('.okno-pozadi')) await p.click('.okno-akce .hl'); await shot('30-ukazka');
-await p.click('.tema[data-id="602"] [data-l="1"]'); ok(await p.$('.okno-pozadi'), 'ukázka má zamčené téma jen vysvětlit'); await p.click('.okno-akce .hl');
-await p.click('.tema[data-id="601"] [data-l="1"]'); await vyklad(); ok(await U(), 'ukázka: první téma na úrovni 1 má jít hrát');
+const demoNa = async d => { await p.evaluate(d => { window.__fg.stav.demo = d; window.__fg.uloz(); }, d); await p.reload(); await p.waitForTimeout(250); };
+await demoNa({ serie: 0, obrana: 0, vyzva: 0 }); ok(await p.$('.demo-pruh'), 'ukázka má ukázat, kolik sérií zbývá');
+await p.click('.tema[data-id="602"] [data-l="3"]'); await vyklad(); ok(await U(), 'ukázka: libovolné téma a úroveň má jít hrát'); await pryc();
+await p.click('.tema[data-id="601"] [data-s]'); ok((await p.textContent('.okno-h')).includes('Strážce'), 'ukázka: strážce se má aspoň představit'); await shot('31-ukazka-strazce'); await p.click('.okno-akce .hl'); ok(!(await U()) || !(await p.$('.hra')), 'ukázka: souboj se strážcem nemá začít');
+await demoNa({ serie: 3, obrana: 1, vyzva: 1 }); await p.click('.tema[data-id="601"] [data-l="1"]'); ok(await p.$('.okno-pozadi') && !(await p.$('.hra')), 'ukázka: po vyčerpání sérií jen vysvětlit'); await shot('32-ukazka-konec'); await p.click('.okno-akce .hl');
+await p.click('.nav [data-z="obrana"]'); await p.click('#b-obr'); ok(await p.$('.okno-pozadi') && !(await p.$('canvas, .obr-hra')), 'ukázka: druhá obrana jen vysvětlit'); await p.click('.okno-akce .hl');
 
 console.log(chyby.length ? 'CHYBY:\n' + chyby.join('\n') : 'Bez chyb.');
 await b.close(); process.exit(chyby.length ? 1 : 0);

@@ -8,7 +8,10 @@ const VYCHOZI = () => ({
   mesto: [],    // id postavených staveb v pořadí stavby
   odznaky: {},  // id: datum
   vyklad: {},   // '601': true = výklad už viděl
-  stat: { uloh: 0, napoprve: 0, combo: 0, kon3: 0, serii: 0, cistych: 0, ubraneno: 0, obrana: {}, den: { datum: '', serie: 0 }, temata: {} },
+  stat: { uloh: 0, napoprve: 0, combo: 0, kon3: 0, serii: 0, cistych: 0, ubraneno: 0, obrana: {}, den: { datum: '', serie: 0 },
+    temata: {}, dny: {}, pasti: {}, chybne: [], hist: [] }, // pro rodiče: '601': [[úloh, vyřešeno, napoprvé] × 3 úrovně], dny: { datum: {f, h, x, ms} }
+  rodic: { salt: '', hash: '' }, // rodičovské heslo (solený SHA-256)
+  demo: { serie: 0, obrana: 0, vyzva: 0 }, // co už ukázka spotřebovala
 });
 export const stav = VYCHOZI();
 function nastav(novy) { for (const k of Object.keys(stav)) delete stav[k]; Object.assign(stav, novy); }
@@ -21,7 +24,8 @@ export function nacti() {
   return stav;
 }
 export function uloz() { try { localStorage.setItem(KLIC, JSON.stringify(stav)); } catch (e) { /* nic */ } }
-export function smaz() { nastav(VYCHOZI()); uloz(); }
+// Vymazání postupu (jen z přehledu pro rodiče): nastavení, rodičovské heslo a počítadlo ukázky zůstanou.
+export function smaz() { const z = {}; for (const k of ['motiv', 'zvuk', 'postavy', 'rocnik', 'uvod', 'rodic', 'demo']) if (k in stav) z[k] = stav[k]; nastav({ ...VYCHOZI(), ...z }); uloz(); }
 
 export const HODNOSTI = [[0, 'Nováček'], [150, 'Učeň'], [400, 'Měřič'], [800, 'Rýsovač'], [1400, 'Kreslič'], [2200, 'Zeměměřič'], [3200, 'Stavitel'], [4500, 'Konstruktér'], [6000, 'Architekt'], [8000, 'Mistr geometrie']];
 export function hodnost(xp = stav.xp) {
