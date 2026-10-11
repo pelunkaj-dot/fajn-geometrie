@@ -38,6 +38,10 @@ neúspěšně, čas řešení, aktivitu za 14 dní, zvládnutí po tématech a �
 úlohy s ukázaným řešením, poslední výsledky, doporučení co hrát dál a popis didaktiky; jde vytisknout.
 Vymazat postup jde jen odtud (heslo, nastavení a počítadlo ukázky zůstanou).
 
+**Opakování** (`js/opakovani.js`): typ úlohy, ve kterém žák chyboval nebo mu bylo ukázáno řešení, se vrací po 1, 3, 7 a 14 dnech.
+Vyřešení napoprvé v den, kdy je na řadě, ho posune dál, nová chyba ho vrátí na začátek. Když je něco na řadě, ukáže se na výpravě
+karta Opakování (série nejvýš 8 úloh, krystal za každou úlohu napoprvé). V ukázce se série opakování počítá do limitu sérií.
+
 Plná verze (`index.html`) je chráněná stejně jako ostatní moduly: první prvek `<head>` je
 `<script src="/fdc-plugin/fdc-guard.js"></script>` (z repozitáře `fdc-plugin`). Bez příchodu z fajndoucko.cz
 přesměruje na `index-demo.html`, která ochranu nemá. Náhled z `tools/nahled.py` ochranu vynechá
@@ -69,6 +73,7 @@ Ke kontrole textů a výpočtů: `KROKY=1 node tools/vzorky.mjs 8 801` vypíše 
 | `js/obrana.js`, `js/mesto.js`, `js/odznaky.js` | herní režimy |
 | `js/app.js` | obrazovky a navigace |
 | `js/rodice.js` | záznam výsledků a přehled pro rodiče |
+| `js/opakovani.js` | opakování s rozestupy podle chyb |
 | `docs/UCIVO.md` | rozpis učiva a pravidla obtížností |
 
 Písma Atkinson Hyperlegible a Baloo 2 jsou přiložená ve `fonts/` (licence SIL OFL), nic se nenačítá odjinud.

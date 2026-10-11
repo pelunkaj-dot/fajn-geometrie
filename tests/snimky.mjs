@@ -70,7 +70,7 @@ const n = await serie('strážce'); ok(await p.$('.vysl'), 'souboj neskončil v�
 ok(await p.$('.tema[data-id="601"] .strazce-b.porazen'), 'strážce není označený jako poražený');
 // prohra se strážcem
 await p.click('.tema[data-id="601"] [data-s]'); await p.click('.okno-akce .hl');
-for (let k = 0; k < 40 && !(await p.$('.vysl')); k++) { t = await U(); if (!t) break; if (t.hotovo) { if (await p.$('#u-dal')) await p.click('#u-dal'); else await p.waitForTimeout(300); continue; } await odpovez(t, false).catch(() => {}); await p.waitForTimeout(80); }
+for (let k = 0; k < 14 && !(await p.$('.vysl')); k++) { t = await U(); if (!t) break; if (t.hotovo) { if (await p.$('#u-dal')) await p.click('#u-dal'); else await p.waitForTimeout(300); continue; } await odpovez(t, false).catch(() => {}); await p.waitForTimeout(80); }
 await p.waitForSelector('.vysl', { timeout: 5000 }); ok((await p.textContent('.vysl h1')).includes('vyhrál'), 'po ztrátě životů má vyhrát strážce'); await domu();
 
 // denní výzva
@@ -98,6 +98,15 @@ await start('603', 2); t = await doDruhu(u => u.kind === 'num' && u.fig); await 
 await p.click('#b-nast'); await p.click('#n-motiv [data-m="girl"]'); await p.click('.okno-akce .hl'); await shot('27-ruzovy');
 await start('604', 2); t = await doDruhu(u => u.kind === 'kon'); await odpovez(t); await shot('28-ruzovy-kon'); await pryc();
 await p.click('#b-nast'); await p.click('#n-motiv [data-m="light"]'); await p.click('.okno-akce .hl');
+// opakování s rozestupy: karta na výpravě, série z naplánovaných úloh, posun plánu
+const dnesStr = await p.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; });
+await stavNa({ opak: { '601|1|1': { krok: 0, kdy: dnesStr, chyb: 2 }, '605|2|0': { krok: 1, kdy: dnesStr, chyb: 1 }, '802|1|2': { krok: 0, kdy: '2099-01-01', chyb: 1 } } });
+ok((await p.textContent('.opak-karta')).includes('2 úlohy'), 'opakování: karta má ukázat 2 úlohy na řadě'); await shot('34-opakovani-karta');
+await p.click('#b-opak'); const no = await serie('opakování'); ok(no === 2, `opakování: série má mít 2 úlohy, má ${no}`); ok(await p.$('.vysl'), 'opakování neskončilo výsledkem'); await shot('35-opakovani-vysl');
+const plan = await p.evaluate(() => window.__fg.stav.opak);
+ok(plan['601|1|1'].krok === 1 && plan['605|2|0'].krok === 2 && plan['601|1|1'].kdy > dnesStr, 'opakování: vyřešení napoprvé má posunout rozestup');
+await domu(); ok(!(await p.$('.opak-karta')) && (await p.textContent('.opak-pozn')).includes('3 úlohy se vrátí'), 'opakování: po sérii už karta není, jen poznámka o dalším termínu');
+
 // přehled pro rodiče: nastavení hesla, přehled, podruhé už bez hesla
 await p.click('#b-rod'); await p.fill('#r-h1', '1234'); await p.fill('#r-h2', '123'); await p.click('#r-ok'); ok((await p.textContent('#r-err')).includes('neshodují'), 'rodiče: rozdílná hesla mají vadit');
 await p.fill('#r-h2', '1234'); await p.click('#r-ok'); await p.waitForSelector('.rod-dlazdice'); ok((await p.textContent('.rod')).includes('Zvládnutí témat'), 'rodiče: přehled se má otevřít'); await shot('33-rodice', true);

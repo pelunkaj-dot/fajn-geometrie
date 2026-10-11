@@ -349,6 +349,11 @@ b { font-weight: 700; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
+/* opakování s rozestupy */
+.opak-karta { display: flex; align-items: center; gap: 12px; margin: 10px 0 0; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 14px; background: var(--info-bg); box-shadow: 0 3px 0 var(--ink); }
+.opak-karta div { flex: 1; } .opak-karta p { margin: 2px 0 0; font-size: .95rem; } .opak-karta .btn { flex: none; }
+.opak-pozn { margin: 8px 0 0; text-align: center; color: var(--muted); font-size: .92rem; }
+
 /* ukázka */
 .demo-pruh { margin: 10px 0 0; padding: 8px 12px; border: 2px dashed var(--accent); border-radius: 12px; background: var(--hint-bg); text-align: center; font-size: .95rem; }
 .pro-rodice { text-align: center; margin: 18px 0 4px; }

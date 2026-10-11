@@ -12,6 +12,7 @@ const VYCHOZI = () => ({
     temata: {}, dny: {}, pasti: {}, chybne: [], hist: [] }, // pro rodiče: '601': [[úloh, vyřešeno, napoprvé] × 3 úrovně], dny: { datum: {f, h, x, ms} }
   rodic: { salt: '', hash: '' }, // rodičovské heslo (solený SHA-256)
   demo: { serie: 0, obrana: 0, vyzva: 0 }, // co už ukázka spotřebovala
+  opak: {}, // opakování s rozestupy: 'téma|úroveň|typ úlohy': { krok, kdy, chyb } (js/opakovani.js)
 });
 export const stav = VYCHOZI();
 function nastav(novy) { for (const k of Object.keys(stav)) delete stav[k]; Object.assign(stav, novy); }

@@ -53,7 +53,7 @@ async function konstrukce(u) {
     if (t.strict && u.units) await p.click(`.jednotky .chip[data-j="${u.unit}"]`);
     await p.fill('#u-in', String(spravne ? u.ans : u.ans + 7).replace('.', ',')); await p.click('#u-ok');
   } else if (u.kind === 'dm') { const v = spravne ? u.ans : u.ans + 61; await p.fill('#u-in', String(Math.floor(v / 60))); await p.fill('#u-in2', String(v % 60)); await p.click('#u-ok'); }
-  else if (u.kind === 'choice') { await p.click(`#u-odp .volba[data-i="${spravne ? u.ans : (u.ans + 1) % u.opts.length}"]:not([disabled])`); }
+  else if (u.kind === 'choice') { if (spravne) await p.click(`#u-odp .volba[data-i="${u.ans}"]`); else await p.locator(`#u-odp .volba:not([disabled]):not([data-i="${u.ans}"])`).first().click(); } // špatně: pokaždé jiná dosud nezkoušená možnost
   else if (u.kind === 'grid') { for (const q of (spravne ? u.ans : u.body)) await p.click(`.fg-uzel[data-x="${q[0]}"][data-y="${q[1]}"]`, { force: true }); await p.click('#u-ok'); }
   else if (u.kind === 'kon') await konstrukce(u);
 }

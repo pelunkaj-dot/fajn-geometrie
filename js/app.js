@@ -8,6 +8,7 @@ import { ODZNAKY, noveOdznaky } from './odznaky.js';
 import { zvuk, odemkni, nastavZvuk } from './zvuky.js';
 import { rekni } from './hlasky.js';
 import { rodice, zapisUlohu, zapisSerii } from './rodice.js';
+import { zapisOpak, prehledOpak, ulohyOpak, ROZESTUPY } from './opakovani.js';
 import { avatar, obrazek } from './postavy.js';
 import { $, $$, modal, zavriModal, jeModal, modalPevny, toast, hv, KRYSTAL, zvukBtn, napojZvuk } from './ui.js';
 import { shuffle, pick, setRng, mulberry } from './util.js';
@@ -21,6 +22,7 @@ const kdoMluvi = () => stav.postavy ? pick(['Matýsek', 'Terezka']) : 'Nikdo';
 // Ukázka omezuje množství, ne obsah: všechna témata a úrovně, ale jen DEMO_SERII dokončených sérií, jedna obrana a jedna výzva.
 const DEMO_SERII = 3;
 const demoZbyva = () => DEMO_SERII - stav.demo.serie;
+const zaznam = z => { zapisUlohu(z); zapisOpak(z); }; // každá vyřešená úloha: statistiky pro rodiče + plán opakování
 
 const IK = {
   vyprava: '<polygon points="12,3 21,20 3,20"/>', obrana: '<circle cx="14" cy="14" r="6"/><path d="M3 3l6 6M3 9l3 3M9 3l3 3"/>', vyzva: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
@@ -57,6 +59,7 @@ function vyprava() {
   const R = rocnik(), h = hodnost();
   ram(`<section class="uvod" id="uvod-mesto">${mestoSvg(stav.mesto, { H: stav.mesto.length ? 150 : 64 })}
       <p class="uvod-t">${h.dalsi ? `Do hodnosti ${h.dalsi} zbývá <b>${h.zbyva}</b> bodů.` : 'Nejvyšší hodnost je tvoje.'}</p></section>
+    ${opakKarta()}
     ${DEMO ? `<p class="demo-pruh">${demoZbyva() > 0 ? `Ukázka: vyzkoušej cokoli. Zbývající série: <b>${demoZbyva()}</b> ze ${DEMO_SERII}.` : 'Ukázka je u konce. Celá hra je na <b>fajndoucko.cz</b>.'}</p>` : ''}
     <div class="rocniky" role="tablist" aria-label="Ročník">${ROCNIKY.map(r => `<button role="tab" aria-selected="${r.rocnik === R.rocnik}" class="${r.rocnik === R.rocnik ? 'on' : ''}" data-r="${r.rocnik}">${r.rocnik}. ročník</button>`).join('')}</div>
     <div class="temata">${R.temata.map(t => {
@@ -68,6 +71,7 @@ function vyprava() {
       </section>`; }).join('')}</div>
     <p class="pro-rodice"><button class="btn mini" id="b-rod">Pro rodiče</button></p>`);
   $('#b-rod').onclick = () => rodice(kresli);
+  const bo = $('#b-opak'); if (bo) bo.onclick = () => { odemkni(); pripravOpak(); };
   $('#uvod-mesto').onclick = () => { zalozka = 'mesto'; kresli(); };
   if (fokusTema) { const el = $(`.tema[data-id="${fokusTema}"]`); fokusTema = null; if (el) el.scrollIntoView({ block: 'center' }); }
   $$('.rocniky button').forEach(b => b.onclick = () => { stav.rocnik = +b.dataset.r; uloz(); kresli(); });
@@ -102,10 +106,10 @@ function ukazVyklad(t, pak) {
 function sestav(gens, n, lvl, filtr, tema) {
   const out = []; let pytel = [], pokusu = 0;
   while (out.length < n && pokusu++ < 400) {
-    if (!pytel.length) pytel = shuffle(gens);
-    const u = pytel.pop()();
+    if (!pytel.length) pytel = shuffle(gens.map((_, gi) => gi));
+    const gi = pytel.pop(), u = gens[gi]();
     if (filtr && !filtr(u)) continue;
-    out.push({ u, lvl, tema });
+    out.push({ u, lvl, tema, gi });
   }
   return out;
 }
@@ -114,7 +118,7 @@ function pripravUroven(t, lvl) {
   if (DEMO && demoZbyva() <= 0) return plna();
   const start = () => {
     const n = t.kon ? [6, 6, 5][lvl - 1] : [10, 10, 8][lvl - 1], kdo = kdoMluvi();
-    bezici = serie(app, { typ: 'uroven', ulohy: sestav(t.u[lvl - 1], n, lvl, null, t.id), kdo, vyklad: () => ukazVyklad(t), onZpet: kresli, zaznam: zapisUlohu, onKonec: res => poUrovni(t, lvl, res, kdo) });
+    bezici = serie(app, { typ: 'uroven', ulohy: sestav(t.u[lvl - 1], n, lvl, null, t.id), kdo, vyklad: () => ukazVyklad(t), onZpet: kresli, zaznam, onKonec: res => poUrovni(t, lvl, res, kdo) });
   };
   if (lvl === 1 && !stav.vyklad[t.id]) ukazVyklad(t, start); else start();
 }
@@ -140,13 +144,40 @@ function poUrovni(t, lvl, res, kdo) {
       { t: 'Hrát znovu', hl: !dalsiL && !(muzeStrazce && lvl === 3), fn: () => pripravUroven(t, lvl) }, { t: 'Zpět na výpravu', fn: kresli }] });
 }
 
+// ---------- opakování s rozestupy (js/opakovani.js) ----------
+function kdyTxt(den) {
+  const [, m, d] = den.split('-').map(Number), za = Math.round((Date.parse(den) - Date.parse(dnes())) / 864e5);
+  return za <= 1 ? 'zítra' : za === 2 ? 'pozítří' : `${d}. ${m}.`;
+}
+const ulohTxt = n => n === 1 ? '1 úloha' : n >= 2 && n <= 4 ? `${n} úlohy` : `${n} úloh`;
+function opakKarta() {
+  const o = prehledOpak();
+  if (o.dnes) return `<section class="opak-karta"><div><b>Opakování</b><p>Na řadě ${o.dnes === 1 ? 'je' : o.dnes <= 4 ? 'jsou' : 'je'} ${ulohTxt(o.dnes)}, se kterými byly dřív potíže.</p></div><button class="btn hl" id="b-opak">Opakovat</button></section>`;
+  return o.celkem ? `<p class="opak-pozn">Opakování: ${ulohTxt(o.celkem)} se vrátí ${kdyTxt(o.dalsi)}.</p>` : '';
+}
+function pripravOpak() {
+  if (DEMO && demoZbyva() <= 0) return plna();
+  const ulohy = ulohyOpak(), kdo = kdoMluvi(); uloz();
+  if (!ulohy.length) { toast('Dnes není co opakovat.'); return kresli(); }
+  bezici = serie(app, { typ: 'opakovani', ulohy, kdo, onZpet: kresli, zaznam, onKonec: res => poOpak(res, kdo) });
+}
+function poOpak(res, kdo) {
+  const kr = res.napoprve; // krystal za každou úlohu, která se napodruhé povedla napoprvé
+  stav.krystaly += kr; zapisSerii({ typ: 'opakovani', acc: Math.round(100 * res.napoprve / res.n), n: res.n }); if (DEMO) stav.demo.serie++;
+  const povyseni = pripis(res), nove = noveOdznaky(stav, ROCNIKY); uloz(); zvuk.hotovo(res.napoprve === res.n ? 3 : 2);
+  const o = prehledOpak();
+  vysledek({ nadpis: res.napoprve === res.n ? 'Opakování bez chyby' : 'Opakování hotové', radky: [`${res.napoprve} z ${res.n} napoprvé`, o.dnes ? `na řadě ještě ${ulohTxt(o.dnes)}` : o.celkem ? `další opakování ${kdyTxt(o.dalsi)}` : 'nic dalšího k opakování'],
+    xp: res.xp, kr, kdo, hlaska: rekni(kdo, 'opakovani'), povyseni, nove,
+    akce: [...(o.dnes ? [{ t: 'Opakovat další', hl: 1, fn: pripravOpak }] : []), { t: 'Zpět na výpravu', hl: !o.dnes, fn: kresli }] });
+}
+
 // ---------- souboj se strážcem ----------
 function pripravStrazce(t) {
   fokusTema = t.id;
   const f = u => u.kind !== 'kon' || u.mode === 2, kdo = kdoMluvi();
   const ulohy = [...sestav(t.u[0], 3, 1, f, t.id), ...sestav(t.u[1], 3, 2, f, t.id), ...sestav(t.u[2], 2, 3, f, t.id)];
   modal({ nadpis: `Strážce ${t.strazce}`, html: `<div class="sz-uvod">${strazceSvg(+t.id)}<p>${rekni(kdo, 'strazceUvod')}</p><p class="pozn">${ulohy.length} úloh od základů po jedničkáře. Každá chyba stojí jeden ze tří životů. Nápovědy v souboji nejsou.</p></div>`,
-    tlacitka: [{ t: 'Zatím ne' }, { t: 'Do souboje', hl: 1, fn: () => { bezici = serie(app, { typ: 'strazce', ulohy, kdo, zivoty: 3, strazce: { jmeno: t.strazce, seed: +t.id }, onZpet: kresli, zaznam: zapisUlohu, onKonec: res => poStrazci(t, res, kdo) }); } }] });
+    tlacitka: [{ t: 'Zatím ne' }, { t: 'Do souboje', hl: 1, fn: () => { bezici = serie(app, { typ: 'strazce', ulohy, kdo, zivoty: 3, strazce: { jmeno: t.strazce, seed: +t.id }, onZpet: kresli, zaznam, onKonec: res => poStrazci(t, res, kdo) }); } }] });
 }
 function poStrazci(t, res, kdo) {
   const poprve = res.vyhra && !stav.strazci[t.id], kr = poprve ? 30 : 0;
@@ -208,9 +239,9 @@ function vyzva() {
     if (DEMO) { if (stav.demo.vyzva) return plna('Výzvu už znáš'); stav.demo.vyzva++; uloz(); } odemkni();
     const [y, m, dd] = dnes().split('-').map(Number), kdo = kdoMluvi();
     setRng(mulberry(y * 10000 + m * 100 + dd + R.rocnik * 7919));
-    const tem = shuffle(R.temata), gens = Array.from({ length: 5 }, (_, i) => [pick(tem[i % tem.length].u[1]), tem[i % tem.length].id]), ulohy = gens.map(([g, tema]) => { let u; do { u = g(); } while (u.kind === 'kon' && u.mode === 3); return { u, lvl: 2, tema }; });
+    const tem = shuffle(R.temata), gens = Array.from({ length: 5 }, (_, i) => { const t = tem[i % tem.length], gi = pick(t.u[1].map((_, k) => k)); return [t.u[1][gi], t.id, gi]; }), ulohy = gens.map(([g, tema, gi]) => { let u; do { u = g(); } while (u.kind === 'kon' && u.mode === 3); return { u, lvl: 2, tema, gi }; });
     setRng(null);
-    bezici = serie(app, { typ: 'denni', ulohy, kdo, onZpet: kresli, zaznam: zapisUlohu, onKonec: res => {
+    bezici = serie(app, { typ: 'denni', ulohy, kdo, onZpet: kresli, zaznam, onKonec: res => {
       zapisSerii({ typ: 'denni', lvl: 2, acc: Math.round(100 * res.napoprve / res.n), n: res.n });
       const uz = stav.stat.den.datum === dnes(), kr = uz ? 0 : 20;
       if (!uz) { stav.stat.den = { datum: dnes(), serie: stav.stat.den.datum === vcera() ? stav.stat.den.serie + 1 : 1 }; }

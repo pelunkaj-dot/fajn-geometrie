@@ -20,6 +20,7 @@ export const HLASKY = {
     obrana: ['Na město padají meteory! Sestřel je správnou odpovědí.', 'Poplach! Braň město, rychle a přesně.', 'Meteory na obzoru. Pal!'],
     mesto: ['Pěkná stavba. Co postavíme příště?', 'Město roste. Líbí se mi to.', 'Tohle by chtělo ještě věž. Nebo raketu!'],
     denni: ['Denní výzva splněna. Zítra zase!', 'Hotovo. A zítra to zopakujeme.'],
+    opakovani: ['Co se jednou pokazí, to se vrátí. A teď už to sedí.', 'Opakování je matka moudrosti. A ty jsi na dobré cestě.', 'Staré chyby? Já žádné nevidím.'],
   },
   'Terezka': {
     ok: ['Správně!', 'Výborně!', 'Ano, přesně tak.', 'Krásně spočítáno.', 'To se ti povedlo.', 'Sedí to!', 'Skvělé, pokračujeme.', 'Máš to dobře.', 'Šikovně!', 'Paráda!'],
@@ -37,12 +38,13 @@ export const HLASKY = {
     obrana: ['Město potřebuje pomoc! Vyber správnou odpověď a meteor zmizí.', 'Padají meteory. Zachráníš město?', 'Pozor, meteory! Počítej rychle, ale pozorně.'],
     mesto: ['Ta stavba městu sluší.', 'Město je zase o kousek hezčí.', 'Krásné! Už se těším na další stavbu.'],
     denni: ['Denní výzva je hotová. Zítra tě čeká další.', 'Splněno! Zítra se zase uvidíme.'],
+    opakovani: ['Krásně, tohle už ti jde mnohem líp.', 'Opakování se vyplácí. Vidíš ten rozdíl?', 'Co dřív zlobilo, teď jde samo.'],
   },
   'Nikdo': {
     ok: ['Správně.'], okPozdeji: ['Správně.'], chyba1: ['Zkus to znovu.'], chyba2: ['Přečti si nápovědu.'], odhaleni: ['Projdi si postup řešení.'],
     hv3: ['Výborný výsledek.'], hv2: ['Dobrý výsledek.'], hv1: ['Úroveň je splněná.'], hv0: ['Tentokrát to nestačilo. Zkus výklad nebo nižší úroveň.'],
     strazceUvod: ['Souboj se strážcem: tři životy, bez nápověd.'], strazceVyhra: ['Strážce je poražen.'], strazceProhra: ['Strážce vyhrál. Zkus to po tréninku znovu.'],
-    obrana: ['Sestřel meteory správnou odpovědí.'], mesto: ['Stavba je postavená.'], denni: ['Denní výzva je splněná.'],
+    obrana: ['Sestřel meteory správnou odpovědí.'], mesto: ['Stavba je postavená.'], denni: ['Denní výzva je splněná.'], opakovani: ['Opakování je hotové.'],
   },
 };
 const pytle = {};

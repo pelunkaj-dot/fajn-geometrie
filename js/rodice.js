@@ -3,6 +3,7 @@
 import { ROCNIKY, najdiTema, NAZVY_UROVNI } from './obsah.js';
 import { stav, uloz, smaz, hvezdy, dnes } from './stav.js';
 import { $, $$, modal, zavriModal, hv } from './ui.js';
+import { prehledOpak, ROZESTUPY } from './opakovani.js';
 
 const DNU = 60, HIST = 20, CHYBNE = 12, MAX_MS = 3 * 60e3; // déle než 3 minuty nad jednou úlohou už je pauza
 const st = () => {
@@ -128,7 +129,7 @@ function prehled() {
     const [id, ...m] = k.split('|'), t = najdiTema(id);
     return `<li><b>${t ? t.nazev : id}</b> <small>${n}×</small><br>${esc(m.join('|'))}</li>`; }).join('');
   const chybne = s.chybne.map(c => { const t = najdiTema(c.tema); return `<li><small>${t ? t.nazev : c.tema} · ${NAZVY_UROVNI[c.lvl - 1]}</small><br>${esc(c.text)}${c.odp ? ` <b>→ ${esc(c.odp)}</b>` : ''}</li>`; }).join('');
-  const TYP = { uroven: 'série', strazce: 'strážce', denni: 'denní výzva', obrana: 'obrana města' };
+  const TYP = { uroven: 'série', strazce: 'strážce', denni: 'denní výzva', obrana: 'obrana města', opakovani: 'opakování' };
   const hist = s.hist.slice(0, 10).map(h => { const d = new Date(h.d), t = h.tema && najdiTema(h.tema);
     return `<tr><td>${d.getDate()}. ${d.getMonth() + 1}.</td><td>${t ? t.nazev : TYP[h.typ]}${t && h.typ !== 'uroven' ? ` <small>(${TYP[h.typ]})</small>` : ''}</td><td>${h.lvl ? NAZVY_UROVNI[h.lvl - 1] : ''}</td><td>${h.hv != null ? hv(h.hv) : ''}</td><td>${h.acc != null ? h.acc + ' %' : ''}</td></tr>`; }).join('');
 
@@ -138,6 +139,7 @@ function prehled() {
       <div><b>${proc(T.h, tot)}</b><span>s pomocí</span></div><div><b>${proc(T.x, tot)}</b><span>neúspěšně</span></div>
       <div><b>${min}</b><span>${sklon(min, 'minuta', 'minuty', 'minut')} řešení</span></div><div><b>${stav.stat.serii || 0}</b><span>${sklon(stav.stat.serii || 0, 'dokončená série', 'dokončené série', 'dokončených sérií')}</span></div></div>
     <p class="rod-dop">${doporuceni(s)}</p>
+    ${(o => o.celkem || o.zvladnuto ? `<p class="pozn">Opakování: dnes na řadě ${o.dnes}, naplánováno celkem ${o.celkem}, po opakování zvládnuto ${o.zvladnuto} ${sklon(o.zvladnuto, 'typ úlohy', 'typy úloh', 'typů úloh')}.</p>` : '')(prehledOpak())}
     <p class="rod-leg"><span><i class="s1"></i>napoprvé</span><span><i class="s2"></i>s pomocí (po chybě nebo s nápovědou)</span><span><i class="s3"></i>neúspěšně (ukázali jsme řešení)</span></p>
     <h3>Aktivita za posledních 14 dní</h3><div class="rod-graf">${sloupce}</div>
     <h3>Zvládnutí témat</h3>${temata || '<p class="pozn">Zatím nejsou uložené žádné výsledky.</p>'}
@@ -147,6 +149,7 @@ function prehled() {
     <h3>Jak FajnGeometrie učí</h3>
     <p>Každé téma má tři úrovně. <b>Základy</b> začínají výkladem a mají obrázek a tři stupně nápovědy (o co jde, jak na to, dosazení). <b>Procvičování</b> přidává obrácené úlohy a převody. <b>Jedničkář</b> chce přesnou odpověď: dítě samo volí jednotku, zaokrouhluje přesně a nápověda stojí body. V konstrukčních úlohách dítě kreslí náčrtek, zapisuje postup a určuje počet řešení. Uzná se každý správný postup.</p>
     <p>Po první chybě dítě zkouší znovu, po druhé se samo ukáže nápověda, po třetí řešení s postupem. Na typickou chybu (třeba zapomenuté dělení dvěma u trojúhelníku) hra odpoví cílenou radou. Hvězdy za sérii: ★ od 60 %, ★★ od 80 %, ★★★ od 95 % bez ukázaného řešení.</p>
+    <p>Typ úlohy, ve kterém dítě chybovalo, se vrací k opakování po ${ROZESTUPY.join(', ').replace(/, (\d+)$/, ' a $1')} dnech. Každé vyřešení napoprvé ho posune dál, nová chyba ho vrátí na začátek. Když na řadě něco je, ukáže se na úvodní obrazovce karta Opakování.</p>
     <div class="rod-akce rod-tisk"><button class="btn mini" id="r-tisk">Tisk</button><button class="btn mini" id="r-heslo">Změnit heslo</button><button class="btn mini" id="r-smaz">Vymazat výsledky a postup</button></div>`, el => {
     $('#r-tisk', el).onclick = () => window.print();
     $('#r-heslo', el).onclick = () => { stav.rodic = { salt: '', hash: '' }; odemceno = false; uloz(); brana(); };

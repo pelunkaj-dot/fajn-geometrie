@@ -22,7 +22,7 @@ export function strazceSvg(seed) {
     <polyline points="38,66 44,61 50,66 56,61 62,66" class="sz-p"/></svg>`;
 }
 
-// cfg: { typ: 'uroven'|'strazce'|'denni', nazev, ulohy: [{u, lvl, tema}], kdo, zivoty, strazce: {jmeno, seed}, vyklad(), onKonec(res), onZpet(), zaznam(úloha) }
+// cfg: { typ: 'uroven'|'strazce'|'denni'|'opakovani', nazev, ulohy: [{u, lvl, tema, gi}], kdo, zivoty, strazce: {jmeno, seed}, vyklad(), onKonec(res), onZpet(), zaznam(úloha) }
 export function serie(root, cfg) {
   const N = cfg.ulohy.length, res = { body: [], xp: 0, odhaleno: 0, comboMax: 0, kon3: 0, vyhra: true, n: N, vyreseno: 0, napoprve: 0 };
   let i = 0, combo = 0, zivoty = cfg.zivoty || 0, t = null, konec = false, aktivita = false;
@@ -180,7 +180,7 @@ export function serie(root, cfg) {
     const alt = u.kind === 'num' && u.alt.length ? `<p class="pozn">S tlačítkem π na kalkulačce vyjde ${cz(u.alt[0], u.dec ?? 3)} ${u.unit}. Uznávají se oba výsledky.</p>` : '';
     el.innerHTML = `<div class="reseni"><p class="res-odp">Správná odpověď: <b>${odpoved(u)}</b></p>${u.figSol ? `<div class="ul-obr">${u.figSol}</div>` : ''}${u.steps.length ? `<ol class="res-kroky">${u.steps.map(s => `<li>${s}</li>`).join('')}</ol>` : ''}${alt}</div>`;
   }
-  function zapis(vysl) { if (cfg.zaznam) cfg.zaznam({ tema: cfg.ulohy[i].tema, lvl: t.lvl, vysl, ms: Date.now() - t.od, chyby: t.chyby, text: [t.u.text, t.u.q].filter(Boolean).join(' '), odp: odpoved(t.u) }); }
+  function zapis(vysl) { if (cfg.zaznam) cfg.zaznam({ tema: cfg.ulohy[i].tema, gi: cfg.ulohy[i].gi, lvl: t.lvl, vysl, ms: Date.now() - t.od, chyby: t.chyby, text: [t.u.text, t.u.q].filter(Boolean).join(' '), odp: odpoved(t.u) }); }
   function zamkni() { t.hotovo = true; aktivita = true; $$('#u-odp input, #u-odp .volba, #u-odp .chip', telo).forEach(x => x.disabled = true); }
   function spravne(zKon) {
     const prvni = t.pokus === 0; zamkni();
