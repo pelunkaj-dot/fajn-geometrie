@@ -10,6 +10,9 @@ import { avatar } from './postavy.js';
 import { $, $$, modal, jeModal, zvukBtn, napojZvuk } from './ui.js';
 
 export const BODY = [10, 15, 25];
+// Podíl bodů jako na celé platformě: napoprvé 100 %, napodruhé 60 %, po nápovědě 35 % (i nápověda, která se ukázala sama po 2. chybě).
+export const podilBodu = (pokus, nap) => nap > 0 || pokus >= 2 ? 0.35 : pokus === 1 ? 0.6 : 1;
+const NAVRATU = 2; // kolik úloh s chybou se vrátí na konci kola
 const NAZEV_KROKU = ['O co jde', 'Jak na to', 'Dosazení'];
 
 // Strážce tématu: příšerka z geometrických tvarů (podle čísla tématu pokaždé jiná)
@@ -22,9 +25,11 @@ export function strazceSvg(seed) {
     <polyline points="38,66 44,61 50,66 56,61 62,66" class="sz-p"/></svg>`;
 }
 
-// cfg: { typ: 'uroven'|'strazce'|'denni'|'opakovani', nazev, ulohy: [{u, lvl, tema, gi}], kdo, zivoty, strazce: {jmeno, seed}, vyklad(), onKonec(res), onZpet(), zaznam(úloha) }
+// cfg: { typ: 'uroven'|'strazce'|'denni'|'opakovani', nazev, ulohy: [{u, lvl, tema, gi}], kdo, zivoty, strazce: {jmeno, seed}, vyklad(), onKonec(res), onZpet(), zaznam(úloha), znovu(úloha) }
+// znovu: nová úloha stejného typu; s ní se na konci kola vrátí až NAVRATU úloh s chybou (do hodnocení série se nepočítají).
 export function serie(root, cfg) {
-  const N = cfg.ulohy.length, res = { body: [], xp: 0, odhaleno: 0, comboMax: 0, kon3: 0, vyhra: true, n: N, vyreseno: 0, napoprve: 0 };
+  let N = cfg.ulohy.length, vraceno = false;
+  const res = { body: [], xp: 0, odhaleno: 0, comboMax: 0, kon3: 0, vyhra: true, n: N, vyreseno: 0, napoprve: 0 };
   let i = 0, combo = 0, zivoty = cfg.zivoty || 0, t = null, konec = false, aktivita = false;
   const strazce = cfg.typ === 'strazce';
 
@@ -66,11 +71,11 @@ export function serie(root, cfg) {
   };
 
   function ukaz() {
-    const { u, lvl } = cfg.ulohy[i];
+    const { u, lvl, navrat } = cfg.ulohy[i];
     t = { u, lvl, pokus: 0, nap: 0, hotovo: false, strict: lvl === 3, max: u.kind === 'choice' ? Math.min(3, u.opts.length - 1) : 3, znacky: [], jedn: null, od: Date.now(), chyby: [] };
     lista();
     telo.innerHTML = `<article class="ul ul-${u.kind}">
-      <div class="ul-zadani">${u.fig && u.kind !== 'kon' ? `<div class="ul-obr">${u.fig}</div>` : ''}<p class="ul-text">${u.text || ''}</p>${u.q ? `<p class="ul-q">${u.q}</p>` : ''}</div>
+      ${navrat ? '<p class="ul-navrat">Ještě jednou: v podobné úloze byla chyba.</p>' : ''}<div class="ul-zadani">${u.fig && u.kind !== 'kon' ? `<div class="ul-obr">${u.fig}</div>` : ''}<p class="ul-text">${u.text || ''}</p>${u.q ? `<p class="ul-q">${u.q}</p>` : ''}</div>
       <div class="ul-odp" id="u-odp"></div><div class="ul-nap" id="u-nap"></div><div class="ul-zv" id="u-zv" aria-live="polite"></div>
       <div class="ul-res" id="u-res"></div><div class="ul-akce" id="u-akce"></div></article>`;
     const odp = $('#u-odp', telo);
@@ -115,7 +120,7 @@ export function serie(root, cfg) {
       $('#u-dal', el).onclick = dalsi; $('#u-dal', el).focus({ preventScroll: true }); return;
     }
     const zb = strazce ? 0 : u.hints.length - t.nap;
-    el.innerHTML = `${zb > 0 ? `<button class="btn" id="u-nap-b">Nápověda${t.strict ? ' (−5 bodů)' : ''}</button>` : ''}${['num', 'dm', 'grid'].includes(u.kind) ? '<button class="btn hl" id="u-ok">Zkontrolovat</button>' : ''}`;
+    el.innerHTML = `${zb > 0 ? `<button class="btn" id="u-nap-b">Nápověda${t.strict ? ' (méně bodů)' : ''}</button>` : ''}${['num', 'dm', 'grid'].includes(u.kind) ? '<button class="btn hl" id="u-ok">Zkontrolovat</button>' : ''}`;
     if (zb > 0) $('#u-nap-b', el).onclick = () => napoveda(false);
     const ok = $('#u-ok', el); if (ok) ok.onclick = odesli;
   }
@@ -183,19 +188,20 @@ export function serie(root, cfg) {
   function zapis(vysl) { if (cfg.zaznam) cfg.zaznam({ tema: cfg.ulohy[i].tema, gi: cfg.ulohy[i].gi, lvl: t.lvl, vysl, ms: Date.now() - t.od, chyby: t.chyby, text: [t.u.text, t.u.q].filter(Boolean).join(' '), odp: odpoved(t.u) }); }
   function zamkni() { t.hotovo = true; aktivita = true; $$('#u-odp input, #u-odp .volba, #u-odp .chip', telo).forEach(x => x.disabled = true); }
   function spravne(zKon) {
-    const prvni = t.pokus === 0; zamkni();
-    if (prvni && t.nap === 0) combo++;
-    let xp = Math.round(BODY[t.lvl - 1] * (prvni ? 1 : t.pokus === 1 ? 0.6 : 0.3) * (prvni ? 1 + Math.min(Math.max(combo - 1, 0), 10) * 0.1 : 1));
-    if (t.strict) xp = Math.max(5, xp - 5 * t.nap);
-    res.xp += xp; res.body.push(prvni ? 1 : 0.5); res.vyreseno++; if (prvni) res.napoprve++; res.comboMax = Math.max(res.comboMax, combo);
-    if (zKon && prvni && t.u.mode === 3) res.kon3++;
-    zvuk.ok(combo); reseni(); zapis(prvni && t.nap === 0 ? 0 : 1);
+    const prvni = t.pokus === 0, k = podilBodu(t.pokus, t.nap), nav = cfg.ulohy[i].navrat; zamkni();
+    if (k === 1) combo++; // řada (combo) jen za odpovědi napoprvé bez nápovědy
+    const xp = Math.max(1, Math.round(BODY[t.lvl - 1] * k * (k === 1 ? 1 + Math.min(Math.max(combo - 1, 0), 10) * 0.1 : 1)));
+    res.xp += xp; res.comboMax = Math.max(res.comboMax, combo);
+    if (!nav) { res.body.push(k); res.vyreseno++; if (k === 1) res.napoprve++; }
+    if (zKon && k === 1 && t.u.mode === 3) res.kon3++;
+    cfg.ulohy[i].vysl = k === 1 ? 0 : 1;
+    zvuk.ok(combo); reseni(); zapis(k === 1 ? 0 : 1);
     bublina('ok', `+${xp} bodů${prvni && combo >= 2 ? ` · ${combo}× v řadě` : ''}`, rekni(cfg.kdo, prvni ? 'ok' : 'okPozdeji'));
     if (strazce) { const s = $('#h-sz', root); s.classList.remove('zasah'); void s.offsetWidth; s.classList.add('zasah'); }
     lista(); akce(); ukazZpravu();
   }
   function odhal(zKon) {
-    zamkni(); combo = 0; res.body.push(0); res.odhaleno++; zvuk.odhaleni(); reseni(); zapis(2);
+    zamkni(); combo = 0; if (!cfg.ulohy[i].navrat) { res.body.push(0); res.odhaleno++; } cfg.ulohy[i].vysl = 2; zvuk.odhaleni(); reseni(); zapis(2);
     bublina('bad', '', rekni(cfg.kdo, 'odhaleni'));
     lista(); akce(); ukazZpravu();
   }
@@ -204,6 +210,12 @@ export function serie(root, cfg) {
   function dalsi() {
     if (!t.hotovo || konec) return;
     i++;
+    if (i >= N && !strazce && !vraceno && cfg.znovu) { // chyby se v kole vracejí: nové úlohy stejného typu (bez konstrukcí, ty jsou dlouhé)
+      vraceno = true;
+      const zpet = cfg.ulohy.filter(e => e.vysl > 0 && e.u.kind !== 'kon').sort((a, b) => b.vysl - a.vysl).slice(0, NAVRATU).map(cfg.znovu).filter(Boolean);
+      for (const e of zpet) cfg.ulohy.push({ ...e, navrat: true });
+      N = cfg.ulohy.length;
+    }
     if (i >= N || (strazce && res.vyreseno + res.odhaleno >= N)) { konec = true; $('#h-postup', root).style.width = '100%'; uklid(); return cfg.onKonec(res); }
     ukaz();
   }

@@ -36,6 +36,9 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { margin: 0; }
+/* Pozadí připravené na fotku jako v ostatních modulech platformy: stačí nastavit --scene-photo: url(...). */
+:root { --scene-photo: none; --scene-opacity: .22; }
+body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--scene-photo) center / cover no-repeat; opacity: var(--scene-opacity); }
 body {
   font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 17px; line-height: 1.5; color: var(--ink);
   background-color: var(--bg);
@@ -349,6 +352,9 @@ b { font-weight: 700; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
+/* návrat úlohy s chybou na konci kola */
+.ul-navrat { margin: 0 0 8px; padding: 6px 10px; border-radius: 10px; background: var(--hint-bg); font-weight: 700; font-size: .92rem; }
+
 /* opakování s rozestupy */
 .opak-karta { display: flex; align-items: center; gap: 12px; margin: 10px 0 0; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 14px; background: var(--info-bg); box-shadow: 0 3px 0 var(--ink); }
 .opak-karta div { flex: 1; } .opak-karta p { margin: 2px 0 0; font-size: .95rem; } .opak-karta .btn { flex: none; }
@@ -389,6 +395,7 @@ b { font-weight: 700; }
 .rod-tab { width: 100%; border-collapse: collapse; font-size: .9rem; } .rod-tab td { padding: 4px 4px 4px 0; border-bottom: 1px solid var(--line); vertical-align: top; } .rod-tab small { color: var(--muted); }
 .rod-tisk { justify-content: flex-start; margin-top: 16px; }
 @media print {
+  body::before { display: none; }
   body > *:not(.okno-pozadi) { display: none !important; }
   .okno-pozadi { position: static; background: none; padding: 0; display: block; }
   .okno { max-width: none; border: 0; box-shadow: none; }

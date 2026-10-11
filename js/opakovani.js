@@ -24,6 +24,14 @@ export function zapisOpak({ tema, lvl, gi, vysl }, den = dnes()) {
   o[k] = { ...z, krok, kdy: posun(den, ROZESTUPY[krok]) };
 }
 
+// Nová úloha stejného typu (pro návrat chyby na konci kola). Vrací null, když typ úlohy už v obsahu není.
+export function znovuUloha({ tema, lvl, gi }) {
+  const t = najdiTema(tema), gen = t && t.u[lvl - 1] && t.u[lvl - 1][gi];
+  return gen ? { u: gen(), lvl, tema, gi } : null;
+}
+// Typ úlohy, který čeká na opakování, chodí i v běžných sériích častěji (platforma: „chyby příště chodí častěji“).
+export const casteji = (tema, lvl, gi) => klic(tema, lvl, gi) in data();
+
 // Co je dnes na řadě: nejdřív nejstarší termíny, pak nejvíc chyb.
 export function naRade(den = dnes()) {
   return Object.entries(data()).filter(([, z]) => z.kdy <= den).sort((a, b) => a[1].kdy.localeCompare(b[1].kdy) || b[1].chyb - a[1].chyb).map(([k]) => k);

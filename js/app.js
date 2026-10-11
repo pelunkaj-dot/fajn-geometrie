@@ -8,7 +8,7 @@ import { ODZNAKY, noveOdznaky } from './odznaky.js';
 import { zvuk, odemkni, nastavZvuk } from './zvuky.js';
 import { rekni } from './hlasky.js';
 import { rodice, zapisUlohu, zapisSerii } from './rodice.js';
-import { zapisOpak, prehledOpak, ulohyOpak, ROZESTUPY } from './opakovani.js';
+import { zapisOpak, prehledOpak, ulohyOpak, znovuUloha, casteji } from './opakovani.js';
 import { avatar, obrazek } from './postavy.js';
 import { $, $$, modal, zavriModal, jeModal, modalPevny, toast, hv, KRYSTAL, zvukBtn, napojZvuk } from './ui.js';
 import { shuffle, pick, setRng, mulberry } from './util.js';
@@ -106,7 +106,7 @@ function ukazVyklad(t, pak) {
 function sestav(gens, n, lvl, filtr, tema) {
   const out = []; let pytel = [], pokusu = 0;
   while (out.length < n && pokusu++ < 400) {
-    if (!pytel.length) pytel = shuffle(gens.map((_, gi) => gi));
+    if (!pytel.length) { const vse = gens.map((_, gi) => gi); pytel = shuffle([...vse, ...vse.filter(gi => tema && casteji(tema, lvl, gi))]); } // typy s chybou dvakrát v pytli
     const gi = pytel.pop(), u = gens[gi]();
     if (filtr && !filtr(u)) continue;
     out.push({ u, lvl, tema, gi });
@@ -118,7 +118,7 @@ function pripravUroven(t, lvl) {
   if (DEMO && demoZbyva() <= 0) return plna();
   const start = () => {
     const n = t.kon ? [6, 6, 5][lvl - 1] : [10, 10, 8][lvl - 1], kdo = kdoMluvi();
-    bezici = serie(app, { typ: 'uroven', ulohy: sestav(t.u[lvl - 1], n, lvl, null, t.id), kdo, vyklad: () => ukazVyklad(t), onZpet: kresli, zaznam, onKonec: res => poUrovni(t, lvl, res, kdo) });
+    bezici = serie(app, { typ: 'uroven', ulohy: sestav(t.u[lvl - 1], n, lvl, null, t.id), kdo, vyklad: () => ukazVyklad(t), onZpet: kresli, zaznam, znovu: znovuUloha, onKonec: res => poUrovni(t, lvl, res, kdo) });
   };
   if (lvl === 1 && !stav.vyklad[t.id]) ukazVyklad(t, start); else start();
 }
@@ -159,7 +159,7 @@ function pripravOpak() {
   if (DEMO && demoZbyva() <= 0) return plna();
   const ulohy = ulohyOpak(), kdo = kdoMluvi(); uloz();
   if (!ulohy.length) { toast('Dnes není co opakovat.'); return kresli(); }
-  bezici = serie(app, { typ: 'opakovani', ulohy, kdo, onZpet: kresli, zaznam, onKonec: res => poOpak(res, kdo) });
+  bezici = serie(app, { typ: 'opakovani', ulohy, kdo, onZpet: kresli, zaznam, znovu: znovuUloha, onKonec: res => poOpak(res, kdo) });
 }
 function poOpak(res, kdo) {
   const kr = res.napoprve; // krystal za každou úlohu, která se napodruhé povedla napoprvé
@@ -241,7 +241,7 @@ function vyzva() {
     setRng(mulberry(y * 10000 + m * 100 + dd + R.rocnik * 7919));
     const tem = shuffle(R.temata), gens = Array.from({ length: 5 }, (_, i) => { const t = tem[i % tem.length], gi = pick(t.u[1].map((_, k) => k)); return [t.u[1][gi], t.id, gi]; }), ulohy = gens.map(([g, tema, gi]) => { let u; do { u = g(); } while (u.kind === 'kon' && u.mode === 3); return { u, lvl: 2, tema, gi }; });
     setRng(null);
-    bezici = serie(app, { typ: 'denni', ulohy, kdo, onZpet: kresli, zaznam, onKonec: res => {
+    bezici = serie(app, { typ: 'denni', ulohy, kdo, onZpet: kresli, zaznam, znovu: znovuUloha, onKonec: res => {
       zapisSerii({ typ: 'denni', lvl: 2, acc: Math.round(100 * res.napoprve / res.n), n: res.n });
       const uz = stav.stat.den.datum === dnes(), kr = uz ? 0 : 20;
       if (!uz) { stav.stat.den = { datum: dnes(), serie: stav.stat.den.datum === vcera() ? stav.stat.den.serie + 1 : 1 }; }

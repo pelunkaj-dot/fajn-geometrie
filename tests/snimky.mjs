@@ -60,7 +60,8 @@ await p.click('.nk-el[data-el="a"] .nk-hit', { force: true }); await odpovez(t);
 await pryc();
 
 // celá série → výsledek
-await start('606', 1); await serie('606/1'); await shot('14-vysledek'); await domu();
+await start('606', 1); t = await U(); await odpovez(t, false); await odpovez(t); await p.click('#u-dal'); ok(!(await p.$('.ul-navrat')), 'návrat chyby až na konci kola');
+const n606 = await serie('606/1') + 1; ok(n606 === 11, `jedna chyba v sérii 10 úloh: na konci se má vrátit 1 úloha (odehráno ${n606})`); await shot('14-vysledek'); await domu();
 
 // strážce
 await stavNa({ urovne: { '601-1': { hv: 3, her: 2 }, '601-2': { hv: 2, her: 1 }, '606-1': { hv: 3, her: 1 } } });

@@ -76,5 +76,7 @@ Ke kontrole textů a výpočtů: `KROKY=1 node tools/vzorky.mjs 8 801` vypíše 
 | `js/opakovani.js` | opakování s rozestupy podle chyb |
 | `docs/UCIVO.md` | rozpis učiva a pravidla obtížností |
 
+Pozadí je připravené na fotku jako v ostatních modulech: v `css/style.css` stačí nastavit `--scene-photo: url(...)` (průhlednost `--scene-opacity`).
+
 Písma Atkinson Hyperlegible a Baloo 2 jsou přiložená ve `fonts/` (licence SIL OFL), nic se nenačítá odjinud.
 Postup hráče se ukládá jen v jeho prohlížeči.
