@@ -41,5 +41,5 @@ Vanilla JS, ES moduly, bez build kroku. Přehled souborů je v README.md.
 ## Stav (říjen 2026)
 Hotovo: ročníky 6–9, 21 témat × 3 úrovně, herní režimy, ukázková verze, jednosouborový náhled (`tools/nahled.py`).
 Ochrana `fdc-guard.js` je zapojená v `index.html` (ověřeno lokálně: přímý odkaz → `index-demo.html`, příchod z fajndoucko.cz → plná verze); `index-demo.html` je bez ochrany.
-GitHub Pages zatím nezapnuté (API přes proxy odmítnuto, zapnout ručně v Settings → Pages: `main`, `/`); nasazení neověřeno.
+GitHub Pages zapnuté (`main`, `/`), hra běží na https://pelunkaj-dot.github.io/fajn-geometrie/ (ověřil Jan).
 Nezapojeno: přehled pro rodiče, opakování s rozestupy podle chyb.

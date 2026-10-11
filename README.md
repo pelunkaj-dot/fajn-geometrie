@@ -35,8 +35,6 @@ Plná verze (`index.html`) je chráněná stejně jako ostatní moduly: první p
 přesměruje na `index-demo.html`, která ochranu nemá. Náhled z `tools/nahled.py` ochranu vynechá
 a testy v prohlížeči ji nahradí prázdným skriptem (hrají jako s platným přístupem).
 
-Stav: GitHub Pages zatím nejsou zapnuté (zapnout ručně podle návodu výše).
-
 ## Testy
 
 ```
