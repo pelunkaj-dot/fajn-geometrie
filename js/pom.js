@@ -9,6 +9,8 @@ export const m_ = x => `${cz(x)} m`;
 export const st = x => `${cz(x)}°`;
 export const B = x => `<b>${x}</b>`;
 export const SUB = (z, i) => `${z}<sub>${i}</sub>`;
+// Vysvětlení útvarů na obrázku (úrovně Základy a Procvičování; Jedničkář pojmy zná)
+export const TVAR_V = { kosoctverec: ' (rovnoběžník, který má všechny strany stejně dlouhé)', rovnobeznik: ' (rovnoběžník se šikmými úhly a různě dlouhými stranami)', lichobeznik: ' (ramena jsou stejně dlouhá)' };
 export const KRAT = { 2: 'dvakrát', 3: 'třikrát', 4: 'čtyřikrát', 5: 'pětkrát', 6: 'šestkrát', 8: 'osmkrát', 10: 'desetkrát' };
 // úhel ve stupních a minutách jako text
 export const sm = (s, m) => m ? `${s}° ${m}′` : `${s}°`;

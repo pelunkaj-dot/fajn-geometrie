@@ -165,24 +165,25 @@ function g_pojem() {
     hints: ['Jména odvěsen závisí na tom, od kterého úhlu se díváme.', 'Protilehlá odvěsna leží naproti úhlu. Přilehlá odvěsna z úhlu vychází (a není to přepona).', 'Přepona je vždy naproti pravému úhlu.'], steps: [proc],
   });
 }
+const GF_JM = { sin: 'sinus', cos: 'kosinus', tg: 'tangens' }; // názvy funkcí k vysvětlení zkratek (úrovně 1–2)
 function g_definice() {
   const [f, ok] = pick([['sin α', 'protilehlá odvěsna : přepona'], ['cos α', 'přilehlá odvěsna : přepona'], ['tg α', 'protilehlá odvěsna : přilehlá odvěsna']]);
   return C({
-    text: `Goniometrická funkce ${B(f)} v pravoúhlém trojúhelníku.`, q: 'Který poměr stran to je?', ok, opts: ['protilehlá odvěsna : přepona', 'přilehlá odvěsna : přepona', 'protilehlá odvěsna : přilehlá odvěsna'],
+    text: `Goniometrická funkce ${B(f)} (${GF_JM[f.split(' ')[0]]} úhlu α) v pravoúhlém trojúhelníku.`, q: 'Který poměr stran to je?', ok, opts: ['protilehlá odvěsna : přepona', 'přilehlá odvěsna : přepona', 'protilehlá odvěsna : přilehlá odvěsna'],
     hints: ['Každá funkce je podíl dvou stran pravoúhlého trojúhelníku.', 'Sinus a kosinus mají ve jmenovateli přeponu. Tangens přeponu nepoužívá.', 'Sinus: protilehlá ku přeponě. Kosinus: přilehlá ku přeponě. Tangens: protilehlá ku přilehlé.'], steps: [`${f} = ${ok}`],
   });
 }
 function g_pomer() {
   const [a, b, c] = pick([[3, 4, 5], [4, 3, 5], [5, 12, 13], [12, 5, 13], [8, 15, 17], [15, 8, 17], [6, 8, 10], [7, 24, 25]]), f = pick(['sin', 'cos', 'tg']), [cit, jm, v] = { sin: [a, c, 'a : c'], cos: [b, c, 'b : c'], tg: [a, b, 'a : b'] }[f];
   return N({
-    text: `${PRAVO} je a = ${B(cm(a))}, b = ${B(cm(b))}, c = ${B(cm(c))}. Úhel α leží u vrcholu A.`, q: `Vypočítej ${f} α. Zaokrouhli na dvě desetinná místa.`, fig: fRightTri(a, b, { la: cm(a), lb: cm(b), lc: cm(c), alpha: 'α' }), ans: rd(cit / jm, 2), dec: 2,
+    text: `${PRAVO} je a = ${B(cm(a))}, b = ${B(cm(b))}, c = ${B(cm(c))}. Úhel α leží u vrcholu A.`, q: `Vypočítej ${f} α (${GF_JM[f]} úhlu α). Zaokrouhli na dvě desetinná místa.`, fig: fRightTri(a, b, { la: cm(a), lb: cm(b), lc: cm(c), alpha: 'α' }), ans: rd(cit / jm, 2), dec: 2,
     hints: ['Úhel α je u vrcholu A. Protilehlá odvěsna je a, přilehlá b, přepona c.', `${f} α = ${v}`, `${f} α = ${cit} : ${jm}`], steps: [`${f} α = ${v}`, `${f} α = ${cit} : ${jm} ≐ ${cz(rd(cit / jm, 2))}`],
   });
 }
 function g_kalkulacka() {
   let f, u, h; do { f = pick(['sin', 'cos', 'tg']); u = ri(10, 80); h = FN[f](u); } while (!bezp(h, 2));
   return N({
-    text: `Najdi na kalkulačce (nebo v tabulkách) hodnotu ${B(`${f} ${u}°`)}.`, q: 'Kolik to je? Zaokrouhli na dvě desetinná místa.', ans: rd(h, 2), dec: 2,
+    text: `Najdi na kalkulačce (nebo v tabulkách) hodnotu ${B(`${f} ${u}°`)} (${GF_JM[f]} úhlu ${u}°).`, q: 'Kolik to je? Zaokrouhli na dvě desetinná místa.', ans: rd(h, 2), dec: 2,
     hints: ['Na kalkulačce musí být nastavené stupně (DEG), ne radiány.', `Zmáčkni tlačítko ${f === 'tg' ? 'tan' : f} a zadej ${u}.`, 'Výsledek zaokrouhli na setiny.'], steps: [`${f} ${u}° ≐ ${cz(rd(h, 2))}`],
   });
 }
@@ -192,7 +193,7 @@ function gonStrana(f) { // f: sin → a z c; cos → b z c; tg → a z b
 function g_stranaSin() {
   const [al, c, x, tab] = gonStrana('sin');
   return N({
-    text: `${PRAVO} je přepona c = ${B(cm(c))} a úhel α = ${B(st(al))}.`, q: `Jak dlouhá je odvěsna a (protilehlá k úhlu α)? ${ZAOKR}`, fig: fRightTri(c * FN.sin(al), c * FN.cos(al), { la: '?', lc: cm(c), alpha: st(al) }), ...gv(x, tab), unit: 'cm',
+    text: `${PRAVO} je přepona (nejdelší strana, naproti pravému úhlu) c = ${B(cm(c))} a úhel α = ${B(st(al))}.`, q: `Jak dlouhá je odvěsna a (protilehlá k úhlu α)? ${ZAOKR}`, fig: fRightTri(c * FN.sin(al), c * FN.cos(al), { la: '?', lc: cm(c), alpha: st(al) }), ...gv(x, tab), unit: 'cm',
     traps: [[rd(c * FN.cos(al), 1), 'Tohle vyjde s kosinem. Protilehlá odvěsna patří k sinu.']],
     hints: ['Známe přeponu a úhel, hledáme protilehlou odvěsnu. Která funkce spojuje protilehlou odvěsnu a přeponu?', 'sin α = a : c, proto a = c · sin α', `a = ${c} · sin ${al}°`], steps: ['sin α = a : c', `a = c · sin α = ${c} · sin ${al}°`, `a ≐ ${cm(rd(x, 1))}`],
   });
@@ -201,7 +202,7 @@ function g_stranaSin() {
 function g_stranaCos() {
   const [al, c, x, tab] = gonStrana('cos');
   return N({
-    text: `${PRAVO} je přepona c = ${B(cm(c))} a úhel α = ${B(st(al))}.`, q: `Jak dlouhá je odvěsna b (přilehlá k úhlu α)? ${ZAOKR}`, fig: fRightTri(c * FN.sin(al), c * FN.cos(al), { lb: '?', lc: cm(c), alpha: st(al) }), ...gv(x, tab), unit: 'cm',
+    text: `${PRAVO} je přepona (nejdelší strana, naproti pravému úhlu) c = ${B(cm(c))} a úhel α = ${B(st(al))}.`, q: `Jak dlouhá je odvěsna b (přilehlá k úhlu α)? ${ZAOKR}`, fig: fRightTri(c * FN.sin(al), c * FN.cos(al), { lb: '?', lc: cm(c), alpha: st(al) }), ...gv(x, tab), unit: 'cm',
     traps: [[rd(c * FN.sin(al), 1), 'Tohle vyjde se sinem. Přilehlá odvěsna patří ke kosinu.']],
     hints: ['Přilehlou odvěsnu a přeponu spojuje kosinus.', 'cos α = b : c, proto b = c · cos α'], steps: [`b = c · cos α = ${c} · cos ${al}°`, `b ≐ ${cm(rd(x, 1))}`],
   });
@@ -209,14 +210,14 @@ function g_stranaCos() {
 function g_stranaTg() {
   const [al, bb, x, tab] = gonStrana('tg');
   return N({
-    text: `${PRAVO} je odvěsna b = ${B(cm(bb))} a úhel α = ${B(st(al))}.`, q: `Jak dlouhá je odvěsna a (protilehlá k úhlu α)? ${ZAOKR}`, fig: fRightTri(x, bb, { la: '?', lb: cm(bb), alpha: st(al) }), ...gv(x, tab), unit: 'cm',
+    text: `${PRAVO} je odvěsna (kratší strana u pravého úhlu) b = ${B(cm(bb))} a úhel α = ${B(st(al))}.`, q: `Jak dlouhá je odvěsna a (protilehlá k úhlu α)? ${ZAOKR}`, fig: fRightTri(x, bb, { la: '?', lb: cm(bb), alpha: st(al) }), ...gv(x, tab), unit: 'cm',
     hints: ['Známe přilehlou odvěsnu, hledáme protilehlou. Přepona v úloze není, použijeme tangens.', 'tg α = a : b, proto a = b · tg α'], steps: [`a = b · tg α = ${bb} · tg ${al}°`, `a ≐ ${cm(rd(x, 1))}`],
   });
 }
 function g_prepona() {
   let al, a, x; do { al = ri(20, 70); a = ri(4, 15); x = a / FN.sin(al); } while (!bezp(x, 1));
   return N({
-    text: `${PRAVO} je odvěsna a = ${B(cm(a))} a úhel α = ${B(st(al))} (leží naproti straně a).`, q: `Jak dlouhá je přepona c? ${ZAOKR}`, fig: fRightTri(a, a / FN.tg(al), { la: cm(a), lc: '?', alpha: st(al) }), ...gv(x, a / rd(FN.sin(al), 4)), unit: 'cm',
+    text: `${PRAVO} je odvěsna (kratší strana u pravého úhlu) a = ${B(cm(a))} a úhel α = ${B(st(al))} (leží naproti straně a).`, q: `Jak dlouhá je přepona c? ${ZAOKR}`, fig: fRightTri(a, a / FN.tg(al), { la: cm(a), lc: '?', alpha: st(al) }), ...gv(x, a / rd(FN.sin(al), 4)), unit: 'cm',
     traps: [[rd(a * FN.sin(al), 1), 'Přepona je delší než odvěsna. Sinem se tady dělí, nenásobí.']],
     hints: ['Protilehlou odvěsnu a přeponu spojuje sinus.', 'sin α = a : c, proto c = a : sin α'], steps: ['sin α = a : c', `c = a : sin α = ${a} : sin ${al}°`, `c ≐ ${cm(rd(x, 1))}`],
   });
@@ -225,7 +226,7 @@ function gonUhel(f) { for (;;) { const p = ri(3, 12), q = ri(4, 15), pom = f ===
 function g_uhelSin() {
   const [a, c, u] = gonUhel('sin');
   return N({
-    text: `${PRAVO} je odvěsna a = ${B(cm(a))} a přepona c = ${B(cm(c))}.`, q: 'Jak velký je úhel α (naproti straně a)? Zaokrouhli na celé stupně.', ans: rd(u), dec: 0, unit: '°',
+    text: `${PRAVO} je odvěsna (kratší strana u pravého úhlu) a = ${B(cm(a))} a přepona (nejdelší strana, naproti pravému úhlu) c = ${B(cm(c))}.`, q: 'Jak velký je úhel α (naproti straně a)? Zaokrouhli na celé stupně.', ans: rd(u), dec: 0, unit: '°',
     traps: [[rd(90 - u), 'To je druhý ostrý úhel. Úhel α leží naproti straně a.']],
     hints: ['Protilehlou odvěsnu a přeponu spojuje sinus: sin α = a : c.', 'Úhel z hodnoty sinu vrátí na kalkulačce tlačítko sin⁻¹ (často SHIFT + sin).'], steps: [`sin α = ${a} : ${c} ≐ ${cz(a / c, 4)}`, `α ≐ ${st(rd(u))}`],
   });
@@ -233,7 +234,7 @@ function g_uhelSin() {
 function g_uhelTg() {
   const [a, bb, u] = gonUhel('tg');
   return N({
-    text: `${PRAVO} jsou odvěsny a = ${B(cm(a))} a b = ${B(cm(bb))}.`, q: 'Jak velký je úhel α (naproti straně a)? Zaokrouhli na celé stupně.', fig: fRightTri(a, bb, { la: cm(a), lb: cm(bb), alpha: '?' }), ans: rd(u), dec: 0, unit: '°',
+    text: `${PRAVO} jsou odvěsny (dvě kratší strany u pravého úhlu) a = ${B(cm(a))} a b = ${B(cm(bb))}.`, q: 'Jak velký je úhel α (naproti straně a)? Zaokrouhli na celé stupně.', fig: fRightTri(a, bb, { la: cm(a), lb: cm(bb), alpha: '?' }), ans: rd(u), dec: 0, unit: '°',
     traps: [[rd(90 - u), 'To je druhý ostrý úhel. Do tangens patří protilehlá ku přilehlé: a : b.']],
     hints: ['Známe obě odvěsny, použijeme tangens: tg α = a : b.', 'Úhel z hodnoty tangens vrátí tlačítko tan⁻¹ (často SHIFT + tan).'], steps: [`tg α = ${a} : ${bb} ≐ ${cz(a / bb, 4)}`, `α ≐ ${st(rd(u))}`],
   });
@@ -298,7 +299,7 @@ function g_lanovka() {
 function j_objemSp() {
   const v = 3 * ri(1, 5), S = ri(6, 40);
   return N({
-    text: `Jehlan má podstavu o obsahu ${B(cm2(S))} a výšku ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', ans: S * v / 3, unit: 'cm³',
+    text: `Jehlan má podstavu (stěnu, na které jehlan stojí) o obsahu ${B(cm2(S))} a výšku ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', ans: S * v / 3, unit: 'cm³',
     traps: [[S * v, 'To je objem hranolu se stejnou podstavou a výškou. Jehlan má třetinu.']],
     hints: ['Jehlan se zužuje do špičky, proto má menší objem než hranol se stejnou podstavou a výškou.', 'Má přesně třetinu: V = S<sub>p</sub> · v : 3', `V = ${S} · ${v} : 3`], steps: ['V = S<sub>p</sub> · v : 3', `V = ${S} · ${v} : 3 = ${cm3(S * v / 3)}`],
   });
@@ -306,7 +307,7 @@ function j_objemSp() {
 function j_objemCtv() {
   const a = ri(3, 10), v = 3 * ri(1, 5);
   return N({
-    text: `Pravidelný čtyřboký jehlan má podstavnou hranu ${B(cm(a))} a výšku ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', fig: fPyr(a, v, { la: cm(a), lh: cm(v) }), ans: a * a * v / 3, unit: 'cm³',
+    text: `Pravidelný čtyřboký jehlan (podstava je čtverec, boční stěny jsou stejné trojúhelníky) má podstavnou hranu ${B(cm(a))} a výšku ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', fig: fPyr(a, v, { la: cm(a), lh: cm(v) }), ans: a * a * v / 3, unit: 'cm³',
     traps: [[a * a * v, 'Chybí dělení třemi.'], [a * v / 3, 'Podstava je čtverec, její obsah je a · a.']],
     hints: ['Podstavou pravidelného čtyřbokého jehlanu je čtverec.', 'V = S<sub>p</sub> · v : 3, kde S<sub>p</sub> = a²', `V = ${a}² · ${v} : 3`], steps: [`S<sub>p</sub> = ${a}² = ${cm2(a * a)}`, `V = ${a * a} · ${v} : 3 = ${cm3(a * a * v / 3)}`],
   });
@@ -314,7 +315,7 @@ function j_objemCtv() {
 function k_objem() {
   const r = ri(2, 6), v = 3 * ri(1, 5);
   return N({
-    text: `Kužel má poloměr podstavy ${B(cm(r))} a výšku ${B(cm(v))}.`, q: `Vypočítej jeho objem. ${ZAOKR} ${PI_T}`, fig: fCone(r, v, { lr: cm(r), lh: cm(v) }), ...pia(p => p * r * r * v / 3), unit: 'cm³',
+    text: `Kužel má poloměr podstavy (kruhového dna) ${B(cm(r))} a výšku ${B(cm(v))}.`, q: `Vypočítej jeho objem. ${ZAOKR} ${PI_T}`, fig: fCone(r, v, { lr: cm(r), lh: cm(v) }), ...pia(p => p * r * r * v / 3), unit: 'cm³',
     traps: [[rd(3.14 * r * r * v, 1), 'To je objem válce. Kužel má třetinu.']],
     hints: ['Kužel je „kulatý jehlan“: podstava je kruh a těleso se zužuje do špičky.', 'Má třetinu objemu válce se stejnou podstavou a výškou: V = π · r² · v : 3', `V = 3,14 · ${r}² · ${v} : 3`], steps: ['V = π · r² · v : 3', `V = 3,14 · ${r * r} · ${v} : 3`, `V ≐ ${cm3(rd(3.14 * r * r * v / 3, 1))}`],
   });
@@ -339,7 +340,7 @@ function j_pojem() {
 function j_povrch() {
   const a = 2 * ri(2, 6), w = ri(a / 2 + 1, 12);
   return N({
-    text: `Pravidelný čtyřboký jehlan má podstavnou hranu ${B(cm(a))} a stěnovou výšku ${B(cm(w))}.`, q: 'Vypočítej jeho povrch.', fig: fPyr(a, Math.sqrt(w * w - a * a / 4), { la: cm(a), lw: cm(w) }), ans: a * a + 2 * a * w, unit: 'cm²',
+    text: `Pravidelný čtyřboký jehlan (podstava je čtverec, boční stěny jsou stejné trojúhelníky) má podstavnou hranu ${B(cm(a))} a stěnovou výšku (výšku jedné boční stěny, trojúhelníku) ${B(cm(w))}.`, q: 'Vypočítej jeho povrch.', fig: fPyr(a, Math.sqrt(w * w - a * a / 4), { la: cm(a), lw: cm(w) }), ans: a * a + 2 * a * w, unit: 'cm²',
     traps: [[a * a + 4 * a * w, 'Boční stěny jsou trojúhelníky: obsah každé je a · w : 2.'], [2 * a * w, 'Přičti ještě podstavu.']],
     hints: ['Povrch = čtvercová podstava + čtyři stejné trojúhelníkové stěny.', 'Stěnová výška w je výška boční stěny. Jedna stěna má obsah a · w : 2.'], steps: [`S<sub>p</sub> = ${a}² = ${cm2(a * a)}`, `Plášť: 4 · ${a} · ${w} : 2 = ${cm2(2 * a * w)}`, `S = ${a * a} + ${2 * a * w} = ${cm2(a * a + 2 * a * w)}`],
   });
@@ -348,7 +349,7 @@ const KUZ = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [9, 12, 15], [8, 6
 function k_strana() {
   const [r, v, s] = pick(KUZ);
   return N({
-    text: `Kužel má poloměr podstavy ${B(cm(r))} a výšku ${B(cm(v))}.`, q: 'Jak dlouhá je jeho strana s?', fig: fCone(r, v, { lr: cm(r), lh: cm(v), ls: '?' }), ans: s, unit: 'cm',
+    text: `Kužel má poloměr podstavy (kruhového dna) ${B(cm(r))} a výšku ${B(cm(v))}.`, q: 'Jak dlouhá je jeho strana s (spojnice špičky s okrajem podstavy)?', fig: fCone(r, v, { lr: cm(r), lh: cm(v), ls: '?' }), ans: s, unit: 'cm',
     traps: [[r + v, 'Délky se nesčítají. Použij Pythagorovu větu.']],
     hints: ['Poloměr, výška a strana kužele tvoří pravoúhlý trojúhelník. Strana je přepona.', 's² = r² + v²'], steps: [`s² = ${r}² + ${v}² = ${r * r} + ${v * v} = ${s * s}`, `s = √${s * s} = ${cm(s)}`],
   });
@@ -356,7 +357,7 @@ function k_strana() {
 function k_plast() {
   const [r, , s] = pick(KUZ);
   return N({
-    text: `Kužel má poloměr podstavy ${B(cm(r))} a stranu ${B(cm(s))}.`, q: `Jaký obsah má jeho plášť? ${ZAOKR} ${PI_T}`, ...pia(p => p * r * s), unit: 'cm²',
+    text: `Kužel má poloměr podstavy (kruhového dna) ${B(cm(r))} a stranu (spojnici špičky s okrajem podstavy) ${B(cm(s))}.`, q: `Jaký obsah má jeho plášť? ${ZAOKR} ${PI_T}`, ...pia(p => p * r * s), unit: 'cm²',
     traps: [[rd(3.14 * r * (r + s), 1), 'To je celý povrch i s podstavou. Ptáme se jen na plášť.']],
     hints: ['Plášť kužele rozvinutý do roviny je kruhová výseč.', 'S<sub>pl</sub> = π · r · s'], steps: ['S<sub>pl</sub> = π · r · s', `S<sub>pl</sub> = 3,14 · ${r} · ${s} ≐ ${cm2(rd(3.14 * r * s, 1))}`],
   });
@@ -364,7 +365,7 @@ function k_plast() {
 function k_povrch() {
   const [r, , s] = pick(KUZ);
   return N({
-    text: `Kužel má poloměr podstavy ${B(cm(r))} a stranu ${B(cm(s))}.`, q: `Vypočítej jeho povrch. ${ZAOKR} ${PI_T}`, ...pia(p => p * r * (r + s)), unit: 'cm²',
+    text: `Kužel má poloměr podstavy (kruhového dna) ${B(cm(r))} a stranu (spojnici špičky s okrajem podstavy) ${B(cm(s))}.`, q: `Vypočítej jeho povrch. ${ZAOKR} ${PI_T}`, ...pia(p => p * r * (r + s)), unit: 'cm²',
     traps: [[rd(3.14 * r * s, 1), 'To je jen plášť. Přičti podstavu.']],
     hints: ['Povrch = kruhová podstava + plášť.', 'S = π · r² + π · r · s'], steps: [`Podstava: 3,14 · ${r}² = ${cz(3.14 * r * r)} cm²`, `Plášť: 3,14 · ${r} · ${s} = ${cz(3.14 * r * s)} cm²`, `S ≐ ${cm2(rd(3.14 * r * (r + s), 1))}`],
   });
@@ -380,7 +381,7 @@ function ko_objem() {
 function j_vyskaZObjemu() {
   const S = ri(6, 30), v = ri(3, 12);
   return N({
-    text: `Jehlan má objem ${B(cm3(S * v))} a podstavu o obsahu ${B(cm2(3 * S))}.`, q: 'Jak je vysoký?', ans: v, unit: 'cm',
+    text: `Jehlan má objem ${B(cm3(S * v))} a podstavu (stěnu, na které jehlan stojí) o obsahu ${B(cm2(3 * S))}.`, q: 'Jak je vysoký?', ans: v, unit: 'cm',
     traps: [[rd(v / 3, 2), 'Ve vzorci je dělení třemi. Při výpočtu výšky se proto objem nejdřív násobí třemi.']],
     hints: ['V = S<sub>p</sub> · v : 3. Trojnásobek objemu je S<sub>p</sub> · v.', 'v = 3 · V : S<sub>p</sub>'], steps: ['v = 3 · V : S<sub>p</sub>', `v = 3 · ${S * v} : ${3 * S} = ${cm(v)}`],
   });

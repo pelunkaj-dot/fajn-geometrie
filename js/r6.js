@@ -3,7 +3,7 @@ import { ri, pick, chance, shuffle, sample, rstep, cz, rd } from './util.js';
 import { N, C, DM, GR, K, sit } from './ulohy.js';
 import { fAngle, fAnglePair, fParallel, fClock, fTri, triAng, triSSS, fRect, fL, fCuboid, fShape, gridSvg } from './fig.js';
 import { nacrtekSvg, kSvg, kProved } from './kon.js';
-import { cm, cm2, cm3, st, B, SUB, KRAT, sm, smT, trojStrany, danyTroj } from './pom.js';
+import { cm, cm2, cm3, st, B, SUB, KRAT, sm, smT, trojStrany, danyTroj, TVAR_V } from './pom.js';
 
 // ======================= 601 ÚHLY =======================
 const DRUH = d => d < 90 ? 'ostrý' : d === 90 ? 'pravý' : d < 180 ? 'tupý' : 'přímý';
@@ -21,7 +21,7 @@ function uh_druh() {
 function uh_ved1() {
   let a = rstep(20, 160, 5); if (a === 90) a = 65;
   return N({
-    text: `Úhly α a β jsou ${B('vedlejší')}. Úhel α má ${B(st(a))}.`, q: 'Jak velký je úhel β?',
+    text: `Úhly α a β jsou ${B('vedlejší')} (leží vedle sebe a mají společné rameno). Úhel α má ${B(st(a))}.`, q: 'Jak velký je úhel β?',
     fig: fAnglePair('ved', a, st(a), '?'), ans: 180 - a, unit: '°',
     traps: [[a, 'Stejně velké jsou vrcholové úhly. Vedlejší úhly dávají dohromady 180°.'], [360 - a, 'Vedlejší úhly tvoří dohromady přímý úhel, tedy 180°, ne 360°.'],
       ...(a < 90 ? [[90 - a, 'Do 90° se doplňují úhly v pravém úhlu. Vedlejší úhly dávají dohromady 180°.']] : [])],
@@ -32,7 +32,7 @@ function uh_ved1() {
 function uh_vrch1() {
   let a = rstep(20, 160, 5); if (a === 90) a = 115;
   return N({
-    text: `Úhly α a β jsou ${B('vrcholové')}. Úhel α má ${B(st(a))}.`, q: 'Jak velký je úhel β?',
+    text: `Úhly α a β jsou ${B('vrcholové')} (leží naproti sobě u průsečíku dvou přímek). Úhel α má ${B(st(a))}.`, q: 'Jak velký je úhel β?',
     fig: fAnglePair('vrch', a, st(a), '?'), ans: a, unit: '°',
     traps: [[180 - a, 'To je vedlejší úhel. Vrcholové úhly leží proti sobě a jsou stejně velké.']],
     hints: ['Vrcholové úhly vzniknou, když se protnou dvě přímky. Leží proti sobě, mají společný jen vrchol.', 'Vrcholové úhly jsou vždy stejně velké.', `β = α = ${st(a)}`],
@@ -106,7 +106,7 @@ function uh_osa() {
 function uh_vedDM() {
   const a = ri(40, 150), m = ri(5, 55);
   return DM({
-    text: `Úhly α a β jsou vedlejší. α = ${B(sm(a, m))}`, q: 'Vypočítej úhel β.', ans: 180 * 60 - a * 60 - m,
+    text: `Úhly α a β jsou vedlejší (leží vedle sebe a mají společné rameno). α = ${B(sm(a, m))}`, q: 'Vypočítej úhel β.', ans: 180 * 60 - a * 60 - m,
     traps: [[(180 - a) * 60 + m, 'Minuty se taky odčítají. Zapiš si 180° jako 179° 60′.'], [(180 - a) * 60 - m + 60, 'Když si půjčíš 1° na minuty, zbude ti 179°, ne 180°.']],
     hints: ['Vedlejší úhly dávají dohromady 180°.', '180° si napiš jako 179° 60′, pak půjdou minuty odečíst.'],
     steps: ['β = 180° − α', `180° = 179° 60′`, `β = 179° 60′ − ${sm(a, m)} = ${smT(180 * 60 - a * 60 - m)}`],
@@ -115,7 +115,7 @@ function uh_vedDM() {
 function uh_dvaVrch() {
   const a = ri(25, 85);
   return N({
-    text: `Dvě přímky se protínají. Součet dvou vrcholových úhlů je ${B(st(2 * a))}.`, q: 'Jak velký je úhel, který je k nim vedlejší?', ans: 180 - a, unit: '°',
+    text: `Dvě přímky se protínají. Součet dvou vrcholových úhlů (leží naproti sobě u průsečíku přímek) je ${B(st(2 * a))}.`, q: 'Jak velký je úhel, který je k nim vedlejší (leží vedle každého z nich a má s ním společné rameno)?', ans: 180 - a, unit: '°',
     fig: fAnglePair('vrch', a, 'α', 'α', '?'),
     traps: [[180 - 2 * a, 'Od 180° se odečítá jeden úhel, ne součet obou.'], [a, 'To je jeden z vrcholových úhlů. Hledáme úhel vedlejší.']],
     hints: ['Vrcholové úhly jsou stejně velké. Jak velký je tedy jeden z nich?', 'Vedlejší úhel doplňuje jeden z nich do 180°.'],
@@ -199,8 +199,8 @@ function uh_triDily() {
 // ======================= 602 OSOVÁ SOUMĚRNOST =======================
 const H_OSA = ['Představ si, že osa je zrcadlo. Obraz leží „za zrcadlem“.', 'Spočítej, kolik čtverečků je bod od osy (kolmo k ní). Obraz je stejně daleko na druhé straně.', 'Bod, který leží přímo na ose, zůstává na místě.'];
 const os_sit = (o, text, hints = H_OSA) => () => GR({ ...sit(o), text, q: 'Ťukni do sítě na místa, kde leží obrazy bodů.', hints });
-const os_bod1 = os_sit({ n: 1, osa: ['v', 'h'] }, 'Najdi obraz bodu A v osové souměrnosti s osou o.');
-const os_usecka1 = os_sit({ n: 2, osa: ['v', 'h'] }, 'Najdi obraz úsečky AB v osové souměrnosti s osou o. Stačí označit obrazy krajních bodů.');
+const os_bod1 = os_sit({ n: 1, osa: ['v', 'h'] }, 'Najdi obraz bodu A (kam se bod přenese, jako v zrcadle) v osové souměrnosti s osou o.');
+const os_usecka1 = os_sit({ n: 2, osa: ['v', 'h'] }, 'Najdi obraz úsečky AB (kam se úsečka přenese, jako v zrcadle) v osové souměrnosti s osou o. Stačí označit obrazy krajních bodů.');
 const OSY = [['ctverec', 'čtverec', 4, 'Dvě osy procházejí středy protějších stran, dvě jsou úhlopříčky.'], ['obdelnik', 'obdélník', 2, 'Osy procházejí středy protějších stran. Úhlopříčky osami nejsou.'],
   ['rovnostranny', 'rovnostranný trojúhelník', 3, 'Každá osa prochází jedním vrcholem a středem protější strany.'], ['rovnoramenny', 'rovnoramenný trojúhelník', 1, 'Osa prochází hlavním vrcholem a středem základny.'],
   ['obecny', 'různostranný trojúhelník', 0, 'Žádná přímka ho nerozdělí na dvě zrcadlově stejné části.'], ['kosoctverec', 'kosočtverec', 2, 'Osami jsou obě úhlopříčky.'],
@@ -209,7 +209,7 @@ const OSY = [['ctverec', 'čtverec', 4, 'Dvě osy procházejí středy protějš
 function os_pocet() {
   const [id, jm, n, proc] = pick(OSY.slice(0, 8));
   return C({
-    text: `Na obrázku je ${B(jm)}.`, q: 'Kolik má os souměrnosti?', fig: fShape(id), figSol: fShape(id, { osy: 1 }),
+    text: `Na obrázku je ${B(jm)}${TVAR_V[id] || ''}.`, q: 'Kolik má os souměrnosti?', fig: fShape(id), figSol: fShape(id, { osy: 1 }),
     ok: String(n), opts: ['0', '1', '2', '3', '4', 'nekonečně mnoho'],
     hints: ['Osa souměrnosti je přímka, podle které jde útvar přeložit tak, že se obě půlky přesně kryjí.', 'Zkoušej v duchu překládat: svisle, vodorovně, šikmo přes vrcholy.', proc],
     steps: [proc],
@@ -218,7 +218,7 @@ function os_pocet() {
 function os_vzd() {
   const d = ri(2, 9), dvoj = chance(0.5);
   return N({
-    text: `Bod A leží ${B(cm(d))} od osy souměrnosti o. Bod A′ je jeho obraz.`, q: dvoj ? 'Jak daleko jsou od sebe body A a A′?' : 'Jak daleko od osy leží bod A′?', ans: dvoj ? 2 * d : d, unit: 'cm',
+    text: `Bod A leží ${B(cm(d))} od osy souměrnosti o. Bod A′ je jeho obraz (kam se bod přenese, jako v zrcadle).`, q: dvoj ? 'Jak daleko jsou od sebe body A a A′?' : 'Jak daleko od osy leží bod A′?', ans: dvoj ? 2 * d : d, unit: 'cm',
     traps: dvoj ? [[d, 'To je vzdálenost jednoho bodu od osy. Mezi A a A′ je ta vzdálenost dvakrát.']] : [[2 * d, 'To je vzdálenost mezi body A a A′. Od osy je obraz stejně daleko jako vzor.']],
     hints: ['Vzor a obraz jsou od osy vždy stejně daleko, každý na jiné straně.', dvoj ? 'Vzdálenost |AA′| je dvakrát vzdálenost bodu od osy.' : 'Obraz je od osy stejně daleko jako vzor.', dvoj ? `2 · ${d}` : `${d} cm`],
     steps: [dvoj ? `|AA′| = 2 · ${cm(d)} = ${cm(2 * d)}` : `Obraz je od osy stejně daleko jako vzor: ${cm(d)}`],
@@ -234,13 +234,13 @@ function os_pismeno() {
 }
 function os_samodruzny() {
   return C({
-    text: 'Bod B leží přímo na ose souměrnosti.', q: 'Kde leží jeho obraz B′?', ok: 'Ve stejném místě jako bod B', bad: ['Na druhé straně osy', 'Takový bod obraz nemá', 'O kousek dál na ose'],
+    text: 'Bod B leží přímo na ose souměrnosti.', q: 'Kde leží jeho obraz B′ (kam se bod přenese, jako v zrcadle)?', ok: 'Ve stejném místě jako bod B', bad: ['Na druhé straně osy', 'Takový bod obraz nemá', 'O kousek dál na ose'],
     hints: ['Jak daleko je bod B od osy?', 'Bod na ose je od osy vzdálený 0. Jeho obraz je taky vzdálený 0.', 'Bodům, které se zobrazí samy na sebe, říkáme samodružné.'],
     steps: ['Bod na ose se zobrazí sám na sebe. Je to samodružný bod.'],
   });
 }
-const os_troj = os_sit({ n: 3, osa: ['v', 'h'] }, 'Najdi obraz trojúhelníku ABC v osové souměrnosti s osou o. Označ obrazy všech tří vrcholů.');
-const os_naose = os_sit({ n: 3, osa: ['v', 'h'], naOse: true }, 'Najdi obraz trojúhelníku ABC v osové souměrnosti s osou o. Pozor, jeden vrchol leží na ose.');
+const os_troj = os_sit({ n: 3, osa: ['v', 'h'] }, 'Najdi obraz trojúhelníku ABC (kam se trojúhelník přenese, jako v zrcadle) v osové souměrnosti s osou o. Označ obrazy všech tří vrcholů.');
+const os_naose = os_sit({ n: 3, osa: ['v', 'h'], naOse: true }, 'Najdi obraz trojúhelníku ABC (kam se trojúhelník přenese, jako v zrcadle) v osové souměrnosti s osou o. Pozor, jeden vrchol leží na ose.');
 function os_shodnost() {
   const v = ri(0, 2);
   if (v === 0) {
@@ -261,7 +261,7 @@ function os_shodnost() {
   }
   const d = ri(12, 48) / 10;
   return N({
-    text: `Bod A leží ${cm(d)} od osy o. Bod A′ je jeho obraz v osové souměrnosti.`, q: 'Vypočítej vzdálenost |AA′|.', ans: 2 * d, unit: 'cm',
+    text: `Bod A leží ${cm(d)} od osy o. Bod A′ je jeho obraz (kam se bod přenese, jako v zrcadle) v osové souměrnosti.`, q: 'Vypočítej vzdálenost |AA′|.', ans: 2 * d, unit: 'cm',
     traps: [[d, 'Mezi A a A′ je vzdálenost od osy dvakrát: tam a ještě jednou na druhou stranu.']],
     hints: ['Body A a A′ jsou od osy stejně daleko, každý na jiné straně.', '|AA′| = 2 · vzdálenost od osy'], steps: [`|AA′| = 2 · ${cm(d)} = ${cm(2 * d)}`],
   });
@@ -269,7 +269,7 @@ function os_shodnost() {
 function os_pocet2() {
   const [id, jm, n, proc] = pick(OSY.filter(x => typeof x[2] === 'number'));
   return N({
-    text: `Na obrázku je ${B(jm)}.`, q: 'Kolik má os souměrnosti?', fig: fShape(id), figSol: fShape(id, { osy: 1 }), ans: n,
+    text: `Na obrázku je ${B(jm)}${TVAR_V[id] || ''}.`, q: 'Kolik má os souměrnosti?', fig: fShape(id), figSol: fShape(id, { osy: 1 }), ans: n,
     hints: ['Hledej přímky, podle kterých jde útvar přeložit tak, že se půlky kryjí.', 'U pravidelných útvarů zkoušej osy přes vrcholy a přes středy stran.'], steps: [proc],
   });
 }
@@ -366,14 +366,14 @@ function t_rovnoram() {
   if (chance(0.5)) {
     const z = ri(25, 80), v = 180 - 2 * z;
     return N({
-      text: `Rovnoramenný trojúhelník má úhly při základně velké ${B(st(z))}.`, q: 'Jak velký je úhel při hlavním vrcholu?', fig: fTri(triAng(7, z, z), { angs: [st(z), st(z), '?'] }), ans: v, unit: '°',
+      text: `Rovnoramenný trojúhelník má úhly při základně (straně, která není rameno) velké ${B(st(z))}.`, q: 'Jak velký je úhel při hlavním vrcholu (naproti základně)?', fig: fTri(triAng(7, z, z), { angs: [st(z), st(z), '?'] }), ans: v, unit: '°',
       traps: [[180 - z, 'Při základně jsou úhly dva a oba se odečítají.']],
       hints: ['V rovnoramenném trojúhelníku jsou oba úhly při základně stejné.', 'γ = 180° − 2 · úhel při základně'], steps: [`γ = 180° − 2 · ${st(z)}`, `γ = 180° − ${st(2 * z)} = ${st(v)}`],
     });
   }
   const v = 2 * ri(10, 65), z = (180 - v) / 2;
   return N({
-    text: `Rovnoramenný trojúhelník má při hlavním vrcholu úhel ${B(st(v))}.`, q: 'Jak velký je každý z úhlů při základně?', fig: fTri(triAng(7, z, z), { angs: ['?', '?', st(v)] }), ans: z, unit: '°',
+    text: `Rovnoramenný trojúhelník má při hlavním vrcholu (naproti základně) úhel ${B(st(v))}.`, q: 'Jak velký je každý z úhlů při základně (straně, která není rameno)?', fig: fTri(triAng(7, z, z), { angs: ['?', '?', st(v)] }), ans: z, unit: '°',
     traps: [[180 - v, 'To jsou oba úhly při základně dohromady. Ještě je rozděl na dva stejné.']],
     hints: ['Na oba úhly při základně zbývá 180° minus úhel při vrcholu.', 'Oba úhly při základně jsou stejné, takže zbytek vyděl dvěma.'], steps: [`180° − ${st(v)} = ${st(180 - v)}`, `${st(180 - v)} : 2 = ${st(z)}`],
   });
@@ -381,13 +381,13 @@ function t_rovnoram() {
 function t_vnejsi() {
   let al, be; do { al = ri(30, 75); be = ri(30, 75); } while (al + be > 140);
   if (chance(0.6)) return N({
-    text: `V trojúhelníku ABC je α = ${B(st(al))} a β = ${B(st(be))}.`, q: 'Jak velký je vnější úhel u vrcholu C?', fig: fTri(triAng(8, al, be), { angs: [st(al), st(be), ''], ext: { at: 2, lab: '?' } }), ans: al + be, unit: '°',
+    text: `V trojúhelníku ABC je α = ${B(st(al))} a β = ${B(st(be))}.`, q: 'Jak velký je vnější úhel u vrcholu C (mezi stranou a prodloužením sousední strany)?', fig: fTri(triAng(8, al, be), { angs: [st(al), st(be), ''], ext: { at: 2, lab: '?' } }), ans: al + be, unit: '°',
     traps: [[180 - al - be, 'To je vnitřní úhel γ. Vnější úhel je k němu vedlejší.']],
     hints: ['Vnější úhel je vedlejší k vnitřnímu úhlu u stejného vrcholu.', 'Vnější úhel se rovná součtu dvou vnitřních úhlů u zbylých vrcholů.'],
     steps: [`γ = 180° − ${st(al)} − ${st(be)} = ${st(180 - al - be)}`, `Vnější úhel: 180° − ${st(180 - al - be)} = ${st(al + be)}`, `(Rychleji: α + β = ${st(al)} + ${st(be)} = ${st(al + be)}.)`],
   });
   return N({
-    text: `V trojúhelníku ABC má vnější úhel u vrcholu C velikost ${B(st(al + be))} a α = ${B(st(al))}.`, q: 'Jak velký je úhel β?', fig: fTri(triAng(8, al, be), { angs: [st(al), '?', ''], ext: { at: 2, lab: st(al + be) } }), ans: be, unit: '°',
+    text: `V trojúhelníku ABC má vnější úhel u vrcholu C (mezi stranou a prodloužením sousední strany) velikost ${B(st(al + be))} a α = ${B(st(al))}.`, q: 'Jak velký je úhel β?', fig: fTri(triAng(8, al, be), { angs: [st(al), '?', ''], ext: { at: 2, lab: st(al + be) } }), ans: be, unit: '°',
     hints: ['Vnější úhel u vrcholu C se rovná součtu vnitřních úhlů α a β.', 'β = vnější úhel − α'], steps: [`α + β = ${st(al + be)}`, `β = ${st(al + be)} − ${st(al)} = ${st(be)}`],
   });
 }
@@ -419,7 +419,7 @@ function t_tretiDM() {
 function t_rameno() {
   const z = ri(4, 12), r = ri(Math.floor(z / 2) + 2, 14);
   return N({
-    text: `Rovnoramenný trojúhelník má obvod ${B(cm(z + 2 * r))} a základnu ${B(cm(z))}.`, q: 'Jak dlouhé je jedno rameno?', ans: r, unit: 'cm',
+    text: `Rovnoramenný trojúhelník má obvod ${B(cm(z + 2 * r))} a základnu (stranu, která není rameno) ${B(cm(z))}.`, q: 'Jak dlouhé je jedno rameno?', ans: r, unit: 'cm',
     traps: [[2 * r, 'To jsou obě ramena dohromady. Ještě je rozděl na dvě.']],
     hints: ['Obvod = základna + dvě stejná ramena.', 'Od obvodu odečti základnu a zbytek vyděl dvěma.'], steps: [`${z + 2 * r} − ${z} = ${2 * r}`, `${2 * r} : 2 = ${cm(r)}`],
   });
@@ -491,7 +491,7 @@ function kon_sss(mode) {
 function kon_vyska(mode) {
   const t = trojStrany({ ostro: 1 });
   return K({
-    mode, init: danyTroj(t), dano: ['△ABC (je narýsovaný)'], sestroj: `výšku ${SUB('v', 'c')}; P = pata výšky`, text: `Je dán trojúhelník ABC. Sestroj jeho výšku ${SUB('v', 'c')} z vrcholu C na stranu AB. Patu výšky označ P.`,
+    mode, init: danyTroj(t), dano: ['△ABC (je narýsovaný)'], sestroj: `výšku ${SUB('v', 'c')}; P = pata výšky`, text: mode < 3 ? `Je dán trojúhelník ABC. Sestroj jeho výšku ${SUB('v', 'c')} (kolmici z vrcholu C na stranu AB). Patu výšky (bod, kde výška dopadne na stranu) označ P.` : `Je dán trojúhelník ABC. Sestroj jeho výšku ${SUB('v', 'c')} z vrcholu C na stranu AB. Patu výšky označ P.`,
     plan: [{ op: 'perp', name: 'p', thru: 'C', to: 'AB' }, { op: 'int', name: 'P', of: ['p', 'AB'] }, { op: 'seg', a: 'C', b: 'P' }],
     goal: [['foot', 'P', 'C', 'A', 'B'], ['segd', 'C', 'P']], names: ['P'], ops: ['perp', 'axis', 'mid', 'int', 'seg'],
     hints: ['Výška je kolmice z vrcholu na protější stranu.', 'Veď bodem C kolmici k přímce AB. Tam, kde protne AB, je pata výšky P.'],
@@ -500,7 +500,7 @@ function kon_vyska(mode) {
 function kon_teznice(mode) {
   const t = trojStrany();
   return K({
-    mode, init: danyTroj(t), dano: ['△ABC (je narýsovaný)'], sestroj: `těžnici ${SUB('t', 'c')}; S = střed strany AB`, text: `Je dán trojúhelník ABC. Sestroj jeho těžnici ${SUB('t', 'c')} z vrcholu C. Střed strany AB označ S.`,
+    mode, init: danyTroj(t), dano: ['△ABC (je narýsovaný)'], sestroj: `těžnici ${SUB('t', 'c')}; S = střed strany AB`, text: mode < 3 ? `Je dán trojúhelník ABC. Sestroj jeho těžnici ${SUB('t', 'c')} (spojnici vrcholu C se středem strany AB). Střed strany AB označ S.` : `Je dán trojúhelník ABC. Sestroj jeho těžnici ${SUB('t', 'c')} z vrcholu C. Střed strany AB označ S.`,
     plan: [{ op: 'mid', name: 'S', a: 'A', b: 'B' }, { op: 'seg', a: 'C', b: 'S' }],
     goal: [['mid', 'S', 'A', 'B'], ['segd', 'C', 'S']], names: ['S'], ops: ['perp', 'mid', 'axis', 'int', 'seg'],
     hints: ['Těžnice spojuje vrchol se středem protější strany.', 'Najdi střed S strany AB a spoj ho s vrcholem C.'],
@@ -573,7 +573,7 @@ function k_stredy() {
 function k_teziste() {
   const t = 3 * ri(2, 8), odV = chance(0.5);
   return N({
-    text: `Těžnice ${SUB('t', 'c')} trojúhelníku ABC měří ${B(cm(t))}.`, q: odV ? 'Jak daleko je těžiště od vrcholu C?' : 'Jak daleko je těžiště od středu strany AB?', ans: odV ? 2 * t / 3 : t / 3, unit: 'cm',
+    text: `Těžnice ${SUB('t', 'c')} trojúhelníku ABC (spojnice vrcholu C se středem strany AB) měří ${B(cm(t))}.`, q: odV ? 'Jak daleko je těžiště od vrcholu C?' : 'Jak daleko je těžiště od středu strany AB?', ans: odV ? 2 * t / 3 : t / 3, unit: 'cm',
     traps: [[t / 2, 'Těžiště těžnici nepůlí. Dělí ji na třetiny: dvě jsou blíž k vrcholu, jedna ke straně.'], [odV ? t / 3 : 2 * t / 3, 'Pozor, delší díl (dvě třetiny) leží u vrcholu, kratší (jedna třetina) u strany.']],
     hints: ['Těžiště dělí každou těžnici v poměru 2 : 1. Delší díl je u vrcholu.', `Třetina těžnice je ${cm(t / 3)}.`],
     steps: [`Třetina těžnice: ${t} : 3 = ${cm(t / 3)}`, odV ? `Od vrcholu: 2 · ${cm(t / 3)} = ${cm(2 * t / 3)}` : `Od středu strany: ${cm(t / 3)}`],
@@ -734,7 +734,7 @@ function o_hektary() {
 function k_krObjem() {
   const a = ri(2, 6);
   return N({
-    text: `Krychle má hranu ${B(cm(a))}.`, q: 'Vypočítej její objem.', fig: fCuboid(a, a, a, { la: cm(a) }), ans: a ** 3, unit: 'cm³',
+    text: `Krychle má hranu ${B(cm(a))}.`, q: 'Vypočítej její objem (kolik se do ní vejde).', fig: fCuboid(a, a, a, { la: cm(a) }), ans: a ** 3, unit: 'cm³',
     traps: [[3 * a, 'a · a · a není totéž co 3 · a.'], [6 * a * a, 'To je povrch. Objem říká, kolik kostiček 1 cm³ se dovnitř vejde.'], [a * a, 'To je obsah jedné stěny. Ještě vynásob výškou.']],
     hints: ['Objem říká, kolik kostiček o hraně 1 cm se do tělesa vejde.', `V jedné vrstvě je ${a} · ${a} kostiček a vrstev je ${a}: V = a · a · a.`, `V = ${a} · ${a} · ${a}`], steps: ['V = a · a · a', `V = ${a} · ${a} · ${a} = ${cm3(a ** 3)}`],
   });
@@ -742,7 +742,7 @@ function k_krObjem() {
 function k_krPovrch() {
   const a = ri(2, 9);
   return N({
-    text: `Krychle má hranu ${B(cm(a))}.`, q: 'Vypočítej její povrch.', fig: fCuboid(a, a, a, { la: cm(a) }), ans: 6 * a * a, unit: 'cm²',
+    text: `Krychle má hranu ${B(cm(a))}.`, q: 'Vypočítej její povrch (obsah všech stěn dohromady).', fig: fCuboid(a, a, a, { la: cm(a) }), ans: 6 * a * a, unit: 'cm²',
     traps: [[a ** 3, 'To je objem. Povrch je obsah všech stěn dohromady.'], [a * a, 'To je jen jedna stěna. Krychle jich má šest.'], [4 * a * a, 'Krychle má šest stěn: čtyři kolem dokola, dno a víko.']],
     hints: ['Povrch je obsah všech stěn dohromady. Jako papír, do kterého krychli zabalíš.', 'Krychle má 6 stejných čtvercových stěn: S = 6 · a · a.', `S = 6 · ${a} · ${a}`], steps: ['S = 6 · a · a', `S = 6 · ${a * a} = ${cm2(6 * a * a)}`],
   });
@@ -750,7 +750,7 @@ function k_krPovrch() {
 function k_kvObjem() {
   const [a, bb, c] = [ri(3, 9), ri(2, 7), ri(2, 6)];
   return N({
-    text: `Kvádr má rozměry ${B(`${a} cm, ${bb} cm a ${c} cm`)}.`, q: 'Vypočítej jeho objem.', fig: fCuboid(a, bb, c, { la: cm(a), lb: cm(bb), lc: cm(c) }), ans: a * bb * c, unit: 'cm³',
+    text: `Kvádr má rozměry ${B(`${a} cm, ${bb} cm a ${c} cm`)}.`, q: 'Vypočítej jeho objem (kolik se do něj vejde).', fig: fCuboid(a, bb, c, { la: cm(a), lb: cm(bb), lc: cm(c) }), ans: a * bb * c, unit: 'cm³',
     traps: [[a + bb + c, 'Rozměry se násobí, nesčítají.'], [2 * (a * bb + bb * c + a * c), 'To je povrch. Objem je a · b · c.']],
     hints: ['Objem říká, kolik kostiček o hraně 1 cm se do kvádru vejde.', `Ve spodní vrstvě je ${a} · ${bb} kostiček, vrstev je ${c}: V = a · b · c.`, `V = ${a} · ${bb} · ${c}`], steps: ['V = a · b · c', `V = ${a} · ${bb} · ${c} = ${cm3(a * bb * c)}`],
   });
@@ -789,7 +789,7 @@ function k_hranaZPovrchu() {
 function k_vyskaZObjemu() {
   const [a, bb, c] = [ri(3, 9), ri(2, 7), ri(2, 8)];
   return N({
-    text: `Kvádr má objem ${B(cm3(a * bb * c))}. Jeho podstava má rozměry ${B(`${a} cm a ${bb} cm`)}.`, q: 'Jak je kvádr vysoký?', ans: c, unit: 'cm',
+    text: `Kvádr má objem ${B(cm3(a * bb * c))}. Jeho podstava (stěna, na které kvádr stojí) má rozměry ${B(`${a} cm a ${bb} cm`)}.`, q: 'Jak je kvádr vysoký?', ans: c, unit: 'cm',
     hints: ['V = a · b · c. Součin a · b je obsah podstavy.', 'Výška = objem : obsah podstavy'], steps: [`Obsah podstavy: ${a} · ${bb} = ${cm2(a * bb)}`, `c = ${a * bb * c} : ${a * bb} = ${cm(c)}`],
   });
 }

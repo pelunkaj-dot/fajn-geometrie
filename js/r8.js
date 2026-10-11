@@ -23,7 +23,7 @@ function p_pojem() {
 function p_ctverce() {
   const [a, b] = trojice(2);
   return N({
-    text: `Čtverce sestrojené nad odvěsnami pravoúhlého trojúhelníku mají obsahy ${B(cm2(a * a))} a ${B(cm2(b * b))}.`, q: 'Jaký obsah má čtverec nad přeponou?', ans: a * a + b * b, unit: 'cm²',
+    text: `Čtverce sestrojené nad odvěsnami (dvěma kratšími stranami u pravého úhlu) pravoúhlého trojúhelníku mají obsahy ${B(cm2(a * a))} a ${B(cm2(b * b))}.`, q: 'Jaký obsah má čtverec nad přeponou (nejdelší stranou, naproti pravému úhlu)?', ans: a * a + b * b, unit: 'cm²',
     hints: ['Nad každou stranou pravoúhlého trojúhelníku si představ čtverec.', 'Pythagorova věta: čtverec nad přeponou má stejný obsah jako oba čtverce nad odvěsnami dohromady.', `${a * a} + ${b * b}`], steps: ['c² = a² + b²', `c² = ${a * a} + ${b * b} = ${cm2(a * a + b * b)}`],
   });
 }
@@ -35,7 +35,7 @@ function p_mocniny() {
 function p_prepona() {
   const [a, b, c] = trojice();
   return N({
-    text: `Pravoúhlý trojúhelník má odvěsny ${B(cm(a))} a ${B(cm(b))}.`, q: 'Jak dlouhá je přepona?', fig: fRightTri(a, b, { la: cm(a), lb: cm(b), lc: '?' }), ans: c, unit: 'cm',
+    text: `Pravoúhlý trojúhelník má odvěsny (dvě kratší strany u pravého úhlu) ${B(cm(a))} a ${B(cm(b))}.`, q: 'Jak dlouhá je přepona?', fig: fRightTri(a, b, { la: cm(a), lb: cm(b), lc: '?' }), ans: c, unit: 'cm',
     traps: [[a + b, 'Strany se nesčítají. Sčítají se jejich druhé mocniny.'], [a * a + b * b, 'To je c². Ještě odmocni.']],
     hints: ['Pro pravoúhlý trojúhelník platí Pythagorova věta.', 'c² = a² + b². Sečti druhé mocniny odvěsen a výsledek odmocni.', `c² = ${a}² + ${b}² = ${a * a} + ${b * b}`], steps: ['c² = a² + b²', `c² = ${a}² + ${b}² = ${a * a} + ${b * b} = ${a * a + b * b}`, `c = √${a * a + b * b} = ${cm(c)}`],
   });
@@ -43,7 +43,7 @@ function p_prepona() {
 function p_odvesna() {
   const [a, b, c] = trojice();
   return N({
-    text: `Pravoúhlý trojúhelník má přeponu ${B(cm(c))} a jednu odvěsnu ${B(cm(a))}.`, q: 'Jak dlouhá je druhá odvěsna?', fig: fRightTri(a, b, { la: cm(a), lb: '?', lc: cm(c) }), ans: b, unit: 'cm',
+    text: `Pravoúhlý trojúhelník má přeponu (nejdelší stranu, naproti pravému úhlu) ${B(cm(c))} a jednu odvěsnu (kratší stranu u pravého úhlu) ${B(cm(a))}.`, q: 'Jak dlouhá je druhá odvěsna?', fig: fRightTri(a, b, { la: cm(a), lb: '?', lc: cm(c) }), ans: b, unit: 'cm',
     traps: [[c - a, 'Strany se neodčítají. Odčítají se jejich druhé mocniny.'], [c * c - a * a, 'To je b². Ještě odmocni.'], [odm(c * c + a * a), 'Při výpočtu odvěsny se odčítá: b² = c² − a².']],
     hints: ['Z Pythagorovy věty c² = a² + b² vyjádříme odvěsnu.', 'b² = c² − a². Od druhé mocniny přepony odečti druhou mocninu odvěsny a odmocni.', `b² = ${c}² − ${a}² = ${c * c} − ${a * a}`], steps: ['b² = c² − a²', `b² = ${c}² − ${a}² = ${c * c} − ${a * a} = ${b * b}`, `b = √${b * b} = ${cm(b)}`],
   });
@@ -53,7 +53,7 @@ function netrojice() { for (;;) { const a = ri(2, 12), b = ri(2, 12), s = a * a 
 function p_preponaDec() {
   const [a, b, s] = netrojice();
   return N({
-    text: `Pravoúhlý trojúhelník má odvěsny ${B(cm(a))} a ${B(cm(b))}.`, q: 'Jak dlouhá je přepona? ' + ZAOKR, fig: fRightTri(a, b, { la: cm(a), lb: cm(b), lc: '?' }), ans: odm(s), dec: 1, unit: 'cm',
+    text: `Pravoúhlý trojúhelník má odvěsny (dvě kratší strany u pravého úhlu) ${B(cm(a))} a ${B(cm(b))}.`, q: 'Jak dlouhá je přepona? ' + ZAOKR, fig: fRightTri(a, b, { la: cm(a), lb: cm(b), lc: '?' }), ans: odm(s), dec: 1, unit: 'cm',
     traps: [[a + b, 'Strany se nesčítají. Sčítají se jejich druhé mocniny.'], [s, 'To je c². Ještě odmocni.']],
     hints: ['c² = a² + b²', 'Odmocninu spočítej na kalkulačce a zaokrouhli.'], steps: [`c² = ${a}² + ${b}² = ${a * a} + ${b * b} = ${s}`, `c = √${s} ≐ ${cm(odm(s))}`],
   });
@@ -61,7 +61,7 @@ function p_preponaDec() {
 function p_odvesnaDec() {
   let a, c, s; do { a = ri(3, 10); c = a + ri(2, 7); s = c * c - a * a; } while (Math.sqrt(s) % 1 < 0.05 || Math.sqrt(s) % 1 > 0.95);
   return N({
-    text: `Pravoúhlý trojúhelník má přeponu ${B(cm(c))} a jednu odvěsnu ${B(cm(a))}.`, q: 'Jak dlouhá je druhá odvěsna? ' + ZAOKR, ans: odm(s), dec: 1, unit: 'cm',
+    text: `Pravoúhlý trojúhelník má přeponu (nejdelší stranu, naproti pravému úhlu) ${B(cm(c))} a jednu odvěsnu (kratší stranu u pravého úhlu) ${B(cm(a))}.`, q: 'Jak dlouhá je druhá odvěsna? ' + ZAOKR, ans: odm(s), dec: 1, unit: 'cm',
     traps: [[odm(c * c + a * a), 'Při výpočtu odvěsny se odčítá: b² = c² − a².'], [c - a, 'Odčítají se druhé mocniny, ne strany.']],
     hints: ['b² = c² − a²', 'Odmocninu spočítej na kalkulačce a zaokrouhli.'], steps: [`b² = ${c}² − ${a}² = ${c * c} − ${a * a} = ${s}`, `b = √${s} ≐ ${cm(odm(s))}`],
   });
@@ -78,7 +78,7 @@ function p_obracena() {
 function p_uhlopricka() {
   const [a, b, s] = chance(0.4) ? (() => { const t = trojice(2); return [t[0], t[1], t[2] * t[2]]; })() : netrojice(), cel = Number.isInteger(Math.sqrt(s));
   return N({
-    text: `Obdélník má strany ${B(cm(a))} a ${B(cm(b))}.`, q: 'Jak dlouhá je jeho úhlopříčka?' + (cel ? '' : ' ' + ZAOKR), fig: fRect(a, b, { la: cm(a), lb: cm(b), diag: '?' }), ans: cel ? Math.sqrt(s) : odm(s), dec: cel ? null : 1, unit: 'cm',
+    text: `Obdélník má strany ${B(cm(a))} a ${B(cm(b))}.`, q: 'Jak dlouhá je jeho úhlopříčka (spojnice protějších vrcholů)?' + (cel ? '' : ' ' + ZAOKR), fig: fRect(a, b, { la: cm(a), lb: cm(b), diag: '?' }), ans: cel ? Math.sqrt(s) : odm(s), dec: cel ? null : 1, unit: 'cm',
     traps: [[a + b, 'Strany se nesčítají. Sčítají se jejich druhé mocniny.']],
     hints: ['Úhlopříčka rozdělí obdélník na dva pravoúhlé trojúhelníky. Je jejich přeponou.', 'u² = a² + b²'], steps: [`u² = ${a}² + ${b}² = ${a * a} + ${b * b} = ${s}`, `u = √${s} ${cel ? '=' : '≐'} ${cm(cel ? Math.sqrt(s) : odm(s))}`],
   });
@@ -86,7 +86,7 @@ function p_uhlopricka() {
 function p_ctverecUhl() {
   const a = ri(3, 12), s = 2 * a * a;
   return N({
-    text: `Čtverec má stranu ${B(cm(a))}.`, q: 'Jak dlouhá je jeho úhlopříčka? ' + ZAOKR, fig: fRect(a, a, { la: cm(a), diag: '?' }), ans: odm(s), dec: 1, unit: 'cm',
+    text: `Čtverec má stranu ${B(cm(a))}.`, q: 'Jak dlouhá je jeho úhlopříčka (spojnice protějších vrcholů)? ' + ZAOKR, fig: fRect(a, a, { la: cm(a), diag: '?' }), ans: odm(s), dec: 1, unit: 'cm',
     traps: [[2 * a, 'Úhlopříčka není dvojnásobek strany. Použij Pythagorovu větu.']],
     hints: ['Úhlopříčka čtverce je přepona pravoúhlého trojúhelníku, jehož obě odvěsny jsou strany čtverce.', 'u² = a² + a²'], steps: [`u² = ${a}² + ${a}² = ${s}`, `u = √${s} ≐ ${cm(odm(s))}`],
   });
@@ -95,7 +95,7 @@ const ROVNORAM = [[6, 5, 4], [10, 13, 12], [16, 10, 6], [12, 10, 8], [24, 13, 5]
 function p_rovnoram() {
   const [z, r, v] = pick(ROVNORAM);
   return N({
-    text: `Rovnoramenný trojúhelník má základnu ${B(cm(z))} a ramena ${B(cm(r))}.`, q: 'Jak dlouhá je výška na základnu?', fig: fTri([[0, 0], [z, 0], [z / 2, v]], { sides: [cm(z), cm(r), ''], h: { from: 2, lab: '?' }, names: null }), ans: v, unit: 'cm',
+    text: `Rovnoramenný trojúhelník má základnu (stranu, která není rameno) ${B(cm(z))} a ramena ${B(cm(r))}.`, q: 'Jak dlouhá je výška na základnu?', fig: fTri([[0, 0], [z, 0], [z / 2, v]], { sides: [cm(z), cm(r), ''], h: { from: 2, lab: '?' }, names: null }), ans: v, unit: 'cm',
     traps: [[odm(r * r - z * z > 0 ? r * r - z * z : 0), 'Výška půlí základnu. V pravoúhlém trojúhelníku je odvěsnou jen polovina základny.']],
     hints: ['Výška na základnu rozdělí rovnoramenný trojúhelník na dva shodné pravoúhlé trojúhelníky.', `V každém z nich je přeponou rameno (${r} cm) a jednou odvěsnou polovina základny (${z / 2} cm).`], steps: [`Polovina základny: ${z} : 2 = ${cm(z / 2)}`, `v² = ${r}² − ${z / 2}² = ${r * r} − ${z * z / 4} = ${v * v}`, `v = √${v * v} = ${cm(v)}`],
   });
@@ -233,7 +233,7 @@ function kr_mezikruzi() {
 function kr_vysec() {
   const r = pick([3, 6, 9, 12]), al = pick([30, 45, 60, 90, 120]);
   return N({
-    text: `Kruhová výseč má poloměr ${B(cm(r))} a středový úhel ${B(st(al))}.`, q: `Jaký má obsah? ${ZAOKR} ${PI_T}`, fig: fCircle(r, { sector: al, lsec: st(al), lr: cm(r) }), ...pia(p => p * r * r * al / 360), unit: 'cm²',
+    text: `Kruhová výseč (dílek kruhu jako kousek pizzy) má poloměr ${B(cm(r))} a středový úhel (úhel u středu kruhu) ${B(st(al))}.`, q: `Jaký má obsah? ${ZAOKR} ${PI_T}`, fig: fCircle(r, { sector: al, lsec: st(al), lr: cm(r) }), ...pia(p => p * r * r * al / 360), unit: 'cm²',
     hints: ['Výseč je část kruhu, jako dílek dortu. Celý kruh má 360°.', `Výseč zabírá ${al}/360 kruhu.`], steps: [`Celý kruh: 3,14 · ${r}² = ${cz(3.14 * r * r)} cm²`, `Výseč: ${cz(3.14 * r * r)} · ${al} : 360 ≐ ${cm2(rd(3.14 * r * r * al / 360, 1))}`],
   });
 }
@@ -341,7 +341,7 @@ function pk_dveKruznice() {
 function pk_tecnaDelka() {
   const [x, y, d] = trojice(2), r = Math.min(x, y), t = Math.max(x, y);
   return N({
-    text: `Kružnice má střed S a poloměr ${B(cm(r))}. Bod M je od středu vzdálený ${B(cm(d))}. Z bodu M vede ke kružnici tečna, bod dotyku je T.`, q: 'Jak dlouhá je úsečka MT?', fig: fTangent(r, d, { lr: cm(r), ld: cm(d), lt: '?' }), ans: t, unit: 'cm',
+    text: `Kružnice má střed S a poloměr ${B(cm(r))}. Bod M je od středu vzdálený ${B(cm(d))}. Z bodu M vede ke kružnici tečna (přímka, která se kružnice dotkne jen v jednom bodě), bod dotyku (místo, kde se tečna kružnice dotkne) je T.`, q: 'Jak dlouhá je úsečka MT?', fig: fTangent(r, d, { lr: cm(r), ld: cm(d), lt: '?' }), ans: t, unit: 'cm',
     traps: [[d - r, 'Odčítají se druhé mocniny. Trojúhelník STM je pravoúhlý.']],
     hints: ['Tečna je kolmá na poloměr v bodě dotyku, takže trojúhelník STM má u vrcholu T pravý úhel.', 'Přeponou je SM. |MT|² = |SM|² − r²'], steps: [`|MT|² = ${d}² − ${r}² = ${d * d} − ${r * r} = ${t * t}`, `|MT| = √${t * t} = ${cm(t)}`],
   });
@@ -350,7 +350,7 @@ const TETIVY = [[5, 3, 4], [5, 4, 3], [10, 6, 8], [10, 8, 6], [13, 5, 12], [13, 
 function pk_tetiva() {
   const [r, v, h] = pick(TETIVY);
   return N({
-    text: `Kružnice má poloměr ${B(cm(r))}. Tětiva je od středu vzdálená ${B(cm(v))}.`, q: 'Jak dlouhá je tětiva?', fig: fCircle(r, { chord: { v, lv: cm(v), lr: cm(r), lt: '' } }), ans: 2 * h, unit: 'cm',
+    text: `Kružnice má poloměr ${B(cm(r))}. Tětiva (úsečka, která spojuje dva body kružnice) je od středu vzdálená ${B(cm(v))}.`, q: 'Jak dlouhá je tětiva?', fig: fCircle(r, { chord: { v, lv: cm(v), lr: cm(r), lt: '' } }), ans: 2 * h, unit: 'cm',
     traps: [[h, 'To je jen polovina tětivy.']],
     hints: ['Spoj střed s koncem tětivy (to je poloměr) a se středem tětivy. Vznikne pravoúhlý trojúhelník.', 'Odvěsny: vzdálenost tětivy od středu a polovina tětivy. Přepona: poloměr.'], steps: [`(t/2)² = ${r}² − ${v}² = ${r * r} − ${v * v} = ${h * h}`, `t/2 = ${cm(h)}`, `t = 2 · ${h} = ${cm(2 * h)}`],
   });
@@ -358,7 +358,7 @@ function pk_tetiva() {
 function pk_opsana() {
   const [a, b, c] = trojice(2);
   return N({
-    text: `Pravoúhlý trojúhelník má odvěsny ${B(cm(a))} a ${B(cm(b))}.`, q: 'Jaký poloměr má kružnice, která je mu opsaná?', ans: c / 2, unit: 'cm',
+    text: `Pravoúhlý trojúhelník má odvěsny (dvě kratší strany u pravého úhlu) ${B(cm(a))} a ${B(cm(b))}.`, q: 'Jaký poloměr má kružnice, která je mu opsaná?', ans: c / 2, unit: 'cm',
     traps: [[c, 'To je průměr opsané kružnice (přepona). Poloměr je poloviční.']],
     hints: ['Podle Thaletovy věty leží vrchol pravého úhlu na kružnici, jejímž průměrem je přepona.', 'Spočítej přeponu a vyděl ji dvěma.'], steps: [`c² = ${a}² + ${b}² = ${c * c}, c = ${cm(c)}`, `r = c : 2 = ${cm(c / 2)}`],
   });
@@ -366,7 +366,7 @@ function pk_opsana() {
 function kon_thales(mode) {
   let c, a; do { c = 2 * ri(3, 4); a = ri(3, c - 2); } while (a === c / 2);
   return K({
-    mode, tpl: 'tri', dano: { c: cm(c), a: cm(a), ga: '90°' }, sestroj: '△ABC; S = střed přepony AB', text: `Sestroj pravoúhlý trojúhelník ABC s pravým úhlem u vrcholu C: přepona c = ${B(cm(c))}, odvěsna a = ${B(cm(a))}. Střed přepony označ S.`,
+    mode, tpl: 'tri', dano: { c: cm(c), a: cm(a), ga: '90°' }, sestroj: '△ABC; S = střed přepony AB', text: mode < 3 ? `Sestroj pravoúhlý trojúhelník ABC s pravým úhlem u vrcholu C: přepona (nejdelší strana, naproti pravému úhlu) c = ${B(cm(c))}, odvěsna (kratší strana u pravého úhlu) a = ${B(cm(a))}. Střed přepony označ S.` : `Sestroj pravoúhlý trojúhelník ABC s pravým úhlem u vrcholu C: přepona c = ${B(cm(c))}, odvěsna a = ${B(cm(a))}. Střed přepony označ S.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'mid', name: 'S', a: 'A', b: 'B' }, { op: 'circ', name: 'k', c: 'S', r: { pp: ['S', 'A'] } }, { op: 'circ', name: 'l', c: 'B', r: a }, { op: 'int', name: 'C', of: ['k', 'l'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['dist', 'B', 'C', a], ['ang', 'A', 'C', 'B', 90], ['poly', 'ABC']],
     lens: [c, a], angs: [90], names: ['S', 'C'], ops: ['seg', 'mid', 'axis', 'circ', 'int', 'poly'], vysl: ['A', 'B', 'C'],
@@ -379,7 +379,7 @@ function kon_tecna(mode) {
   return K({
     mode, init: [{ op: 'given', pts: { S: [0, 0], M: [d, 0] }, circs: { k: { c: 'S', r } } }],
     dano: [`k(S; ${cm(r)})`, `|SM| = ${cm(d)}`], sestroj: 'tečnu z bodu M ke kružnici k; O = střed úsečky SM, T = bod dotyku',
-    text: `Je dána kružnice k(S; ${cm(r)}) a bod M, |SM| = ${cm(d)}. Sestroj tečnu z bodu M ke kružnici k. Střed úsečky SM označ O, bod dotyku T.`,
+    text: mode < 3 ? `Je dána kružnice k(S; ${cm(r)}) a bod M, |SM| = ${cm(d)}. Sestroj tečnu (přímku, která se kružnice dotkne jen v jednom bodě) z bodu M ke kružnici k. Střed úsečky SM označ O, bod dotyku (místo, kde se tečna kružnice dotkne) T.` : `Je dána kružnice k(S; ${cm(r)}) a bod M, |SM| = ${cm(d)}. Sestroj tečnu z bodu M ke kružnici k. Střed úsečky SM označ O, bod dotyku T.`,
     plan: [{ op: 'mid', name: 'O', a: 'S', b: 'M' }, { op: 'circ', name: 'l', c: 'O', r: { pp: ['O', 'S'] } }, { op: 'int', name: 'T', of: ['l', 'k'] }, { op: 'line', a: 'M', b: 'T' }],
     goal: [['tangent', 'M', 'k']], names: ['O', 'T'], ops: ['mid', 'axis', 'perp', 'circ', 'int', 'line'],
     nsol: mode === 3 ? 2 : null, nsolOtazka: 'Kolik tečen lze z bodu M ke kružnici k vést?', nsolMoz: ['žádnou', 'jednu', 'dvě'], nsolProc: 'Thaletova kružnice protne kružnici k ve dvou bodech dotyku, tečny jsou tedy dvě.',
@@ -414,14 +414,14 @@ function pk_stredna() {
 function v_objemSp() {
   const S = ri(10, 80), v = ri(3, 12);
   return N({
-    text: `Válec má podstavu o obsahu ${B(cm2(S))} a výšku ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', ans: S * v, unit: 'cm³',
+    text: `Válec má podstavu (kruhové dno, víko je stejné) o obsahu ${B(cm2(S))} a výšku ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', ans: S * v, unit: 'cm³',
     hints: ['Válec si představ jako sloupeček mincí. Každá mince má tvar podstavy.', 'Objem = obsah podstavy · výška, stejně jako u hranolu.', `V = ${S} · ${v}`], steps: ['V = S<sub>p</sub> · v', `V = ${S} · ${v} = ${cm3(S * v)}`],
   });
 }
 function v_podstava() {
   const r = ri(2, 8);
   return N({
-    text: `Válec má poloměr podstavy ${B(cm(r))}.`, q: `Jaký obsah má jeho podstava? ${ZAOKR} ${PI_T}`, fig: fCyl(r, r * 1.6, { lr: cm(r) }), ...pia(p => p * r * r), unit: 'cm²',
+    text: `Válec má poloměr podstavy (kruhového dna) ${B(cm(r))}.`, q: `Jaký obsah má jeho podstava? ${ZAOKR} ${PI_T}`, fig: fCyl(r, r * 1.6, { lr: cm(r) }), ...pia(p => p * r * r), unit: 'cm²',
     traps: [[rd(6.28 * r, 1), 'To je délka kružnice (obvod kruhu). Podstava je kruh, její obsah je π · r².']],
     hints: ['Podstavou válce je kruh.', 'Obsah kruhu: S = π · r²', `S = 3,14 · ${r}²`], steps: ['S<sub>p</sub> = π · r²', `S<sub>p</sub> = 3,14 · ${r * r} ≐ ${cm2(rd(3.14 * r * r, 1))}`],
   });
@@ -429,7 +429,7 @@ function v_podstava() {
 function v_objem() {
   const r = ri(2, 6), v = ri(3, 12);
   return N({
-    text: `Válec má poloměr podstavy ${B(cm(r))} a výšku ${B(cm(v))}.`, q: `Vypočítej jeho objem. ${ZAOKR} ${PI_T}`, fig: fCyl(r, v, { lr: cm(r), lh: cm(v) }), ...pia(p => p * r * r * v), unit: 'cm³',
+    text: `Válec má poloměr podstavy (kruhového dna) ${B(cm(r))} a výšku ${B(cm(v))}.`, q: `Vypočítej jeho objem. ${ZAOKR} ${PI_T}`, fig: fCyl(r, v, { lr: cm(r), lh: cm(v) }), ...pia(p => p * r * r * v), unit: 'cm³',
     traps: [[rd(6.28 * r * v, 1), 'To je obsah pláště. Objem je π · r² · v.'], [rd(3.14 * r * v, 1), 'Poloměr se umocňuje na druhou: π · r² · v.']],
     hints: ['Objem válce = obsah podstavy · výška.', 'Podstava je kruh: V = π · r² · v', `V = 3,14 · ${r}² · ${v}`], steps: ['V = π · r² · v', `V = 3,14 · ${r * r} · ${v}`, `V ≐ ${cm3(rd(3.14 * r * r * v, 1))}`],
   });
@@ -437,7 +437,7 @@ function v_objem() {
 function v_plast() {
   const r = ri(2, 6), v = ri(3, 12);
   return N({
-    text: `Válec má poloměr podstavy ${B(cm(r))} a výšku ${B(cm(v))}.`, q: `Jaký obsah má jeho plášť? ${ZAOKR} ${PI_T}`, fig: fCyl(r, v, { lr: cm(r), lh: cm(v) }), ...pia(p => 2 * p * r * v), unit: 'cm²',
+    text: `Válec má poloměr podstavy (kruhového dna) ${B(cm(r))} a výšku ${B(cm(v))}.`, q: `Jaký obsah má jeho plášť (boční plocha, třeba etiketa na konzervě)? ${ZAOKR} ${PI_T}`, fig: fCyl(r, v, { lr: cm(r), lh: cm(v) }), ...pia(p => 2 * p * r * v), unit: 'cm²',
     traps: [[rd(3.14 * r * r * v, 1), 'To je objem. Plášť je 2 · π · r · v.']],
     hints: ['Plášť je „etiketa“ kolem válce. Když ji rozvineš, je to obdélník.', 'Jedna strana obdélníku je délka kružnice podstavy (obvod podstavy = 2 · π · r), druhá výška válce.', `S = 2 · 3,14 · ${r} · ${v}`], steps: ['S<sub>pl</sub> = 2 · π · r · v', `S<sub>pl</sub> = 2 · 3,14 · ${r} · ${v} ≐ ${cm2(rd(6.28 * r * v, 1))}`],
   });
@@ -450,7 +450,7 @@ function v_pojem() {
 function v_povrch() {
   const r = ri(2, 6), v = ri(3, 12);
   return N({
-    text: `Válec má poloměr podstavy ${B(cm(r))} a výšku ${B(cm(v))}.`, q: `Vypočítej jeho povrch. ${ZAOKR} ${PI_T}`, fig: fCyl(r, v, { lr: cm(r), lh: cm(v) }), ...pia(p => 2 * p * r * (r + v)), unit: 'cm²',
+    text: `Válec má poloměr podstavy (kruhového dna) ${B(cm(r))} a výšku ${B(cm(v))}.`, q: `Vypočítej jeho povrch. ${ZAOKR} ${PI_T}`, fig: fCyl(r, v, { lr: cm(r), lh: cm(v) }), ...pia(p => 2 * p * r * (r + v)), unit: 'cm²',
     traps: [[rd(3.14 * r * r + 6.28 * r * v, 1), 'Podstavy jsou dvě.'], [rd(6.28 * r * v, 1), 'To je jen plášť. Přičti obě podstavy.']],
     hints: ['Povrch = dvě podstavy + plášť.', 'S = 2 · π · r² + 2 · π · r · v'], steps: [`Podstavy: 2 · 3,14 · ${r}² = ${cz(6.28 * r * r)} cm²`, `Plášť: 2 · 3,14 · ${r} · ${v} = ${cz(6.28 * r * v)} cm²`, `S ≐ ${cm2(rd(6.28 * r * (r + v), 1))}`],
   });
@@ -458,7 +458,7 @@ function v_povrch() {
 function v_objemD() {
   const r = ri(2, 6), v = ri(3, 12);
   return N({
-    text: `Válec má průměr podstavy ${B(cm(2 * r))} a výšku ${B(cm(v))}.`, q: `Vypočítej jeho objem. ${ZAOKR} ${PI_T}`, fig: fCyl(r, v, { ld: cm(2 * r), lh: cm(v) }), ...pia(p => p * r * r * v), unit: 'cm³',
+    text: `Válec má průměr podstavy (kruhového dna) ${B(cm(2 * r))} a výšku ${B(cm(v))}.`, q: `Vypočítej jeho objem. ${ZAOKR} ${PI_T}`, fig: fCyl(r, v, { ld: cm(2 * r), lh: cm(v) }), ...pia(p => p * r * r * v), unit: 'cm³',
     traps: [[rd(3.14 * 4 * r * r * v, 1), 'Do vzorce patří poloměr. Průměr nejdřív vyděl dvěma.']],
     hints: ['Vzorec V = π · r² · v pracuje s poloměrem.', `r = ${2 * r} : 2 = ${r} cm`], steps: [`r = ${2 * r} : 2 = ${cm(r)}`, `V = 3,14 · ${r * r} · ${v} ≐ ${cm3(rd(3.14 * r * r * v, 1))}`],
   });
@@ -466,7 +466,7 @@ function v_objemD() {
 function v_vyskaZObjemu() {
   const r = ri(2, 6), v = ri(3, 12), V = rd(3.14 * r * r * v, 2);
   return N({
-    text: `Válec má objem ${B(cm3(V))} a poloměr podstavy ${B(cm(r))}.`, q: `Jak je vysoký? ${ZAOKR} ${PI_T}`, ans: v, dec: 1, unit: 'cm',
+    text: `Válec má objem ${B(cm3(V))} a poloměr podstavy (kruhového dna) ${B(cm(r))}.`, q: `Jak je vysoký? ${ZAOKR} ${PI_T}`, ans: v, dec: 1, unit: 'cm',
     hints: ['V = π · r² · v. Nejdřív spočítej obsah podstavy.', 'v = V : (π · r²)'], steps: [`S<sub>p</sub> = 3,14 · ${r}² = ${cz(3.14 * r * r)} cm²`, `v = ${cz(V)} : ${cz(3.14 * r * r)} = ${cm(v)}`],
   });
 }
@@ -530,7 +530,7 @@ const TROJ_OPS = ['seg', 'par', 'ray', 'mid', 'circ', 'int', 'poly'];
 function kon_vc(mode) {
   let c, vc, b; do { c = ri(6, 8); vc = ri(3, 4); b = ri(vc + 1, 6); } while (b === c || vc === b);
   return K({
-    mode, tpl: 'tri', dano: { c: cm(c), vc: cm(vc), b: cm(b) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('v', 'c')} = ${B(cm(vc))}, b = ${B(cm(b))}.`,
+    mode, tpl: 'tri', dano: { c: cm(c), vc: cm(vc), b: cm(b) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('v', 'c')} = ${B(cm(vc))}${mode < 3 ? ' (výška: kolmice z vrcholu C na stranu AB)' : ''}, b = ${B(cm(b))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'par', name: 'p', to: 'AB', dist: vc }, { op: 'circ', name: 'k', c: 'A', r: b }, { op: 'int', name: 'C', of: ['p', 'k'], pick: 1 }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['hgt', 'C', 'A', 'B', vc], ['dist', 'A', 'C', b], ['poly', 'ABC']],
     lens: [c, vc, b], names: ['C'], ops: TROJ_OPS, vysl: ['A', 'B', 'C'],
@@ -541,7 +541,7 @@ function kon_vc(mode) {
 function kon_tc(mode) {
   let c, tc, a; do { c = 2 * ri(3, 4); tc = ri(3, 5); a = ri(3, 6); } while (Math.abs(tc - a) >= c / 2 - 0.5 || tc + a <= c / 2 + 1 || tc === a || a === c || tc === c);
   return K({
-    mode, tpl: 'tri', dano: { c: cm(c), tc: cm(tc), a: cm(a) }, sestroj: '△ABC; S = střed strany AB', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('t', 'c')} = ${B(cm(tc))}, a = ${B(cm(a))}. Střed strany AB označ S.`,
+    mode, tpl: 'tri', dano: { c: cm(c), tc: cm(tc), a: cm(a) }, sestroj: '△ABC; S = střed strany AB', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, ${SUB('t', 'c')} = ${B(cm(tc))}${mode < 3 ? ' (těžnice: spojnice vrcholu C se středem strany AB)' : ''}, a = ${B(cm(a))}. Střed strany AB označ S.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'mid', name: 'S', a: 'A', b: 'B' }, { op: 'circ', name: 'k', c: 'S', r: tc }, { op: 'circ', name: 'l', c: 'B', r: a }, { op: 'int', name: 'C', of: ['k', 'l'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['med', 'C', 'A', 'B', tc], ['dist', 'B', 'C', a], ['poly', 'ABC']],
     lens: [c, tc, a], names: ['S', 'C'], ops: TROJ_OPS, vysl: ['A', 'B', 'C'],
@@ -552,7 +552,7 @@ function kon_tc(mode) {
 function kon_vcAl(mode) {
   const c = ri(6, 8), vc = ri(3, 4), al = pick([40, 50, 60, 70]);
   return K({
-    mode, tpl: 'tri', dano: { c: cm(c), al: st(al), vc: cm(vc) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, α = ${B(st(al))}, ${SUB('v', 'c')} = ${B(cm(vc))}.`,
+    mode, tpl: 'tri', dano: { c: cm(c), al: st(al), vc: cm(vc) }, sestroj: '△ABC', text: `Sestroj trojúhelník ABC: c = ${B(cm(c))}, α = ${B(st(al))}, ${SUB('v', 'c')} = ${B(cm(vc))}${mode < 3 ? ' (výška: kolmice z vrcholu C na stranu AB)' : ''}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: c }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'par', name: 'p', to: 'AB', dist: vc }, { op: 'int', name: 'C', of: ['AX', 'p'] }, { op: 'poly', pts: ['A', 'B', 'C'] }],
     goal: [['dist', 'A', 'B', c], ['ang', 'B', 'A', 'C', al], ['hgt', 'C', 'A', 'B', vc], ['poly', 'ABC']],
     lens: [c, vc], angs: [al], names: ['C'], ops: TROJ_OPS, vysl: ['A', 'B', 'C'],
@@ -607,7 +607,7 @@ function mn_pocet() {
 function mn_obsahZKonstrukce() {
   const c = ri(5, 12), v = 2 * ri(2, 5);
   return N({
-    text: `Trojúhelník ABC má stranu c = ${B(cm(c))} a výšku ${SUB('v', 'c')} = ${B(cm(v))}. Vrchol C se posouvá po rovnoběžce s AB.`, q: 'Jaký obsah má trojúhelník, ať je bod C na rovnoběžce kdekoli?', ans: c * v / 2, unit: 'cm²',
+    text: `Trojúhelník ABC má stranu c = ${B(cm(c))} a výšku ${SUB('v', 'c')} = ${B(cm(v))} (kolmice z vrcholu C na stranu AB). Vrchol C se posouvá po rovnoběžce s AB.`, q: 'Jaký obsah má trojúhelník, ať je bod C na rovnoběžce kdekoli?', ans: c * v / 2, unit: 'cm²',
     hints: ['Všechny body rovnoběžky jsou od přímky AB stejně daleko. Výška se tedy nemění.', 'S = c · v : 2'], steps: ['Strana c i výška zůstávají stejné, obsah se nemění.', `S = ${c} · ${v} : 2 = ${cm2(c * v / 2)}`],
   });
 }

@@ -4,7 +4,7 @@ import { ri, pick, chance, shuffle, sample, cz, rd } from './util.js';
 import { N, C, GR, K, sit } from './ulohy.js';
 import { fTri, triAng, triSSS, fRightTri, fRect, fPar, fRhomb, fTrap, fPrism, fShape, gridSvg } from './fig.js';
 import { nacrtekSvg, kSvg, kProved } from './kon.js';
-import { cm, cm2, cm3, st, B, SUB, trojStrany } from './pom.js';
+import { cm, cm2, cm3, st, B, SUB, trojStrany, TVAR_V } from './pom.js';
 const VA = 'v<tspan dy="3" font-size="9">a</tspan>';
 
 // ======================= 701 SHODNOST TROJÚHELNÍKŮ =======================
@@ -20,7 +20,7 @@ function sh_veta() {
 function sh_strana() {
   const [a, bb, c] = trojStrany(), k = ri(0, 2), [ot, ans, odp] = [['KL', c, 'AB'], ['LM', a, 'BC'], ['KM', bb, 'AC']][k];
   return N({
-    text: `Trojúhelníky ABC a KLM jsou shodné: ${B('△ABC ≅ △KLM')}. Platí |AB| = ${cm(c)}, |BC| = ${cm(a)}, |AC| = ${cm(bb)}.`, q: `Jak dlouhá je strana ${ot}?`, ans, unit: 'cm',
+    text: `Trojúhelníky ABC a KLM jsou shodné: ${B('△ABC ≅ △KLM')} (A odpovídá K, B odpovídá L, C odpovídá M). Platí |AB| = ${cm(c)}, |BC| = ${cm(a)}, |AC| = ${cm(bb)}.`, q: `Jak dlouhá je strana ${ot}?`, ans, unit: 'cm',
     hints: ['Shodné trojúhelníky se dají položit na sebe tak, že se přesně kryjí.', 'Záleží na pořadí vrcholů v zápisu: A patří ke K, B k L, C k M.', `Strana ${ot} odpovídá straně ${odp}.`],
     steps: ['A ↔ K, B ↔ L, C ↔ M', `|${ot}| = |${odp}| = ${cm(ans)}`],
   });
@@ -29,7 +29,7 @@ function sh_uhel() {
   let al, be; do { al = ri(35, 80); be = ri(35, 80); } while (al === be || 180 - al - be < 25);
   const ga = 180 - al - be, k = ri(0, 2), [vr, ans, odp] = [['K', al, 'A'], ['L', be, 'B'], ['M', ga, 'C']][k];
   return N({
-    text: `Platí ${B('△ABC ≅ △KLM')}. V trojúhelníku ABC je α = ${st(al)} a β = ${st(be)}.`, q: `Jak velký je úhel u vrcholu ${vr}?`, ans, unit: '°',
+    text: `Platí ${B('△ABC ≅ △KLM')} (trojúhelníky jsou shodné: A odpovídá K, B odpovídá L, C odpovídá M). V trojúhelníku ABC je α = ${st(al)} a β = ${st(be)}.`, q: `Jak velký je úhel u vrcholu ${vr}?`, ans, unit: '°',
     traps: k === 2 ? [[al, 'Vrchol M odpovídá vrcholu C, ne A.'], [al + be, 'Ještě odečti od 180°.']] : [],
     hints: ['Shodné trojúhelníky mají stejné strany i stejné úhly.', 'Vrcholy si odpovídají podle pořadí v zápisu: A ↔ K, B ↔ L, C ↔ M.', k === 2 ? `Úhel u M je stejný jako γ = 180° − ${st(al)} − ${st(be)}.` : `Úhel u ${vr} je stejný jako úhel u ${odp}.`],
     steps: k === 2 ? [`γ = 180° − ${st(al)} − ${st(be)} = ${st(ga)}`, `Úhel u M = γ = ${st(ga)}`] : [`${vr} ↔ ${odp}, proto úhel u ${vr} = ${st(ans)}`],
@@ -113,14 +113,14 @@ function sh_urciVetu() {
 function sh_obvod() {
   const [a, bb, c] = trojStrany();
   return N({
-    text: `Platí △ABC ≅ △KLM. Známe |AB| = ${cm(c)}, |LM| = ${cm(a)} a |KM| = ${cm(bb)}.`, q: 'Vypočítej obvod trojúhelníku ABC.', ans: a + bb + c, unit: 'cm',
+    text: `Platí △ABC ≅ △KLM (trojúhelníky jsou shodné: A odpovídá K, B odpovídá L, C odpovídá M). Známe |AB| = ${cm(c)}, |LM| = ${cm(a)} a |KM| = ${cm(bb)}.`, q: 'Vypočítej obvod trojúhelníku ABC.', ans: a + bb + c, unit: 'cm',
     hints: ['Strany shodných trojúhelníků si odpovídají podle pořadí vrcholů: LM ↔ BC, KM ↔ AC.', 'Obvod je součet všech tří stran.'], steps: [`|BC| = |LM| = ${cm(a)}, |AC| = |KM| = ${cm(bb)}`, `o = ${c} + ${a} + ${bb} = ${cm(a + bb + c)}`],
   });
 }
 function sh_uhlopricka() {
   const a = ri(4, 12), bb = 2 * ri(2, 5);
   return N({
-    text: `Úhlopříčka rozdělí obdélník se stranami ${cm(a)} a ${cm(bb)} na dva trojúhelníky.`, q: 'Jaký obsah má jeden z nich?', fig: fRect(a, bb, { la: cm(a), lb: cm(bb), diag: '' }), ans: a * bb / 2, unit: 'cm²',
+    text: `Úhlopříčka (spojnice dvou protějších vrcholů) rozdělí obdélník se stranami ${cm(a)} a ${cm(bb)} na dva trojúhelníky.`, q: 'Jaký obsah má jeden z nich?', fig: fRect(a, bb, { la: cm(a), lb: cm(bb), diag: '' }), ans: a * bb / 2, unit: 'cm²',
     traps: [[a * bb, 'To je obsah celého obdélníku. Trojúhelníky jsou dva a jsou shodné.']],
     hints: ['Oba trojúhelníky jsou shodné (podle věty sss), mají tedy stejný obsah.', 'Obsah jednoho je polovina obsahu obdélníku.'], steps: [`Obdélník: ${a} · ${bb} = ${cm2(a * bb)}`, `Jeden trojúhelník: ${a * bb} : 2 = ${cm2(a * bb / 2)}`],
   });
@@ -136,9 +136,9 @@ function sh_slovni() {
 // ======================= 702 STŘEDOVÁ SOUMĚRNOST =======================
 const H_STRED = ['Středová souměrnost je otočení o půl kruhu (o 180°) kolem středu S.', 'Jdi od bodu ke středu S a spočítej čtverečky vodorovně a svisle. Za středem pokračuj stejným směrem o stejný počet.', 'Střed S leží přesně uprostřed mezi vzorem a obrazem.'];
 const ss_sit = (o, text, hints = H_STRED) => () => GR({ ...sit({ ...o, stred: true }), text, q: 'Ťukni do sítě na místa, kde leží obrazy bodů.', hints });
-const ss_bod = ss_sit({ n: 1 }, 'Najdi obraz bodu A ve středové souměrnosti se středem S.');
-const ss_usecka = ss_sit({ n: 2 }, 'Najdi obraz úsečky AB ve středové souměrnosti se středem S. Označ obrazy obou krajních bodů.');
-const ss_troj = ss_sit({ n: 3 }, 'Najdi obraz trojúhelníku ABC ve středové souměrnosti se středem S.');
+const ss_bod = ss_sit({ n: 1 }, 'Najdi obraz bodu A (kam se bod přenese, když ho otočíš kolem středu S o půl otáčky) ve středové souměrnosti se středem S.');
+const ss_usecka = ss_sit({ n: 2 }, 'Najdi obraz úsečky AB (kam se úsečka přenese, když ji otočíš kolem středu S o půl otáčky) ve středové souměrnosti se středem S. Označ obrazy obou krajních bodů.');
+const ss_troj = ss_sit({ n: 3 }, 'Najdi obraz trojúhelníku ABC (kam se trojúhelník přenese, když ho otočíš kolem středu S o půl otáčky) ve středové souměrnosti se středem S.');
 const ss_troj3 = ss_sit({ n: 3, pres: true }, 'Najdi obraz trojúhelníku ABC ve středové souměrnosti se středem S. Střed leží těsně u trojúhelníku.', ['Každý vrchol zobraz zvlášť: stejný počet čtverečků za střed, stejným směrem.']);
 const ss_ctyr = ss_sit({ n: 4 }, 'Najdi obraz čtyřúhelníku ABCD ve středové souměrnosti se středem S.', ['Každý vrchol zobraz zvlášť: stejný počet čtverečků za střed, stejným směrem.']);
 const STREDOVE = [['ctverec', 'čtverec', 1], ['obdelnik', 'obdélník', 1], ['kosoctverec', 'kosočtverec', 1], ['rovnobeznik', 'kosodélník', 1], ['kruh', 'kruh', 1], ['sestiuhelnik', 'pravidelný šestiúhelník', 1],
@@ -146,7 +146,7 @@ const STREDOVE = [['ctverec', 'čtverec', 1], ['obdelnik', 'obdélník', 1], ['k
 function ss_utvar() {
   const [id, jm, ano] = pick(STREDOVE);
   return C({
-    text: `Na obrázku je ${B(jm)}.`, q: 'Je středově souměrný?', fig: fShape(id), figSol: ano ? fShape(id, { stred: 1 }) : null, ok: ano ? 'Ano' : 'Ne', opts: ['Ano', 'Ne'],
+    text: `Na obrázku je ${B(jm)}${TVAR_V[id] || ''}.`, q: 'Je středově souměrný?', fig: fShape(id), figSol: ano ? fShape(id, { stred: 1 }) : null, ok: ano ? 'Ano' : 'Ne', opts: ['Ano', 'Ne'],
     hints: ['Útvar je středově souměrný, když po otočení o půl kruhu kolem svého středu vypadá úplně stejně.', 'Otoč si v duchu obrázek vzhůru nohama. Splývá s původním?', ano ? 'Po otočení o 180° se kryje sám se sebou.' : 'Po otočení o 180° míří vrchol na opačnou stranu, útvar se sám se sebou nekryje.'],
     steps: [ano ? `${jm[0].toUpperCase() + jm.slice(1)} se po otočení o 180° kolem středu kryje sám se sebou.` : `${jm[0].toUpperCase() + jm.slice(1)} se po otočení o 180° sám se sebou nekryje.`],
   });
@@ -154,7 +154,7 @@ function ss_utvar() {
 function ss_vzd() {
   const d = ri(2, 9), dvoj = chance(0.5);
   return N({
-    text: `Bod A leží ${B(cm(d))} od středu souměrnosti S. Bod A′ je jeho obraz.`, q: dvoj ? 'Jak daleko jsou od sebe body A a A′?' : 'Jak daleko od středu S leží bod A′?', ans: dvoj ? 2 * d : d, unit: 'cm',
+    text: `Bod A leží ${B(cm(d))} od středu souměrnosti S. Bod A′ je jeho obraz (kam se bod přenese, když ho otočíš kolem středu S o půl otáčky).`, q: dvoj ? 'Jak daleko jsou od sebe body A a A′?' : 'Jak daleko od středu S leží bod A′?', ans: dvoj ? 2 * d : d, unit: 'cm',
     traps: dvoj ? [[d, 'To je vzdálenost jednoho bodu od středu. Mezi A a A′ je dvakrát.']] : [[2 * d, 'To je vzdálenost |AA′|. Obraz je od středu stejně daleko jako vzor.']],
     hints: ['Vzor a obraz leží na jedné přímce se středem S, každý na jiné straně.', 'Oba jsou od středu stejně daleko: |SA| = |SA′|.', dvoj ? `|AA′| = 2 · ${d}` : `${d} cm`], steps: [dvoj ? `|AA′| = 2 · ${cm(d)} = ${cm(2 * d)}` : `|SA′| = |SA| = ${cm(d)}`],
   });
@@ -184,7 +184,7 @@ function ss_shodnost() {
   }
   const x = ri(8, 28);
   return N({
-    text: `Bod A′ je obraz bodu A ve středové souměrnosti se středem S. Body jsou od sebe ${cm(x)}.`, q: 'Jak daleko je bod A od středu S?', ans: x / 2, unit: 'cm',
+    text: `Bod A′ je obraz bodu A (kam se bod přenese, když ho otočíš kolem středu S o půl otáčky) ve středové souměrnosti se středem S. Body jsou od sebe ${cm(x)}.`, q: 'Jak daleko je bod A od středu S?', ans: x / 2, unit: 'cm',
     traps: [[2 * x, 'Střed leží uprostřed mezi vzorem a obrazem, vzdálenost se půlí.']], hints: ['Střed S leží přesně uprostřed úsečky AA′.', '|AS| = |AA′| : 2'], steps: [`|AS| = ${x} : 2 = ${cm(x / 2)}`],
   });
 }
@@ -217,7 +217,7 @@ function r_obvod() {
 function r_obsah() {
   const a = ri(5, 14), v = ri(3, 9);
   return N({
-    text: `Rovnoběžník má stranu a = ${B(cm(a))} a výšku na tuto stranu ${SUB('v', 'a')} = ${B(cm(v))}.`, q: 'Vypočítej jeho obsah.', fig: fPar(a, v / Math.sin(1.1), 63, { la: cm(a), lv: cm(v) }), ans: a * v, unit: 'cm²',
+    text: `Rovnoběžník má stranu a = ${B(cm(a))} a výšku na tuto stranu ${SUB('v', 'a')} = ${B(cm(v))} (vzdálenost strany a od protější strany).`, q: 'Vypočítej jeho obsah.', fig: fPar(a, v / Math.sin(1.1), 63, { la: cm(a), lv: cm(v) }), ans: a * v, unit: 'cm²',
     traps: [[a * v / 2, 'Dělení dvěma patří k trojúhelníku. U rovnoběžníku se nedělí.'], [2 * (a + v), 'To je výpočet obvodu, navíc se špatným údajem. Obsah je a · výška.']],
     hints: ['Odstřihni z rovnoběžníku na jedné straně trojúhelník a přilož ho na druhou. Vznikne obdélník.', 'Ten obdélník má strany a a výšku: S = a · v<sub>a</sub>.', `S = ${a} · ${v}`], steps: ['S = a · v<sub>a</sub>', `S = ${a} · ${v} = ${cm2(a * v)}`],
   });
@@ -240,14 +240,14 @@ function r_druh() {
 function r_kosoObvod() {
   const a = ri(4, 15);
   return N({
-    text: `Kosočtverec má stranu ${B(cm(a))}.`, q: 'Vypočítej jeho obvod.', ans: 4 * a, unit: 'cm', traps: [[2 * a, 'Kosočtverec má čtyři strany.'], [a * a, 'Obvod je součet stran.']],
+    text: `Kosočtverec (rovnoběžník, který má všechny strany stejně dlouhé) má stranu ${B(cm(a))}.`, q: 'Vypočítej jeho obvod.', ans: 4 * a, unit: 'cm', traps: [[2 * a, 'Kosočtverec má čtyři strany.'], [a * a, 'Obvod je součet stran.']],
     hints: ['Kosočtverec má všechny čtyři strany stejně dlouhé.', 'o = 4 · a', `o = 4 · ${a}`], steps: ['o = 4 · a', `o = 4 · ${a} = ${cm(4 * a)}`],
   });
 }
 function r_vyskaZObsahu() {
   const a = ri(5, 14), v = ri(3, 9);
   return N({
-    text: `Rovnoběžník má obsah ${B(cm2(a * v))} a stranu a = ${B(cm(a))}.`, q: 'Jak dlouhá je výška na stranu a?', fig: fPar(a, v / Math.sin(1.1), 63, { la: cm(a), lv: '?' }), ans: v, unit: 'cm',
+    text: `Rovnoběžník má obsah ${B(cm2(a * v))} a stranu a = ${B(cm(a))}.`, q: 'Jak dlouhá je výška na stranu a (vzdálenost strany a od protější strany)?', fig: fPar(a, v / Math.sin(1.1), 63, { la: cm(a), lv: '?' }), ans: v, unit: 'cm',
     hints: ['S = a · v<sub>a</sub>. Známe S a a.', 'v<sub>a</sub> = S : a'], steps: ['S = a · v<sub>a</sub>, proto v<sub>a</sub> = S : a', `v<sub>a</sub> = ${a * v} : ${a} = ${cm(v)}`],
   });
 }
@@ -255,7 +255,7 @@ function dveVysky() { let k, va, vb; do { k = ri(2, 3); va = ri(3, 6); vb = ri(3
 function r_druhaVyska() {
   const [a, bb, va, vb] = dveVysky();
   return N({
-    text: `Rovnoběžník má strany a = ${B(cm(a))}, b = ${B(cm(bb))} a výšku ${SUB('v', 'a')} = ${B(cm(va))}.`, q: `Jak dlouhá je výška ${SUB('v', 'b')}?`, ans: vb, unit: 'cm',
+    text: `Rovnoběžník má strany a = ${B(cm(a))}, b = ${B(cm(bb))} a výšku ${SUB('v', 'a')} = ${B(cm(va))} (vzdálenost strany a od protější strany).`, q: `Jak dlouhá je výška ${SUB('v', 'b')}?`, ans: vb, unit: 'cm',
     traps: [[va, 'Výšky na různé strany jsou stejné jen u kosočtverce.']],
     hints: ['Obsah vyjde stejně, ať počítáš s kteroukoli stranou: a · v<sub>a</sub> = b · v<sub>b</sub>.', 'Nejdřív spočítej obsah, pak ho vyděl stranou b.'], steps: [`S = a · v<sub>a</sub> = ${a} · ${va} = ${cm2(a * va)}`, `v<sub>b</sub> = S : b = ${a * va} : ${bb} = ${cm(vb)}`],
   });
@@ -263,7 +263,7 @@ function r_druhaVyska() {
 function r_kosoObsah() {
   const e = 2 * ri(3, 8), f = ri(3, 10);
   return N({
-    text: `Kosočtverec má úhlopříčky e = ${B(cm(e))} a f = ${B(cm(f))}.`, q: 'Vypočítej jeho obsah.', fig: fRhomb(e, f, { le: cm(e), lf: cm(f) }), ans: e * f / 2, unit: 'cm²',
+    text: `Kosočtverec (rovnoběžník, který má všechny strany stejně dlouhé) má úhlopříčky (spojnice protějších vrcholů) e = ${B(cm(e))} a f = ${B(cm(f))}.`, q: 'Vypočítej jeho obsah.', fig: fRhomb(e, f, { le: cm(e), lf: cm(f) }), ans: e * f / 2, unit: 'cm²',
     traps: [[e * f, 'Součin úhlopříček je obsah obdélníku kolem kosočtverce. Kosočtverec je jeho polovina.']],
     hints: ['Úhlopříčky kosočtverce jsou na sebe kolmé. Kosočtverec zabírá přesně polovinu obdélníku se stranami e a f.', 'S = e · f : 2'], steps: ['S = e · f : 2', `S = ${e} · ${f} : 2 = ${cm2(e * f / 2)}`],
   });
@@ -278,14 +278,14 @@ function r_stranaZObvodu() {
 function r_uhlopricky() {
   const e = 2 * ri(4, 12);
   return N({
-    text: `Úhlopříčky rovnoběžníku ABCD se protínají v bodě S. Úhlopříčka AC měří ${B(cm(e))}.`, q: 'Jak dlouhá je úsečka AS?', fig: fPar(9, 6, 62, { diag: cm(e), names: 1 }), ans: e / 2, unit: 'cm',
+    text: `Úhlopříčky rovnoběžníku ABCD (spojnice protějších vrcholů) se protínají v bodě S. Úhlopříčka AC měří ${B(cm(e))}.`, q: 'Jak dlouhá je úsečka AS?', fig: fPar(9, 6, 62, { diag: cm(e), names: 1 }), ans: e / 2, unit: 'cm',
     hints: ['Úhlopříčky rovnoběžníku se navzájem půlí.', '|AS| = |AC| : 2'], steps: [`|AS| = ${e} : 2 = ${cm(e / 2)}`],
   });
 }
 function r_jednotky() {
   const a = ri(11, 25) / 10, v = ri(4, 9);
   return N({
-    text: `Rovnoběžník má stranu a = ${B(cz(a) + ' dm')} a výšku na tuto stranu ${B(cm(v))}.`, q: 'Vypočítej jeho obsah v cm².', ans: rd(a * 10 * v), unit: 'cm²',
+    text: `Rovnoběžník má stranu a = ${B(cz(a) + ' dm')} a výšku na tuto stranu ${B(cm(v))} (vzdálenost strany a od protější strany).`, q: 'Vypočítej jeho obsah v cm².', ans: rd(a * 10 * v), unit: 'cm²',
     traps: [[rd(a * v, 2), 'Strana je v decimetrech, výška v centimetrech. Nejdřív převeď na stejné jednotky.']],
     hints: ['Před výpočtem musí být oba rozměry ve stejných jednotkách.', `${cz(a)} dm = ${cz(a * 10)} cm`], steps: [`${cz(a)} dm = ${cz(a * 10)} cm`, `S = ${cz(a * 10)} · ${v} = ${cm2(rd(a * 10 * v))}`],
   });
@@ -340,7 +340,7 @@ function r_parkety() {
 function tl_troj() {
   const a = ri(4, 14), v = 2 * ri(2, 5);
   return N({
-    text: `Trojúhelník má stranu a = ${B(cm(a))} a výšku na tuto stranu ${SUB('v', 'a')} = ${B(cm(v))}.`, q: 'Vypočítej jeho obsah.', fig: fTri([[0, 0], [a, 0], [a * 0.38, v]], { sides: [cm(a), '', ''], h: { from: 2, lab: cm(v) }, names: null }), ans: a * v / 2, unit: 'cm²',
+    text: `Trojúhelník má stranu a = ${B(cm(a))} a výšku na tuto stranu ${SUB('v', 'a')} = ${B(cm(v))} (vzdálenost vrcholu A od strany a).`, q: 'Vypočítej jeho obsah.', fig: fTri([[0, 0], [a, 0], [a * 0.38, v]], { sides: [cm(a), '', ''], h: { from: 2, lab: cm(v) }, names: null }), ans: a * v / 2, unit: 'cm²',
     traps: [[a * v, 'Součin a · v<sub>a</sub> je obsah celého rovnoběžníku. Trojúhelník je jeho polovina.'], [a + v, 'Strana a výška se násobí.']],
     hints: ['Dva stejné trojúhelníky složí rovnoběžník se stranou a a výškou v<sub>a</sub>.', 'Trojúhelník je tedy polovina rovnoběžníku: S = a · v<sub>a</sub> : 2.', `S = ${a} · ${v} : 2`], steps: ['S = a · v<sub>a</sub> : 2', `S = ${a} · ${v} : 2 = ${a * v} : 2 = ${cm2(a * v / 2)}`],
   });
@@ -348,7 +348,7 @@ function tl_troj() {
 function tl_pravo() {
   const a = ri(3, 12), bb = 2 * ri(2, 6);
   return N({
-    text: `Pravoúhlý trojúhelník má odvěsny ${B(cm(a))} a ${B(cm(bb))}.`, q: 'Vypočítej jeho obsah.', fig: fRightTri(a, bb, { la: cm(a), lb: cm(bb), names: false }), ans: a * bb / 2, unit: 'cm²',
+    text: `Pravoúhlý trojúhelník má odvěsny (dvě kratší strany u pravého úhlu) ${B(cm(a))} a ${B(cm(bb))}.`, q: 'Vypočítej jeho obsah.', fig: fRightTri(a, bb, { la: cm(a), lb: cm(bb), names: false }), ans: a * bb / 2, unit: 'cm²',
     traps: [[a * bb, 'To je obsah obdélníku. Pravoúhlý trojúhelník je jeho polovina.']],
     hints: ['Odvěsny jsou dvě strany, které svírají pravý úhel. Jedna z nich je zároveň výškou na tu druhou.', 'Pravoúhlý trojúhelník je polovina obdélníku: S = a · b : 2.', `S = ${a} · ${bb} : 2`], steps: ['S = a · b : 2', `S = ${a} · ${bb} : 2 = ${cm2(a * bb / 2)}`],
   });
@@ -357,7 +357,7 @@ function lich() { const c = ri(3, 8), a = c + 2 * ri(1, 4), v = 2 * ri(2, 4); re
 function tl_lich() {
   const [a, c, v] = lich(), S = (a + c) * v / 2;
   return N({
-    text: `Lichoběžník má základny a = ${B(cm(a))}, c = ${B(cm(c))} a výšku v = ${B(cm(v))}.`, q: 'Vypočítej jeho obsah.', fig: fTrap(a, c, v, (a - c) / 3, { la: cm(a), lc: cm(c), lv: cm(v) }), ans: S, unit: 'cm²',
+    text: `Lichoběžník má základny (dvě rovnoběžné strany) a = ${B(cm(a))}, c = ${B(cm(c))} a výšku v = ${B(cm(v))}.`, q: 'Vypočítej jeho obsah.', fig: fTrap(a, c, v, (a - c) / 3, { la: cm(a), lc: cm(c), lv: cm(v) }), ans: S, unit: 'cm²',
     traps: [[(a + c) * v, 'Ještě vyděl dvěma. Součin (a + c) · v je obsah rovnoběžníku ze dvou takových lichoběžníků.'], [a * c * v / 2, 'Základny se sčítají, nenásobí.'], [a * v, 'Počítá se s oběma základnami.']],
     hints: ['Dva stejné lichoběžníky (jeden otočený) složí rovnoběžník se stranou a + c a výškou v.', 'Lichoběžník je jeho polovina: S = (a + c) · v : 2.', `S = (${a} + ${c}) · ${v} : 2`], steps: ['S = (a + c) · v : 2', `S = (${a} + ${c}) · ${v} : 2 = ${a + c} · ${v} : 2 = ${cm2(S)}`],
   });
@@ -368,7 +368,7 @@ function tl_lichObvod() {
   let l, r; do { l = pick(moz); r = pick(moz); } while (l[0] + r[0] === 0);
   const c = ri(3, 8), a = c + l[0] + r[0], d = l[1], bb = r[1];
   return N({
-    text: `Lichoběžník má základny ${B(cm(a))} a ${B(cm(c))} a ramena ${B(cm(bb))} a ${B(cm(d))}.`, q: 'Vypočítej jeho obvod.', fig: fTrap(a, c, v, l[0], { la: cm(a), lc: cm(c), lb: cm(bb), ld: cm(d) }), ans: a + bb + c + d, unit: 'cm',
+    text: `Lichoběžník má základny (dvě rovnoběžné strany) ${B(cm(a))} a ${B(cm(c))} a ramena ${B(cm(bb))} a ${B(cm(d))}.`, q: 'Vypočítej jeho obvod.', fig: fTrap(a, c, v, l[0], { la: cm(a), lc: cm(c), lb: cm(bb), ld: cm(d) }), ans: a + bb + c + d, unit: 'cm',
     hints: ['Obvod je délka čáry kolem celého útvaru.', 'Sečti všechny čtyři strany: o = a + b + c + d.', `o = ${a} + ${bb} + ${c} + ${d}`], steps: ['o = a + b + c + d', `o = ${a} + ${bb} + ${c} + ${d} = ${cm(a + bb + c + d)}`],
   });
 }
@@ -382,21 +382,21 @@ function tl_pojem() {
 function tl_vyskaZObsahu() {
   const a = ri(4, 14), v = ri(3, 10), S = a * v / 2;
   return N({
-    text: `Trojúhelník má obsah ${B(cm2(S))} a stranu a = ${B(cm(a))}.`, q: 'Jak dlouhá je výška na stranu a?', ans: v, unit: 'cm', traps: [[v / 2, 'Ve vzorci je dělení dvěma. Při výpočtu výšky se proto obsah nejdřív násobí dvěma.']],
+    text: `Trojúhelník má obsah ${B(cm2(S))} a stranu a = ${B(cm(a))}.`, q: 'Jak dlouhá je výška na stranu a (vzdálenost vrcholu A od strany a)?', ans: v, unit: 'cm', traps: [[v / 2, 'Ve vzorci je dělení dvěma. Při výpočtu výšky se proto obsah nejdřív násobí dvěma.']],
     hints: ['S = a · v<sub>a</sub> : 2. Dvojnásobek obsahu je a · v<sub>a</sub>.', 'v<sub>a</sub> = 2 · S : a'], steps: ['v<sub>a</sub> = 2 · S : a', `v<sub>a</sub> = 2 · ${cz(S)} : ${a} = ${cz(2 * S)} : ${a} = ${cm(v)}`],
   });
 }
 function tl_stranaZObsahu() {
   const a = ri(4, 14), v = ri(3, 10), S = a * v / 2;
   return N({
-    text: `Trojúhelník má obsah ${B(cm2(S))} a výšku ${SUB('v', 'a')} = ${B(cm(v))}.`, q: 'Jak dlouhá je strana a?', ans: a, unit: 'cm', traps: [[a / 2, 'Obsah nejdřív vynásob dvěma, pak teprve děl výškou.']],
+    text: `Trojúhelník má obsah ${B(cm2(S))} a výšku ${SUB('v', 'a')} = ${B(cm(v))} (vzdálenost vrcholu A od strany a).`, q: 'Jak dlouhá je strana a?', ans: a, unit: 'cm', traps: [[a / 2, 'Obsah nejdřív vynásob dvěma, pak teprve děl výškou.']],
     hints: ['S = a · v<sub>a</sub> : 2. Dvojnásobek obsahu je a · v<sub>a</sub>.', 'a = 2 · S : v<sub>a</sub>'], steps: ['a = 2 · S : v<sub>a</sub>', `a = 2 · ${cz(S)} : ${v} = ${cm(a)}`],
   });
 }
 function tl_lichVyska() {
   const [a, c, v] = lich(), S = (a + c) * v / 2;
   return N({
-    text: `Lichoběžník má obsah ${B(cm2(S))} a základny ${B(cm(a))} a ${B(cm(c))}.`, q: 'Jak vysoký je?', fig: fTrap(a, c, v, (a - c) / 3, { la: cm(a), lc: cm(c), lv: '?' }), ans: v, unit: 'cm',
+    text: `Lichoběžník má obsah ${B(cm2(S))} a základny (dvě rovnoběžné strany) ${B(cm(a))} a ${B(cm(c))}.`, q: 'Jak vysoký je?', fig: fTrap(a, c, v, (a - c) / 3, { la: cm(a), lc: cm(c), lv: '?' }), ans: v, unit: 'cm',
     traps: [[v / 2, 'Obsah nejdřív vynásob dvěma, pak teprve děl součtem základen.']],
     hints: ['S = (a + c) · v : 2. Dvojnásobek obsahu je (a + c) · v.', 'v = 2 · S : (a + c)'], steps: ['v = 2 · S : (a + c)', `v = 2 · ${cz(S)} : (${a} + ${c}) = ${cz(2 * S)} : ${a + c} = ${cm(v)}`],
   });
@@ -404,7 +404,7 @@ function tl_lichVyska() {
 function tl_lichZakladna() {
   const [a, c, v] = lich(), S = (a + c) * v / 2;
   return N({
-    text: `Lichoběžník má obsah ${B(cm2(S))}, výšku ${B(cm(v))} a delší základnu ${B(cm(a))}.`, q: 'Jak dlouhá je kratší základna?', ans: c, unit: 'cm',
+    text: `Lichoběžník má obsah ${B(cm2(S))}, výšku ${B(cm(v))} a delší základnu (jednu ze dvou rovnoběžných stran) ${B(cm(a))}.`, q: 'Jak dlouhá je kratší základna?', ans: c, unit: 'cm',
     traps: [[a + c, 'To je součet obou základen. Ještě odečti tu, kterou znáš.']],
     hints: ['Z S = (a + c) · v : 2 nejdřív spočítej součet základen: a + c = 2 · S : v.', 'Pak odečti známou základnu.'], steps: [`a + c = 2 · ${cz(S)} : ${v} = ${a + c}`, `c = ${a + c} − ${a} = ${cm(c)}`],
   });
@@ -412,7 +412,7 @@ function tl_lichZakladna() {
 function tl_tupouhly() {
   const a = ri(4, 8), v = 2 * ri(2, 4);
   return N({
-    text: `Tupoúhlý trojúhelník má stranu a = ${B(cm(a))}. Výška na tuto stranu měří ${B(cm(v))} a padá mimo trojúhelník, na prodloužení strany.`, q: 'Vypočítej obsah trojúhelníku.',
+    text: `Tupoúhlý trojúhelník (má jeden úhel větší než pravý) má stranu a = ${B(cm(a))}. Výška na tuto stranu měří ${B(cm(v))} a padá mimo trojúhelník, na prodloužení strany.`, q: 'Vypočítej obsah trojúhelníku.',
     fig: fTri([[0, 0], [a, 0], [a + v * 0.7, v]], { sides: [cm(a), '', ''], h: { from: 2, lab: cm(v) }, names: null }), ans: a * v / 2, unit: 'cm²',
     traps: [[a * v, 'Nezapomeň dělit dvěma.']], hints: ['Vzorec S = a · v<sub>a</sub> : 2 platí pro každý trojúhelník. Nevadí, že výška leží venku.', 'Počítá se jen se stranou a, ne s jejím prodloužením.'], steps: ['S = a · v<sub>a</sub> : 2', `S = ${a} · ${v} : 2 = ${cm2(a * v / 2)}`],
   });
@@ -420,7 +420,7 @@ function tl_tupouhly() {
 function tl_jednotky() {
   const a = ri(12, 30) / 10, v = 2 * ri(2, 6);
   return N({
-    text: `Trojúhelník má stranu ${B(cz(a) + ' dm')} a výšku na tuto stranu ${B(cm(v))}.`, q: 'Vypočítej jeho obsah v cm².', ans: rd(a * 10 * v / 2), unit: 'cm²',
+    text: `Trojúhelník má stranu ${B(cz(a) + ' dm')} a výšku na tuto stranu ${B(cm(v))} (vzdálenost protějšího vrcholu od této strany).`, q: 'Vypočítej jeho obsah v cm².', ans: rd(a * 10 * v / 2), unit: 'cm²',
     traps: [[rd(a * v / 2, 2), 'Strana je v decimetrech, výška v centimetrech. Převeď na stejné jednotky.']],
     hints: ['Oba rozměry musí být ve stejných jednotkách.', `${cz(a)} dm = ${cz(a * 10)} cm`], steps: [`${cz(a)} dm = ${cz(a * 10)} cm`, `S = ${cz(a * 10)} · ${v} : 2 = ${cm2(rd(a * 10 * v / 2))}`],
   });
@@ -468,7 +468,7 @@ const ROVN_OPS = ['seg', 'ray', 'circ', 'paral', 'int', 'poly'];
 function kon_rovn(mode, koso) {
   let a = ri(5, 8), bb = koso ? a : ri(3, a - 1); const al = pick([50, 60, 70, 110]);
   return K({
-    mode, tpl: 'par', dano: koso ? { a: cm(a), al: st(al) } : { a: cm(a), b: cm(bb), al: st(al) }, sestroj: koso ? 'kosočtverec ABCD' : 'rovnoběžník ABCD', text: koso ? `Sestroj kosočtverec ABCD: a = ${B(cm(a))}, α = ${B(st(al))}.` : `Sestroj rovnoběžník ABCD: a = ${B(cm(a))}, b = ${B(cm(bb))}, α = ${B(st(al))}.`,
+    mode, tpl: 'par', dano: koso ? { a: cm(a), al: st(al) } : { a: cm(a), b: cm(bb), al: st(al) }, sestroj: koso ? 'kosočtverec ABCD' : 'rovnoběžník ABCD', text: koso ? `Sestroj kosočtverec ABCD${mode < 3 ? ' (rovnoběžník, který má všechny strany stejně dlouhé)' : ''}: a = ${B(cm(a))}, α = ${B(st(al))}.` : `Sestroj rovnoběžník ABCD: a = ${B(cm(a))}, b = ${B(cm(bb))}, α = ${B(st(al))}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: a }, { op: 'ray', name: 'AX', v: 'A', to: 'B', ang: al }, { op: 'circ', name: 'k', c: 'A', r: bb }, { op: 'int', name: 'D', of: ['AX', 'k'] },
       { op: 'paral', name: 'p', to: 'AB', thru: 'D' }, { op: 'paral', name: 'q', to: 'AX', thru: 'B' }, { op: 'int', name: 'C', of: ['p', 'q'] }, { op: 'poly', pts: ['A', 'B', 'C', 'D'], label: (koso ? 'kosočtverec' : 'rovnoběžník') + ' ABCD' }],
     goal: [['dist', 'A', 'B', a], ['dist', 'A', 'D', bb], ['ang', 'B', 'A', 'D', al], ['parl', 'A', 'B', 'D', 'C'], ['parl', 'A', 'D', 'B', 'C'], ['poly', 'ABCD']],
@@ -480,7 +480,7 @@ function kon_rovn(mode, koso) {
 function kon_rovnE(mode) {
   let a, bb, e; do { a = ri(5, 7); bb = ri(3, 5); e = ri(6, 9); } while (a === bb || e >= a + bb - 1 || e <= a - bb + 2 || e === a || e === bb);
   return K({
-    mode, tpl: 'par', dano: { a: cm(a), b: cm(bb), e: cm(e) }, sestroj: 'rovnoběžník ABCD', text: `Sestroj rovnoběžník ABCD: a = ${B(cm(a))}, b = ${B(cm(bb))}, úhlopříčka e = |AC| = ${B(cm(e))}.`,
+    mode, tpl: 'par', dano: { a: cm(a), b: cm(bb), e: cm(e) }, sestroj: 'rovnoběžník ABCD', text: `Sestroj rovnoběžník ABCD: a = ${B(cm(a))}, b = ${B(cm(bb))}, úhlopříčka e = |AC| = ${B(cm(e))}${mode < 3 ? ' (úhlopříčka spojuje protější vrcholy A a C)' : ''}.`,
     plan: [{ op: 'seg', a: 'A', b: 'B', len: a }, { op: 'circ', name: 'k', c: 'A', r: e }, { op: 'circ', name: 'l', c: 'B', r: bb }, { op: 'int', name: 'C', of: ['k', 'l'] }, { op: 'seg', a: 'B', b: 'C' },
       { op: 'paral', name: 'p', to: 'AB', thru: 'C' }, { op: 'paral', name: 'q', to: 'BC', thru: 'A' }, { op: 'int', name: 'D', of: ['p', 'q'] }, { op: 'poly', pts: ['A', 'B', 'C', 'D'], label: 'rovnoběžník ABCD' }],
     goal: [['dist', 'A', 'B', a], ['dist', 'B', 'C', bb], ['dist', 'A', 'C', e], ['parl', 'A', 'B', 'D', 'C'], ['parl', 'A', 'D', 'B', 'C'], ['poly', 'ABCD']],
@@ -516,9 +516,9 @@ function kon_lichC() {
 function ct_vlastnost() {
   const [q, ok, bad] = pick([
     ['Protější strany rovnoběžníku jsou…', 'rovnoběžné a stejně dlouhé', ['rovnoběžné, ale různě dlouhé', 'kolmé a stejně dlouhé', 'různoběžné']],
-    ['Úhlopříčky rovnoběžníku…', 'se navzájem půlí', ['jsou vždy stejně dlouhé', 'jsou vždy kolmé', 'půlí úhly u vrcholů']],
+    ['Úhlopříčky rovnoběžníku (spojnice protějších vrcholů)…', 'se navzájem půlí', ['jsou vždy stejně dlouhé', 'jsou vždy kolmé', 'půlí úhly u vrcholů']],
     ['Lichoběžník má…', 'právě jednu dvojici rovnoběžných stran', ['dvě dvojice rovnoběžných stran', 'všechny strany stejně dlouhé', 'všechny úhly pravé']],
-    ['Úhlopříčky kosočtverce…', 'se půlí a jsou na sebe kolmé', ['jsou stejně dlouhé', 'se nepůlí', 'jsou rovnoběžné se stranami']],
+    ['Úhlopříčky kosočtverce (spojnice protějších vrcholů)…', 'se půlí a jsou na sebe kolmé', ['jsou stejně dlouhé', 'se nepůlí', 'jsou rovnoběžné se stranami']],
   ]);
   return C({ text: q, q: 'Doplň větu.', ok, bad, hints: ['Vybav si obrázek útvaru a jeho rovnoběžné strany.', 'Rovnoběžník má dvě dvojice rovnoběžných stran, lichoběžník jen jednu.', 'Vlastnosti, které platí jen pro obdélník nebo čtverec, neplatí pro každý rovnoběžník.'], steps: [`${q.replace('…', '')} ${ok}.`] });
 }
@@ -543,7 +543,7 @@ function ct_protejsi() {
 function h_objemSp() {
   const S = ri(6, 40), v = ri(3, 12);
   return N({
-    text: `Hranol má podstavu o obsahu ${B(cm2(S))} a výšku ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', ans: S * v, unit: 'cm³', traps: [[S + v, 'Obsah podstavy se výškou násobí.'], [2 * S + v, 'To není vzorec pro objem.']],
+    text: `Hranol má podstavu (dolní stěnu, horní je stejná) o obsahu ${B(cm2(S))} a výšku ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', ans: S * v, unit: 'cm³', traps: [[S + v, 'Obsah podstavy se výškou násobí.'], [2 * S + v, 'To není vzorec pro objem.']],
     hints: ['Hranol si představ jako stoh stejných destiček tvaru podstavy.', 'Objem = obsah podstavy · výška: V = S<sub>p</sub> · v.', `V = ${S} · ${v}`], steps: ['V = S<sub>p</sub> · v', `V = ${S} · ${v} = ${cm3(S * v)}`],
   });
 }
@@ -557,14 +557,14 @@ function h_pocty() {
 function h_plast() {
   const o = ri(10, 30), v = ri(4, 12);
   return N({
-    text: `Podstava hranolu má obvod ${B(cm(o))}. Hranol je vysoký ${B(cm(v))}.`, q: 'Vypočítej obsah jeho pláště.', ans: o * v, unit: 'cm²',
+    text: `Podstava hranolu (dolní stěna) má obvod ${B(cm(o))}. Hranol je vysoký ${B(cm(v))}.`, q: 'Vypočítej obsah jeho pláště (všech bočních stěn dohromady).', ans: o * v, unit: 'cm²',
     hints: ['Plášť jsou všechny boční stěny dohromady.', 'Když plášť rozvineš do roviny, vznikne obdélník. Jedna jeho strana je obvod podstavy, druhá výška hranolu.', `S<sub>pl</sub> = ${o} · ${v}`], steps: ['S<sub>pl</sub> = obvod podstavy · výška', `S<sub>pl</sub> = ${o} · ${v} = ${cm2(o * v)}`],
   });
 }
 function h_povrchZCasti() {
   const Sp = ri(6, 30), Spl = ri(40, 200);
   return N({
-    text: `Hranol má podstavu o obsahu ${B(cm2(Sp))} a plášť o obsahu ${B(cm2(Spl))}.`, q: 'Vypočítej jeho povrch.', ans: 2 * Sp + Spl, unit: 'cm²', traps: [[Sp + Spl, 'Hranol má dvě podstavy, dolní a horní.']],
+    text: `Hranol má podstavu (dolní stěnu, horní je stejná) o obsahu ${B(cm2(Sp))} a plášť (všechny boční stěny dohromady) o obsahu ${B(cm2(Spl))}.`, q: 'Vypočítej jeho povrch.', ans: 2 * Sp + Spl, unit: 'cm²', traps: [[Sp + Spl, 'Hranol má dvě podstavy, dolní a horní.']],
     hints: ['Povrch je obsah všech stěn dohromady.', 'Hranol má dvě stejné podstavy a plášť: S = 2 · S<sub>p</sub> + S<sub>pl</sub>.', `S = 2 · ${Sp} + ${Spl}`], steps: ['S = 2 · S<sub>p</sub> + S<sub>pl</sub>', `S = 2 · ${Sp} + ${Spl} = ${cm2(2 * Sp + Spl)}`],
   });
 }
@@ -575,7 +575,7 @@ function h_pojem() {
 function h_objemTroj() {
   const a = ri(3, 8), bb = 2 * ri(2, 5), v = ri(5, 12);
   return N({
-    text: `Trojboký hranol má za podstavu pravoúhlý trojúhelník s odvěsnami ${B(cm(a))} a ${B(cm(bb))}. Výška hranolu je ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', fig: fPrism(a, bb, v, { la: cm(a), lb: cm(bb), lh: cm(v) }), ans: a * bb / 2 * v, unit: 'cm³',
+    text: `Trojboký hranol má za podstavu pravoúhlý trojúhelník s odvěsnami (dvěma kratšími stranami u pravého úhlu) ${B(cm(a))} a ${B(cm(bb))}. Výška hranolu je ${B(cm(v))}.`, q: 'Vypočítej jeho objem.', fig: fPrism(a, bb, v, { la: cm(a), lb: cm(bb), lh: cm(v) }), ans: a * bb / 2 * v, unit: 'cm³',
     traps: [[a * bb * v, 'Podstava je trojúhelník, ne obdélník. Její obsah je a · b : 2.']],
     hints: ['V = S<sub>p</sub> · v. Nejdřív spočítej obsah podstavy.', 'Podstava je pravoúhlý trojúhelník: S<sub>p</sub> = a · b : 2.'], steps: [`S<sub>p</sub> = ${a} · ${bb} : 2 = ${cm2(a * bb / 2)}`, `V = ${a * bb / 2} · ${v} = ${cm3(a * bb / 2 * v)}`],
   });
@@ -592,14 +592,14 @@ function h_povrchTroj() {
 function h_vyskaZObjemu() {
   const S = ri(6, 30), v = ri(3, 12), chciV = chance(0.5);
   return N({
-    text: chciV ? `Hranol má objem ${B(cm3(S * v))} a podstavu o obsahu ${B(cm2(S))}.` : `Hranol má objem ${B(cm3(S * v))} a výšku ${B(cm(v))}.`, q: chciV ? 'Jak je vysoký?' : 'Jaký obsah má jeho podstava?', ans: chciV ? v : S, unit: chciV ? 'cm' : 'cm²',
+    text: chciV ? `Hranol má objem ${B(cm3(S * v))} a podstavu (dolní stěnu, horní je stejná) o obsahu ${B(cm2(S))}.` : `Hranol má objem ${B(cm3(S * v))} a výšku ${B(cm(v))}.`, q: chciV ? 'Jak je vysoký?' : 'Jaký obsah má jeho podstava (dolní stěna)?', ans: chciV ? v : S, unit: chciV ? 'cm' : 'cm²',
     hints: ['V = S<sub>p</sub> · v. Dva z těchto tří údajů znáš.', chciV ? 'v = V : S<sub>p</sub>' : 'S<sub>p</sub> = V : v'], steps: [chciV ? `v = ${S * v} : ${S} = ${cm(v)}` : `S<sub>p</sub> = ${S * v} : ${v} = ${cm2(S)}`],
   });
 }
 function h_objemLich() {
   const [a, c, vp] = lich(), h = ri(5, 12), Sp = (a + c) * vp / 2;
   return N({
-    text: `Hranol má za podstavu lichoběžník se základnami ${B(cm(a))} a ${B(cm(c))} a výškou ${B(cm(vp))}. Výška hranolu je ${B(cm(h))}.`, q: 'Vypočítej jeho objem.', ans: Sp * h, unit: 'cm³',
+    text: `Hranol má za podstavu lichoběžník se základnami (rovnoběžnými stranami) ${B(cm(a))} a ${B(cm(c))} a výškou ${B(cm(vp))}. Výška hranolu je ${B(cm(h))}.`, q: 'Vypočítej jeho objem.', ans: Sp * h, unit: 'cm³',
     traps: [[(a + c) * vp * h, 'U obsahu lichoběžníku nezapomeň dělit dvěma.']],
     hints: ['V = S<sub>p</sub> · v. Podstava je lichoběžník.', 'S<sub>p</sub> = (a + c) · v<sub>p</sub> : 2. Pozor, výška podstavy a výška hranolu jsou dvě různé věci.'], steps: [`S<sub>p</sub> = (${a} + ${c}) · ${vp} : 2 = ${cm2(Sp)}`, `V = ${Sp} · ${h} = ${cm3(Sp * h)}`],
   });

@@ -18,7 +18,7 @@ Geometrie pro 2. stupeň ZŠ po ročnících (6–9), každé téma ve třech ob
 
 Nejsou to ukázky: hotový rozsáhlý modul, hra má děti bavit.
 
-**Pro koho:** modul vyhledávají hlavně slabší a průměrní žáci, ne jedničkáři. Odborný pojem proto vždy podej tak, aby si ho žák uměl představit: v zadání a nápovědě s krátkým vysvětlením v závorce, např. „délka kružnice (obvod kruhu)“. Přesnost se neobětuje, jen se k ní přidá cesta. Silnějšího žáka vysvětlení neurazí.
+**Pro koho:** modul vyhledávají hlavně slabší a průměrní žáci, ne jedničkáři. Odborný pojem proto vždy podej tak, aby si ho žák uměl představit: v zadání úrovní Základy a Procvičování s krátkým vysvětlením v závorce, např. „odvěsny (dvě kratší strany u pravého úhlu)“. Jedničkář pojmy zná, tam vysvětlení není (výjimka: „délka kružnice (obvod kruhu)“ všude). Vysvětlení nesmí prozradit výsledek; úlohy, které se ptají přímo na název nebo vlastnost pojmu, ho nemají. Přesnost se neobětuje, jen se k ní přidá cesta.
 
 ## Architektura
 Vanilla JS, ES moduly, bez build kroku. Přehled souborů je v README.md.
