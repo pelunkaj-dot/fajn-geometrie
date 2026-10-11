@@ -168,23 +168,23 @@ function kr_prumer() {
 function kr_delka() {
   const r = ri(2, 12);
   return N({
-    text: `Kružnice má poloměr ${B(cm(r))}.`, q: `Jak je dlouhá? ${ZAOKR} ${PI_T}`, fig: fCircle(r, { lr: cm(r) }), ...pia(p => 2 * p * r), unit: 'cm',
-    traps: [[rd(3.14 * r * r, 1), 'To je obsah kruhu. Délka kružnice je o = 2 · π · r.'], [rd(3.14 * r, 1), 'Chybí dvojka: o = 2 · π · r.']],
-    hints: ['Délka kružnice je délka celé čáry dokola, jako obvod.', 'Kružnice je vždy asi 3,14krát delší než její průměr: o = π · d = 2 · π · r.', `o = 2 · 3,14 · ${r}`], steps: ['o = 2 · π · r', `o = 2 · 3,14 · ${r}`, `o ≐ ${cm(rd(6.28 * r, 1))}`],
+    text: `Kružnice má poloměr ${B(cm(r))}.`, q: `Jaká je délka kružnice (obvod kruhu)? ${ZAOKR} ${PI_T}`, fig: fCircle(r, { lr: cm(r) }), ...pia(p => 2 * p * r), unit: 'cm',
+    traps: [[rd(3.14 * r * r, 1), 'To je obsah kruhu. Délka kružnice (obvod kruhu) je o = 2 · π · r.'], [rd(3.14 * r, 1), 'Chybí dvojka: o = 2 · π · r.']],
+    hints: ['Délka kružnice (obvod kruhu) je délka celé čáry dokola, jako obvod.', 'Kružnice je vždy asi 3,14krát delší než její průměr: o = π · d = 2 · π · r.', `o = 2 · 3,14 · ${r}`], steps: ['o = 2 · π · r', `o = 2 · 3,14 · ${r}`, `o ≐ ${cm(rd(6.28 * r, 1))}`],
   });
 }
 function kr_obsah() {
   const r = ri(2, 10);
   return N({
     text: `Kruh má poloměr ${B(cm(r))}.`, q: `Jaký má obsah? ${ZAOKR} ${PI_T}`, fig: fCircle(r, { lr: cm(r) }), ...pia(p => p * r * r), unit: 'cm²',
-    traps: [[rd(6.28 * r, 1), 'To je délka kružnice. Obsah kruhu je S = π · r².'], [rd(3.14 * 4 * r * r, 1), 'Do vzorce patří poloměr, ne průměr.'], [rd(9.8596 * r * r, 1), 'Na druhou se umocňuje jen poloměr, π ne.']],
+    traps: [[rd(6.28 * r, 1), 'To je délka kružnice (obvod kruhu). Obsah kruhu je S = π · r².'], [rd(3.14 * 4 * r * r, 1), 'Do vzorce patří poloměr, ne průměr.'], [rd(9.8596 * r * r, 1), 'Na druhou se umocňuje jen poloměr, π ne.']],
     hints: ['Obsah kruhu je plocha uvnitř kružnice.', 'S = π · r². Nejdřív umocni poloměr, pak vynásob číslem π.', `S = 3,14 · ${r}² = 3,14 · ${r * r}`], steps: ['S = π · r²', `S = 3,14 · ${r}² = 3,14 · ${r * r}`, `S ≐ ${cm2(rd(3.14 * r * r, 1))}`],
   });
 }
 function kr_delkaZPrumeru() {
   const d = ri(4, 30);
   return N({
-    text: `Kružnice má průměr ${B(cm(d))}.`, q: `Jak je dlouhá? ${ZAOKR} ${PI_T}`, ...pia(p => p * d), unit: 'cm',
+    text: `Kružnice má průměr ${B(cm(d))}.`, q: `Jaká je délka kružnice (obvod kruhu)? ${ZAOKR} ${PI_T}`, ...pia(p => p * d), unit: 'cm',
     traps: [[rd(6.28 * d, 1), 'Dvojka patří k poloměru. S průměrem je vzorec o = π · d.']],
     hints: ['Číslo π říká, kolikrát je kružnice delší než její průměr.', 'o = π · d', `o = 3,14 · ${d}`], steps: ['o = π · d', `o = 3,14 · ${d} ≐ ${cm(rd(3.14 * d, 1))}`],
   });
@@ -201,7 +201,7 @@ function kr_obsahZPrumeru() {
 function kr_polomerZDelky() {
   const r = ri(2, 15), o = rd(6.28 * r, 2);
   return N({
-    text: `Kružnice je dlouhá ${B(cm(o))}.`, q: `Jaký má poloměr? ${ZAOKR} ${PI_T}`, ans: r, dec: 1, unit: 'cm',
+    text: `Délka kružnice (obvod kruhu) je ${B(cm(o))}.`, q: `Jaký má poloměr? ${ZAOKR} ${PI_T}`, ans: r, dec: 1, unit: 'cm',
     traps: [[2 * r, 'To je průměr. Poloměr je jeho polovina.']],
     hints: ['Ze vzorce o = 2 · π · r vyjádři poloměr.', 'r = o : (2 · π)'], steps: ['r = o : (2 · π)', `r = ${cz(o)} : (2 · 3,14) = ${cz(o)} : 6,28 = ${cm(r)}`],
   });
@@ -242,8 +242,8 @@ function kr_zahon() {
   const d = ri(3, 9), cena = pick([120, 180, 240]);
   return N({
     text: `Kruhový záhon má průměr ${d} m. Kolem něj se položí obrubník, jeden metr stojí ${cena} Kč. ${PI_T}`, q: 'Kolik korun bude obrubník stát? Zaokrouhli přesně na celé koruny.', ...pia(p => p * d * cena, 0), unit: 'Kč',
-    traps: [[rd(3.14 * d * d / 4 * cena), 'Obrubník je čára kolem záhonu. Potřebuješ délku kružnice, ne obsah.']],
-    hints: ['Délka obrubníku je délka kružnice. Zadaný je průměr.'], steps: [`o = 3,14 · ${d} = ${cz(3.14 * d)} m`, `Cena: ${cz(3.14 * d)} · ${cena} ≐ ${cz(rd(3.14 * d * cena))} Kč`],
+    traps: [[rd(3.14 * d * d / 4 * cena), 'Obrubník je čára kolem záhonu. Potřebuješ délku kružnice (obvod kruhu), ne obsah.']],
+    hints: ['Délka obrubníku je délka kružnice (obvod kruhu). Zadaný je průměr.'], steps: [`o = 3,14 · ${d} = ${cz(3.14 * d)} m`, `Cena: ${cz(3.14 * d)} · ${cena} ≐ ${cz(rd(3.14 * d * cena))} Kč`],
   });
 }
 function kr_pizza() {
@@ -260,7 +260,7 @@ function kr_drat() {
   return N({
     text: `Z drátu dlouhého ${L} cm se stočí kružnice (celý drát se spotřebuje). ${PI_T}`, q: 'Jaký poloměr bude kružnice mít? Zaokrouhli přesně na jedno desetinné místo.', ans: rd(L / 6.28, 1), alt: rd(L / 6.28, 1) === rd(L / (2 * Math.PI), 1) ? [] : [rd(L / (2 * Math.PI), 1)], dec: 1, unit: 'cm', units: 1,
     traps: [[rd(L / 3.14, 1), 'To je průměr. Poloměr je poloviční.']],
-    hints: ['Délka drátu je délka kružnice. Ze vzorce o = 2 · π · r vyjádři r.'], steps: ['r = o : (2 · π)', `r = ${L} : 6,28 ≐ ${cm(rd(L / 6.28, 1))}`],
+    hints: ['Délka drátu je délka kružnice (obvod kruhu). Ze vzorce o = 2 · π · r vyjádři r.'], steps: ['r = o : (2 · π)', `r = ${L} : 6,28 ≐ ${cm(rd(L / 6.28, 1))}`],
   });
 }
 function kr_ctverecKruh() {
@@ -282,8 +282,8 @@ function kr_draha() {
 function kr_obsahZDelky() {
   const r = ri(2, 10), o = rd(6.28 * r, 2), a = rd(3.14 * r * r, 1), a2 = rd(o * o / (4 * Math.PI), 1);
   return N({
-    text: `Kružnice je dlouhá ${cm(o)}. ${PI_T}`, q: 'Jaký obsah má kruh, který ohraničuje? Zaokrouhli přesně na jedno desetinné místo.', ans: a, alt: [a2, rd(Math.PI * r * r, 1)].filter(x => x !== a), dec: 1, unit: 'cm²', units: 1,
-    hints: ['Z délky kružnice nejdřív spočítej poloměr, pak teprve obsah.'], steps: [`r = ${cz(o)} : 6,28 = ${cm(r)}`, `S = 3,14 · ${r}² ≐ ${cm2(a)}`],
+    text: `Délka kružnice (obvod kruhu) je ${cm(o)}. ${PI_T}`, q: 'Jaký obsah má kruh, který ohraničuje? Zaokrouhli přesně na jedno desetinné místo.', ans: a, alt: [a2, rd(Math.PI * r * r, 1)].filter(x => x !== a), dec: 1, unit: 'cm²', units: 1,
+    hints: ['Z délky kružnice (obvodu kruhu) nejdřív spočítej poloměr, pak teprve obsah.'], steps: [`r = ${cz(o)} : 6,28 = ${cm(r)}`, `S = 3,14 · ${r}² ≐ ${cm2(a)}`],
   });
 }
 
@@ -422,7 +422,7 @@ function v_podstava() {
   const r = ri(2, 8);
   return N({
     text: `Válec má poloměr podstavy ${B(cm(r))}.`, q: `Jaký obsah má jeho podstava? ${ZAOKR} ${PI_T}`, fig: fCyl(r, r * 1.6, { lr: cm(r) }), ...pia(p => p * r * r), unit: 'cm²',
-    traps: [[rd(6.28 * r, 1), 'To je délka kružnice. Podstava je kruh, její obsah je π · r².']],
+    traps: [[rd(6.28 * r, 1), 'To je délka kružnice (obvod kruhu). Podstava je kruh, její obsah je π · r².']],
     hints: ['Podstavou válce je kruh.', 'Obsah kruhu: S = π · r²', `S = 3,14 · ${r}²`], steps: ['S<sub>p</sub> = π · r²', `S<sub>p</sub> = 3,14 · ${r * r} ≐ ${cm2(rd(3.14 * r * r, 1))}`],
   });
 }
@@ -439,7 +439,7 @@ function v_plast() {
   return N({
     text: `Válec má poloměr podstavy ${B(cm(r))} a výšku ${B(cm(v))}.`, q: `Jaký obsah má jeho plášť? ${ZAOKR} ${PI_T}`, fig: fCyl(r, v, { lr: cm(r), lh: cm(v) }), ...pia(p => 2 * p * r * v), unit: 'cm²',
     traps: [[rd(3.14 * r * r * v, 1), 'To je objem. Plášť je 2 · π · r · v.']],
-    hints: ['Plášť je „etiketa“ kolem válce. Když ji rozvineš, je to obdélník.', 'Jedna strana obdélníku je délka kružnice podstavy (2 · π · r), druhá výška válce.', `S = 2 · 3,14 · ${r} · ${v}`], steps: ['S<sub>pl</sub> = 2 · π · r · v', `S<sub>pl</sub> = 2 · 3,14 · ${r} · ${v} ≐ ${cm2(rd(6.28 * r * v, 1))}`],
+    hints: ['Plášť je „etiketa“ kolem válce. Když ji rozvineš, je to obdélník.', 'Jedna strana obdélníku je délka kružnice podstavy (obvod podstavy = 2 · π · r), druhá výška válce.', `S = 2 · 3,14 · ${r} · ${v}`], steps: ['S<sub>pl</sub> = 2 · π · r · v', `S<sub>pl</sub> = 2 · 3,14 · ${r} · ${v} ≐ ${cm2(rd(6.28 * r * v, 1))}`],
   });
 }
 function v_pojem() {
@@ -506,8 +506,8 @@ function v_etiketa() {
   const d = ri(6, 12), v = ri(8, 14);
   return N({
     text: `Konzerva tvaru válce má průměr ${cm(d)} a výšku ${cm(v)}. Etiketa pokrývá celý plášť. ${PI_T}`, q: 'Kolik cm² papíru je potřeba na etiketu? Zaokrouhli přesně na jedno desetinné místo.', ...pia(p => p * d * v), unit: 'cm²', units: 1,
-    traps: [[rd(6.28 * d * v, 1), 'Zadaný je průměr: délka kružnice je π · d, ne 2 · π · d.']],
-    hints: ['Etiketa je plášť válce: obdélník, jehož jedna strana je délka kružnice podstavy.'], steps: [`Délka kružnice: 3,14 · ${d} = ${cz(3.14 * d)} cm`, `S = ${cz(3.14 * d)} · ${v} ≐ ${cm2(rd(3.14 * d * v, 1))}`],
+    traps: [[rd(6.28 * d * v, 1), 'Zadaný je průměr: délka kružnice (obvod kruhu) je π · d, ne 2 · π · d.']],
+    hints: ['Etiketa je plášť válce: obdélník, jehož jedna strana je délka kružnice podstavy (obvod podstavy).'], steps: [`Délka kružnice (obvod kruhu): 3,14 · ${d} = ${cz(3.14 * d)} cm`, `S = ${cz(3.14 * d)} · ${v} ≐ ${cm2(rd(3.14 * d * v, 1))}`],
   });
 }
 function v_valec() {
@@ -627,11 +627,11 @@ export const R8 = { rocnik: 8, temata: [
     ],
     u: [[p_pojem, p_ctverce, p_mocniny, p_prepona, p_odvesna], [p_preponaDec, p_odvesnaDec, p_obracena, p_uhlopricka, p_ctverecUhl, p_rovnoram], [p_zebrik, p_kosoctverec, p_lichobeznik, p_telesova, p_stozar, p_lod]],
     rychle: [p_ctverce, p_mocniny, p_prepona, p_odvesna, p_obracena] },
-  { id: '802', nazev: 'Kruh a kružnice', ikona: '○', popis: 'Poloměr, průměr, číslo π, délka kružnice a obsah kruhu', strazce: 'Pípolykač',
+  { id: '802', nazev: 'Kruh a kružnice', ikona: '○', popis: 'Poloměr, průměr, číslo π, délka kružnice (obvod kruhu) a obsah kruhu', strazce: 'Pípolykač',
     vyklad: [
       { h: 'Kružnice a kruh', t: '<b>Kružnice</b> je jen čára: všechny body, které jsou od středu S stejně daleko. <b>Kruh</b> je celá plocha uvnitř i s touto čárou.<br><br><b>Poloměr r</b> vede ze středu na kružnici. <b>Průměr d</b> vede od kraje ke kraji přes střed, je to dva poloměry: <b>d = 2 · r</b>.', fig: () => fCircle(4, { lr: 'r' }) },
       { h: 'Číslo π', t: 'Změř u libovolného kola obvod a průměr. Obvod vyjde vždy asi 3,14krát delší. Tomuto číslu se říká <b>π</b> (pí, Ludolfovo číslo).<br><br><b>π ≐ 3,14</b><br><br>Má nekonečně mnoho desetinných míst, proto se výsledky zaokrouhlují. Tady počítej s 3,14, uzná se ti i výsledek s tlačítkem π na kalkulačce.' },
-      { h: 'Délka kružnice', t: 'Délka kružnice je π krát průměr:<br><br><b>o = π · d = 2 · π · r</b><br><br>Příklad: r = 5 cm. o = 2 · 3,14 · 5 = 31,4 cm.' },
+      { h: 'Délka kružnice (obvod kruhu)', t: 'Délka kružnice (obvod kruhu) je π krát průměr:<br><br><b>o = π · d = 2 · π · r</b><br><br>Příklad: r = 5 cm. o = 2 · 3,14 · 5 = 31,4 cm.' },
       { h: 'Obsah kruhu', t: '<b>S = π · r²</b><br><br>Nejdřív umocni poloměr, pak násob číslem π. Příklad: r = 5 cm. S = 3,14 · 25 = 78,5 cm².<br><br>Když znáš průměr, nejdřív z něj udělej poloměr. Do vzorce pro obsah patří vždy poloměr.', fig: () => fCircle(4, { ld: 'd' }) },
       { h: 'Části kruhu', t: '<b>Půlkruh</b> je polovina kruhu, <b>čtvrtkruh</b> čtvrtina. <b>Výseč</b> je „dílek dortu“ se středovým úhlem α a zabírá α/360 celého kruhu.<br><b>Mezikruží</b> je kruh s vyříznutým menším kruhem: S = π · R² − π · r².', fig: () => fCircle(4, { sector: 90, lsec: '90°' }) },
     ],

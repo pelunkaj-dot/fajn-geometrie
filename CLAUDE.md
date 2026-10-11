@@ -22,6 +22,7 @@ Nejsou to ukázky: hotový rozsáhlý modul, hra má děti bavit.
 Vanilla JS, ES moduly, bez build kroku. Přehled souborů je v README.md.
 - **Úloha** je obyčejný objekt z generátoru (`N` číslo, `C` výběr, `DM` stupně a minuty, `GR` síť, `K` konstrukce – viz `js/ulohy.js`). Pole: `text`, `q`, `fig`, `ans`, `unit`, `dec`, `alt`, `traps` (typické chyby se zprávou), `hints`, `steps`, `units` (na úrovni 3 volí jednotku žák).
 - **Téma** (`js/rN.js`): `{ id, nazev, ikona, popis, strazce, vyklad: [{h, t, fig}], u: [[úroveň 1], [2], [3]], rychle: [...], kon }`. `rychle` jsou úlohy pro Obranu města (krátké, bez obrázku). `kon: 1` = konstrukční téma (kratší série).
+- **Délka kružnice**: vždy s vysvětlením „délka kružnice (obvod kruhu)“ (ve správném pádě, u válce „(obvod podstavy)“); samotné „délka“ si žák představí jako vzdálenost dvou bodů. Nikdy „kružnice je dlouhá“.
 - **π**: v zadání vždy „(π ≐ 3,14)“, `pia()` uzná výsledek s 3,14 i s tlačítkem π.
 - **Čísla**: vždy přes `cz()` (desetinná čárka). Indexy v textu `<sub>`, v obrázku `tspan`.
 - **Obrázky** jsou v měřítku a barvy berou z CSS proměnných (`fg-*`), takže fungují ve všech motivech.

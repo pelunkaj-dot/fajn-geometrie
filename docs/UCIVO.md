@@ -63,7 +63,7 @@ chyby (zapomenuté ÷2, průměr místo poloměru, obvod × obsah, chybí odmocn
 
 ### 8. ročník
 - 801 Pythagorova věta: přepona, odvěsna, obrácená věta, úlohy z praxe, tělesová úhlopříčka
-- 802 Kruh a kružnice: π, délka kružnice, obsah kruhu, části kruhu, mezikruží
+- 802 Kruh a kružnice: π, délka kružnice (obvod kruhu), obsah kruhu, části kruhu, mezikruží
 - 803 Tečna a Thaletova kružnice [K]: polohy přímky a kružnice, dvou kružnic, tětiva, tečna z bodu
 - 804 Válec: povrch a objem
 - 805 Konstrukční úlohy [K]: množiny bodů, trojúhelník z výšky a těžnice
