@@ -50,3 +50,5 @@ GitHub Pages zapnuté (`main`, `/`), hra běží na https://pelunkaj-dot.github.
 Ukázka: všechna témata a úrovně, ale jen 3 série + jedna obrana + jedna výzva (odchylka od pravidla platformy „v demu jen Lehká“, schválil Jan).
 Přehled pro rodiče (`js/rodice.js`) hotový podle vzoru FajnDetektiva; obrana města se do statistik úloh nepočítá (jen do posledních výsledků).
 Opakování s rozestupy (`js/opakovani.js`): typ úlohy s chybou nebo ukázaným řešením se vrací po 1, 3, 7, 14 dnech; karta Opakování na výpravě, série max. 8 úloh (nejvýš 2 konstrukce), krystal za každou úlohu napoprvé.
+Čeká: jazyková kontrola nových textů (Jan). Na pokyn „jdeme na jazykovou kontrolu geometrie“ připravit jeden soubor se všemi novými texty a odkazem, odkud jsou: vysvětlení pojmů v zadáních úrovní 1–2, přehled pro rodiče (`js/rodice.js`), texty ukázky a karty Opakování (`js/app.js`), hlášky `opakovani` (`js/hlasky.js`). Pak zapracovat Janovy opravy.
+Rozhodnuto: cena nápovědy se ukazuje jen u Jedničkáře; opravné pokusy zůstávají ve 3 krocích podle tohoto zadání (platforma má 4).
