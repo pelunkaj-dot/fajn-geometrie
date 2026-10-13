@@ -27,7 +27,7 @@ const zaznam = z => { zapisUlohu(z); zapisOpak(z); }; // každá vyřešená úl
 const IK = {
   vyprava: '<polygon points="12,3 21,20 3,20"/>', obrana: '<circle cx="14" cy="14" r="6"/><path d="M3 3l6 6M3 9l3 3M9 3l3 3"/>', vyzva: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
   mesto: '<path d="M3 21V11h5v10M8 21V5h7v16M15 21v-8h6v8M2 21h20"/>', odznaky: '<polygon points="12,2 20,7 20,17 12,22 4,17 4,7"/><path d="M9 12l2 2 4-4"/>',
-  nast: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+  nast: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
 };
 const ik = n => `<svg class="ikona" viewBox="0 0 24 24" aria-hidden="true">${IK[n]}</svg>`;
 
@@ -58,7 +58,7 @@ function kresli() { ({ vyprava, obrana: obranaUvod, vyzva, mesto, odznaky })[zal
 function vyprava() {
   const R = rocnik(), h = hodnost();
   ram(`<section class="uvod" id="uvod-mesto">${mestoSvg(stav.mesto, { H: stav.mesto.length ? 150 : 64 })}
-      <p class="uvod-t">${h.dalsi ? `Do hodnosti ${h.dalsi} zbývá <b>${h.zbyva}</b> bodů.` : 'Nejvyšší hodnost je tvoje.'}</p></section>
+      <p class="uvod-t">${h.dalsi ? `Do hodnosti ${h.dalsi} zbývá <b>${h.zbyva}</b> bodů.` : 'Nejvyšší hodnost je tvoje.'} <button class="odkaz-rod" id="b-rod2">Pro rodiče</button></p></section>
     ${opakKarta()}
     ${DEMO ? `<p class="demo-pruh">${demoZbyva() > 0 ? `Ukázka: vyzkoušej cokoli. Zbývající série: <b>${demoZbyva()}</b> ze ${DEMO_SERII}.` : 'Ukázka je u konce. Celá hra je na <b>fajndoucko.cz</b>.'}</p>` : ''}
     <div class="rocniky" role="tablist" aria-label="Ročník">${ROCNIKY.map(r => `<button role="tab" aria-selected="${r.rocnik === R.rocnik}" class="${r.rocnik === R.rocnik ? 'on' : ''}" data-r="${r.rocnik}">${r.rocnik}. ročník</button>`).join('')}</div>
@@ -69,8 +69,8 @@ function vyprava() {
         <div class="urovne">${[1, 2, 3].map(l => `<button class="uroven" data-l="${l}"><span class="ur-c">${l}</span><span class="ur-n">${NAZVY_UROVNI[l - 1]}</span>${hv(hvezdy(t.id, l))}</button>`).join('')}
           <button class="uroven strazce-b${sOk ? ' porazen' : ''}${sOdem && !DEMO ? '' : ' zamek'}" data-s><span class="ur-c">${sOk ? '✓' : '!'}</span><span class="ur-n">${t.strazce}</span><span class="ur-z">${DEMO ? 'podívat se' : sOk ? 'strážce poražen' : sOdem ? 'souboj se strážcem' : `ještě ${3 - sh} ${3 - sh === 1 ? 'hvězda' : 'hvězdy'}`}</span></button></div>
       </section>`; }).join('')}</div>
-    <p class="pro-rodice"><button class="btn mini" id="b-rod">Pro rodiče</button></p>`);
-  $('#b-rod').onclick = () => rodice(kresli);
+    <section class="karta pro-rodice"><h2>Pro rodiče</h2><p>Co dítě procvičovalo, kde chybuje, kolik času strávilo a jaké má výsledky. Přehled je chráněný heslem.</p><button class="btn" id="b-rod">Otevřít přehled pro rodiče</button></section>`);
+  $('#b-rod').onclick = $('#b-rod2').onclick = () => rodice(kresli);
   const bo = $('#b-opak'); if (bo) bo.onclick = () => { odemkni(); pripravOpak(); };
   $('#uvod-mesto').onclick = () => { zalozka = 'mesto'; kresli(); };
   if (fokusTema) { const el = $(`.tema[data-id="${fokusTema}"]`); fokusTema = null; if (el) el.scrollIntoView({ block: 'center' }); }

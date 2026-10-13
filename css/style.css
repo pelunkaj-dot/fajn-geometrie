@@ -363,6 +363,8 @@ b { font-weight: 700; }
 /* ukázka */
 .demo-pruh { margin: 10px 0 0; padding: 8px 12px; border: 2px dashed var(--accent); border-radius: 12px; background: var(--hint-bg); text-align: center; font-size: .95rem; }
 .pro-rodice { text-align: center; margin: 18px 0 4px; }
+.pro-rodice h2 { margin: 0 0 4px; } .pro-rodice p { margin: 0 0 10px; color: var(--muted, inherit); }
+.odkaz-rod { display: inline; padding: 0; border: 0; background: none; color: var(--accent); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; white-space: nowrap; }
 
 /* přehled pro rodiče */
 .rod h3 { font-size: 1.1rem; margin: 18px 0 6px; }
